@@ -58,9 +58,8 @@
             </li>
             <li class="nav-item ms-lg-2"><button class="btn btn-sm btn-outline-light" id="nav-login-btn" type="button">Login</button></li>
             <li class="nav-item ms-lg-2">
-              <button id="theme-toggle" class="btn btn-sm btn-outline-light" type="button" aria-pressed="false">
-                <i class="bi bi-moon"></i>
-                <span class="d-none d-md-inline ms-1">Dark</span>
+              <button id="theme-toggle" class="btn btn-sm btn-outline-light" type="button" aria-pressed="false" aria-label="Toggle theme">
+                <i class="bi bi-moon" id="theme-icon"></i>
               </button>
             </li>
           </ul>
@@ -152,6 +151,30 @@
         </div>
       </div>
     </div>
+
+            <!-- SIGN OUT MODAL (Fallback) -->
+            <div id="signout-modal" class="modal d-none" tabindex="-1" aria-hidden="true">
+              <div class="modal-dialog modal-dialog-centered">
+                <div class="modal-content shadow-lg border-0">
+                  <div class="modal-header bg-danger text-white border-0">
+                    <h5 class="modal-title fw-bold">
+                      <i class="bi bi-box-arrow-right me-2"></i>Sign out
+                    </h5>
+                    <button type="button" class="btn-close btn-close-white" id="signout-close" aria-label="Close"></button>
+                  </div>
+                  <div class="modal-body p-4">
+                    <p class="mb-2">You're currently signed in as <strong id="signout-identity">user</strong>.</p>
+                    <p class="mb-0">Are you sure you want to sign out?</p>
+                  </div>
+                  <div class="modal-footer border-0">
+                    <button type="button" class="btn btn-secondary" id="signout-cancel">Cancel</button>
+                    <button type="button" class="btn btn-danger" id="signout-confirm">
+                      <i class="bi bi-box-arrow-right me-1"></i>Sign out
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
 
             <!-- FORGOT PASSWORD MODAL (Fallback) -->
             <div id="forgot-modal" class="modal d-none" tabindex="-1" aria-hidden="true">
@@ -597,12 +620,23 @@
         document.documentElement.setAttribute('data-theme', theme);
         document.documentElement.setAttribute('data-bs-theme', theme==='dark' ? 'dark' : 'light');
         try { localStorage.setItem(THEME_STORAGE_KEY, theme); } catch {}
-        if(btn){ btn.textContent = theme==='dark' ? 'Light' : 'Dark'; btn.setAttribute('aria-pressed', theme==='dark'); }
+        if(btn){
+          const icon = btn.querySelector('i');
+          if (icon){
+            icon.classList.remove('bi-moon','bi-sun');
+            icon.classList.add(theme==='dark' ? 'bi-sun' : 'bi-moon');
+          }
+          btn.setAttribute('aria-pressed', theme==='dark');
+        }
       }
       if(btn){
-        // Initialize label
+        // Initialize icon and aria state
         const current = document.documentElement.getAttribute('data-theme') || 'light';
-        btn.textContent = current==='dark' ? 'Light' : 'Dark';
+        const icon = btn.querySelector('i');
+        if (icon){
+          icon.classList.remove('bi-moon','bi-sun');
+          icon.classList.add(current==='dark' ? 'bi-sun' : 'bi-moon');
+        }
         btn.setAttribute('aria-pressed', current==='dark');
         btn.addEventListener('click', ()=>{
           const t = (document.documentElement.getAttribute('data-theme')==='dark') ? 'light' : 'dark';

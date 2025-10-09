@@ -26,13 +26,32 @@
       <div class="col-lg-7">
         <form id="contact-form" class="needs-validation surface-card" novalidate>
           <div class="mb-3">
-            <label class="form-label fw-semibold" for="name">Name</label>
-            <input required type="text" class="form-control" id="name" name="name" placeholder="Jane Doe" />
-            <div class="invalid-feedback">Please enter your name.</div>
+            <label class="form-label fw-semibold" for="first-name">Name</label>
+            <div class="row g-3">
+              <div class="col-12 col-md-4">
+                <input required type="text" class="form-control" id="first-name" name="firstName" placeholder="First name"
+                       oninput="this.value = this.value.replace(/\s+$/, '')"
+                       onkeydown="if(event.key===' ' && this.selectionStart===this.value.length) return false;" />
+                <div class="invalid-feedback">Please enter your first name.</div>
+              </div>
+              <div class="col-12 col-md-4">
+                <input type="text" class="form-control" id="middle-name" name="middleName" placeholder="Middle name (optional)"
+                       oninput="this.value = this.value.replace(/\s+$/, '')"
+                       onkeydown="if(event.key===' ' && this.selectionStart===this.value.length) return false;" />
+              </div>
+              <div class="col-12 col-md-4">
+                <input required type="text" class="form-control" id="last-name" name="lastName" placeholder="Last name"
+                       oninput="this.value = this.value.replace(/\s+$/, '')"
+                       onkeydown="if(event.key===' ' && this.selectionStart===this.value.length) return false;" />
+                <div class="invalid-feedback">Please enter your last name.</div>
+              </div>
+            </div>
           </div>
           <div class="mb-3">
             <label class="form-label fw-semibold" for="email">Email</label>
-            <input required type="email" class="form-control" id="email" name="email" placeholder="you@example.com" />
+       <input required type="email" class="form-control" id="email" name="email" placeholder="you@example.com"
+         oninput="this.value = this.value.replace(/\s+$/, '')"
+         onkeydown="if(event.key===' ' && this.selectionStart===this.value.length) return false;" />
             <div class="invalid-feedback">Enter a valid email.</div>
           </div>
           <div class="mb-3">
@@ -48,7 +67,9 @@
           </div>
           <div class="mb-3">
             <label class="form-label fw-semibold" for="message">Message</label>
-            <textarea required id="message" name="message" rows="5" class="form-control" placeholder="How can we help?"></textarea>
+            <textarea required id="message" name="message" rows="5" class="form-control" placeholder="How can we help?"
+                      oninput="this.value = this.value.replace(/\s+$/, '')"
+                      onkeydown="if(event.key===' ' && this.selectionStart===this.value.length) return false;"></textarea>
             <div class="invalid-feedback">Message cannot be empty.</div>
           </div>
           <button class="btn btn-primary" type="submit">Send Message</button>
@@ -96,13 +117,16 @@
           error.insertAfter(element);
         },
         rules: {
-          name: { required: true, minlength: 2 },
+          firstName: { required: true, minlength: 2 },
+          middleName: { required: false },
+          lastName: { required: true, minlength: 2 },
           email: { required: true, email: true },
           topic: { required: true },
           message: { required: true, minlength: 5 }
         },
         messages: {
-          name: "Please enter your name (at least 2 characters).",
+          firstName: "Please enter your first name (at least 2 characters).",
+          lastName: "Please enter your last name (at least 2 characters).",
           email: "Enter a valid email address.",
           topic: "Please choose a topic.",
           message: "Message cannot be empty."

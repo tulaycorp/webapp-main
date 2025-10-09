@@ -138,14 +138,37 @@
 
     // wire up open button
     openBtn().on('click', function(){
-      // if logged in, show simple logout prompt
+      // if logged in, show Sign Out modal
       var u = localStorage.getItem('eshop_user');
       if (u) {
-        if (confirm('Sign out ' + u + '?')) { setLoggedOut(); }
+        // Populate identity and show modal
+        $('#signout-identity').text(u);
+        var $m = $('#signout-modal');
+        if ($m.length) {
+          $m.removeClass('d-none').addClass('show').css('display','block').attr('aria-hidden','false');
+          if ($('.modal-backdrop.show').length === 0) {
+            $('<div class="modal-backdrop fade show"></div>').appendTo(document.body);
+          }
+          $('body').addClass('modal-open');
+        } else {
+          if (confirm('Sign out ' + u + '?')) { setLoggedOut(); }
+        }
         return;
       }
       showLoginModal();
     });
+
+    // Sign Out modal close helpers
+    function hideSignoutModal(){
+      var $m = $('#signout-modal');
+      $m.removeClass('show').addClass('d-none').css('display','none').attr('aria-hidden','true');
+      $('.modal-backdrop').remove();
+      $('body').removeClass('modal-open');
+    }
+    $(document).on('click', '#signout-close, #signout-cancel', hideSignoutModal);
+    $(document).on('click', '#signout-modal', function(e){ if (e.target.id === 'signout-modal') hideSignoutModal(); });
+    $(document).on('keydown', function(e){ if (e.key === 'Escape' && !$('#signout-modal').hasClass('d-none')) hideSignoutModal(); });
+    $(document).on('click', '#signout-confirm', function(){ setLoggedOut(); hideSignoutModal(); });
 
     // Modal control buttons
     $(document).on('click', '#login-close, #login-cancel', function(){ hideLoginModal(); });

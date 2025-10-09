@@ -265,7 +265,7 @@
       
       // Fetch users from JSON file
       $.ajax({
-        url: 'users.json',
+        url: '../users.json',
         method: 'GET',
         dataType: 'json',
         timeout: 5000,
@@ -376,7 +376,7 @@
 
       // Check if user already exists
       $.ajax({
-        url: 'users.json',
+        url: '../users.json',
         method: 'GET',
         dataType: 'json',
         success: function(data) {
@@ -430,5 +430,19 @@
     if (saved) setLoggedIn(saved);
   }
 
-  $(document).ready(init);
+  // Expose LoginHandler globally so app.js can initialize it after modals are loaded
+  window.LoginHandler = {
+    init: init,
+    showLoginModal: showLoginModal,
+    hideLoginModal: hideLoginModal,
+    showSignupModal: showSignupModal,
+    hideSignupModal: hideSignupModal
+  };
+
+  // Only auto-initialize if modals already exist (fallback for pages that don't use components)
+  $(document).ready(function() {
+    if ($('#login-modal').length && $('#signup-modal').length) {
+      init();
+    }
+  });
 })(window, window.jQuery);

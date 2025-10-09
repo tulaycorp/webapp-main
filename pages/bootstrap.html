@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>E-Shop - Bootstrap Home</title>
+
+  <!-- Theme initialization script -->
+  <script>(function(){try{var t=localStorage.getItem('eshop-theme')||(window.matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light');document.documentElement.setAttribute('data-theme',t);document.documentElement.setAttribute('data-bs-theme',t==='dark'?'dark':'light');}catch(e){}})();</script>
+  
+  <!-- Compiled (Bootstrap + custom) CSS -->
+  <link href="../dist/styles.css" rel="stylesheet">
+  <link href="../dist/theme.css" rel="stylesheet">
+</head>
+<body>
+
+  <!-- NAVBAR CONTAINER -->
+  <div id="navbar-container"></div>
+
+  <!-- HERO -->
+  <header class="py-5 header-plain">
+    <div class="container">
+      <div class="surface-card mx-auto text-center" style="max-width: 720px;">
+        <h1 class="display-5 fw-bold mb-2">Framework</h1>
+        <p class="lead small-muted">Discover premium products for your work and lifestyle</p>
+        <a href="products.html" class="btn btn-primary btn-lg mt-2">Shop Now</a>
+      </div>
+    </div>
+  </header>
+
+  <!-- PRODUCTS -->
+  <section class="py-5">
+    <div class="container">
+      <div class="surface-card mx-auto" style="max-width: 1140px;">
+        <h2 class="text-center mb-4">Featured Products</h2>
+        <div class="row g-4" id="featured-products">
+        <!-- Featured products injected via JS (see app.js) as a subset of catalog -->
+        </div>
+        <div class="text-center mt-4">
+          <a href="products.html" class="btn btn-outline-secondary btn-lg">Browse Full Catalog →</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- FOOTER -->
+  <footer class="text-center py-3">
+    <p class="mb-0 small small-muted">© 2025 Framework • <a href="about.html" class="text-decoration-none">About</a> • <a href="contact.html" class="text-decoration-none">Contact</a> • <a href="test-credentials.html" class="text-decoration-none">Test Login</a></p>
+  </footer>
+
+  <!-- jQuery -->
+  <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+  <!-- Bootstrap JS (for navbar collapse/toggler) -->
+  <script src="../node_modules/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+  <!-- Shared App Logic -->
+  <script src="../scripts/app.js"></script>
+  <!-- Authentication -->
+  <script src="../scripts/login.js"></script>
+</body>
+</html>

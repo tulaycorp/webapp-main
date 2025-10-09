@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>E-Shop - Cart</title>
+  <script>(function(){try{var t=localStorage.getItem('eshop-theme')||(window.matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light');document.documentElement.setAttribute('data-theme',t);document.documentElement.setAttribute('data-bs-theme',t==='dark'?'dark':'light');}catch(e){}})();</script>
+  <link href="../dist/styles.css" rel="stylesheet" />
+  <link href="../dist/theme.css" rel="stylesheet" />
+  <!-- Bootstrap Icons -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet" />
+</head>
+<body>
+  <!-- NAVBAR CONTAINER -->
+  <div id="navbar-container"></div>
+
+  <header class="header-plain py-5 mb-4">
+    <div class="container">
+      <h1 class="display-6 fw-semibold mb-2">Your Cart</h1>
+      <p class="lead mb-0 text-muted">Review items before checkout.</p>
+    </div>
+  </header>
+
+  <main class="container pb-5">
+    <div class="row g-4">
+      <div class="col-lg-8">
+        <div id="cart-items" class="vstack gap-3"></div>
+        <div id="cart-empty" class="alert alert-info d-none">Your cart is empty. <a href="products.html" class="alert-link">Browse products</a>.</div>
+      </div>
+      <div class="col-lg-4">
+        <div class="card shadow-sm surface-card">
+          <div class="card-body">
+            <h2 class="h5">Summary</h2>
+            <ul class="list-unstyled small mb-3">
+              <li class="d-flex justify-content-between"><span>Subtotal</span><strong id="summary-subtotal">$0.00</strong></li>
+              <li class="d-flex justify-content-between"><span>Tax (8%)</span><strong id="summary-tax">$0.00</strong></li>
+              <li class="d-flex justify-content-between border-top pt-2"><span>Total</span><strong id="summary-total" class="fs-5">$0.00</strong></li>
+            </ul>
+            <button class="btn btn-primary w-100" id="checkout" disabled>Checkout</button>
+            <button class="btn btn-outline-danger w-100 mt-2" id="clear-cart" disabled>Clear Cart</button>
+            <div id="checkout-msg" class="alert alert-success mt-3 d-none">Order placed (demo)!</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <footer class="text-center py-3 mt-auto">
+    <p class="mb-0 small small-muted">© 2025 Framework • <a href="test-credentials.html" class="text-decoration-none">Test Login</a></p>
+  </footer>
+
+  <!-- jQuery -->
+  <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+  <script src="../node_modules/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="../scripts/app.js"></script>
+  <!-- Authentication -->
+  <script src="../scripts/login.js"></script>
+  <script>window.Eshop && window.Eshop.pages.cart();</script>
+</body>
+</html>

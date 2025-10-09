@@ -3,58 +3,168 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>E-Shop - Bootstrap Home</title>
+  <title>E-Shop - Premium Products for Modern Living</title>
 
   <!-- Theme initialization script -->
   <script>(function(){try{var t=localStorage.getItem('eshop-theme')||(window.matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light');document.documentElement.setAttribute('data-theme',t);document.documentElement.setAttribute('data-bs-theme',t==='dark'?'dark':'light');}catch(e){}})();</script>
   
-  <!-- Compiled (Bootstrap + custom) CSS -->
+  <!-- CSS with modern design system -->
   <link href="../dist/styles.css" rel="stylesheet">
   <link href="../dist/theme.css" rel="stylesheet">
+  <link href="../styles.css" rel="stylesheet">
 </head>
-<body>
+<body class="page-transition">
 
   <!-- NAVBAR CONTAINER -->
   <div id="navbar-container"></div>
 
-  <!-- HERO -->
-  <header class="py-5 header-plain">
+  <!-- HERO SECTION - Modern Design -->
+  <section class="hero-section py-5">
     <div class="container">
-      <div class="surface-card mx-auto text-center" style="max-width: 720px;">
-        <h1 class="display-5 fw-bold mb-2">Framework</h1>
-        <p class="lead small-muted">Discover premium products for your work and lifestyle</p>
-        <a href="products.html" class="btn btn-primary btn-lg mt-2">Shop Now</a>
+      <div class="row align-items-center">
+        <div class="col-lg-6">
+          <div class="hero-content">
+            <h1 class="display-4 fw-bold text-primary mb-3">
+              Premium Products for Modern Living
+            </h1>
+            <p class="lead mb-4">
+              Discover our curated collection of furniture, electronics, and lifestyle products 
+              designed to enhance your everyday experience.
+            </p>
+            <div class="d-flex gap-3 flex-wrap">
+              <a href="products.html" class="btn btn-primary btn-lg">
+                <i class="bi bi-shop me-2"></i>Shop Now
+              </a>
+              <a href="about.html" class="btn btn-outline-primary btn-lg">
+                Learn More
+              </a>
+            </div>
+          </div>
+        </div>
+        <div class="col-lg-6 mt-4 mt-lg-0">
+          <img src="https://picsum.photos/600/400?shopping" 
+               alt="Shopping Experience" 
+               class="img-fluid rounded shadow">
+        </div>
       </div>
     </div>
-  </header>
+  </section>
 
-  <!-- PRODUCTS -->
-  <section class="py-5">
+  <!-- FEATURED PRODUCTS -->
+  <section class="section-padding">
     <div class="container">
-      <div class="surface-card mx-auto" style="max-width: 1140px;">
-        <h2 class="text-center mb-4">Featured Products</h2>
-        <div class="row g-4" id="featured-products">
-        <!-- Featured products injected via JS (see app.js) as a subset of catalog -->
+      <div class="text-center mb-5">
+        <h2 class="display-5 fw-bold">Featured Products</h2>
+        <p class="lead text-muted">Handpicked items from our premium collection</p>
+      </div>
+      
+      <div class="row g-4" id="featured-products">
+        <!-- Featured products injected via JS -->
+        <div class="col-12 text-center">
+          <div class="loading-spinner mx-auto" role="status">
+            <span class="visually-hidden">Loading...</span>
+          </div>
         </div>
-        <div class="text-center mt-4">
-          <a href="products.html" class="btn btn-outline-secondary btn-lg">Browse Full Catalog →</a>
+      </div>
+      
+      <div class="text-center mt-5">
+        <a href="products.html" class="btn btn-outline-primary btn-lg">
+          View All Products
+          <i class="bi bi-arrow-right ms-2"></i>
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- FEATURES SECTION -->
+  <section class="hero-section section-padding">
+    <div class="container">
+      <div class="row g-4">
+        <div class="col-md-4 text-center">
+          <div class="feature-card h-100">
+            <div class="feature-icon bg-primary text-white rounded-circle mx-auto mb-3">
+              <i class="bi bi-truck fs-1"></i>
+            </div>
+            <h4>Free Shipping</h4>
+            <p class="text-muted">Free shipping on all orders over $50. Fast and reliable delivery to your doorstep.</p>
+          </div>
+        </div>
+        <div class="col-md-4 text-center">
+          <div class="feature-card h-100">
+            <div class="value-icon bg-success text-white rounded-circle mx-auto mb-3">
+              <i class="bi bi-shield-check fs-1"></i>
+            </div>
+            <h4>Quality Guarantee</h4>
+            <p class="text-muted">30-day money-back guarantee. We stand behind the quality of our products.</p>
+          </div>
+        </div>
+        <div class="col-md-4 text-center">
+          <div class="feature-card h-100">
+            <div class="value-icon bg-info text-white rounded-circle mx-auto mb-3">
+              <i class="bi bi-headset fs-1"></i>
+            </div>
+            <h4>24/7 Support</h4>
+            <p class="text-muted">Round-the-clock customer support. We're here to help whenever you need us.</p>
+          </div>
         </div>
       </div>
     </div>
   </section>
 
   <!-- FOOTER -->
-  <footer class="text-center py-3">
-    <p class="mb-0 small small-muted">© 2025 Framework • <a href="about.html" class="text-decoration-none">About</a> • <a href="contact.html" class="text-decoration-none">Contact</a> • <a href="test-credentials.html" class="text-decoration-none">Test Login</a></p>
+  <footer class="bg-dark text-light py-4 mt-auto">
+    <div class="container">
+      <div class="row">
+        <div class="col-md-6">
+          <div class="d-flex align-items-center mb-3">
+            <i class="bi bi-shop fs-3 me-2"></i>
+            <h5 class="mb-0">E-Shop</h5>
+          </div>
+          <p class="text-muted">Premium products for modern living. Quality, style, and convenience in every purchase.</p>
+        </div>
+        <div class="col-md-6">
+          <h6 class="mb-3">Quick Links</h6>
+          <div class="row">
+            <div class="col-6">
+              <ul class="list-unstyled">
+                <li><a href="bootstrap.html" class="text-light text-decoration-none">Home</a></li>
+                <li><a href="products.html" class="text-light text-decoration-none">Products</a></li>
+                <li><a href="cart.html" class="text-light text-decoration-none">Cart</a></li>
+              </ul>
+            </div>
+            <div class="col-6">
+              <ul class="list-unstyled">
+                <li><a href="about.html" class="text-light text-decoration-none">About</a></li>
+                <li><a href="contact.html" class="text-light text-decoration-none">Contact</a></li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div>
+      <hr class="my-4">
+      <div class="text-center">
+        <p class="mb-0 text-muted">&copy; 2025 E-Shop. All rights reserved.</p>
+      </div>
+    </div>
   </footer>
 
-  <!-- jQuery -->
+  <!-- Scripts -->
   <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
-  <!-- Bootstrap JS (for navbar collapse/toggler) -->
   <script src="../node_modules/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
-  <!-- Shared App Logic -->
+  
+  <!-- Both app versions for compatibility and modern UI -->
   <script src="../scripts/app.js"></script>
-  <!-- Authentication -->
+  <script src="../scripts/app-modern.js"></script>
   <script src="../scripts/login.js"></script>
+
+  <!-- Load Page Controller - Modern version takes priority -->
+  <script>
+    // Use modern app if available, fallback to original
+    if (window.eshopModern) {
+      console.log('Using modern E-Shop application with enhanced UI');
+    } else if (window.Eshop && window.Eshop.pages && window.Eshop.pages.home) {
+      window.Eshop.pages.home();
+    }
+  </script>
 </body>
 </html>

@@ -3,21 +3,34 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>E-Shop - Cart</title>
+  <title>E-Shop - Shopping Cart</title>
   <script>(function(){try{var t=localStorage.getItem('eshop-theme')||(window.matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light');document.documentElement.setAttribute('data-theme',t);document.documentElement.setAttribute('data-bs-theme',t==='dark'?'dark':'light');}catch(e){}})();</script>
   <link href="../dist/styles.css" rel="stylesheet" />
   <link href="../dist/theme.css" rel="stylesheet" />
+  <link href="../styles.css" rel="stylesheet" />
   <!-- Bootstrap Icons -->
   <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet" />
 </head>
-<body>
+<body class="page-transition">
   <!-- NAVBAR CONTAINER -->
   <div id="navbar-container"></div>
 
-  <header class="header-plain py-5 mb-4">
+  <!-- MODERN HEADER -->
+  <header class="hero-section py-5 mb-4">
     <div class="container">
-      <h1 class="display-6 fw-semibold mb-2">Your Cart</h1>
-      <p class="lead mb-0 text-muted">Review items before checkout.</p>
+      <div class="row align-items-center">
+        <div class="col">
+          <h1 class="display-6 fw-bold text-primary mb-2">
+            <i class="bi bi-cart3 me-2"></i>Your Cart
+          </h1>
+          <p class="lead mb-0">Review your items and proceed to checkout</p>
+        </div>
+        <div class="col-auto">
+          <button class="btn btn-outline-danger" id="clear-cart">
+            <i class="bi bi-trash me-1"></i>Clear Cart
+          </button>
+        </div>
+      </div>
     </div>
   </header>
 

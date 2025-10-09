@@ -246,3 +246,42 @@ footer {
     max-width: none !important;
   }
 }
+
+/* Modal fallback (ensures proper centering when opening HTML files directly) */
+.modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  display: none;
+  overflow-x: hidden;
+  overflow-y: auto;
+  z-index: 1050; /* Above navbar */
+}
+.modal.show { display: block; }
+
+.modal-dialog {
+  position: relative;
+  width: auto;
+  margin: 1.75rem auto;
+  pointer-events: none; /* Clicks go to content only */
+  max-width: 500px;
+}
+.modal-dialog-centered {
+  min-height: calc(100% - 3.5rem);
+  display: flex;
+  align-items: center;
+}
+.modal .modal-content { pointer-events: auto; }
+
+.modal-backdrop {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background-color: rgba(0,0,0,0.5);
+  z-index: 1040;
+}
+.modal-open { overflow: hidden; }

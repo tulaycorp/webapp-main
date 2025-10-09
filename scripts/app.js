@@ -153,6 +153,53 @@
       </div>
     </div>
 
+            <!-- FORGOT PASSWORD MODAL (Fallback) -->
+            <div id="forgot-modal" class="modal d-none" tabindex="-1" aria-hidden="true">
+              <div class="modal-dialog modal-dialog-centered">
+                <div class="modal-content shadow-lg border-0">
+                  <div class="modal-header bg-info text-white border-0">
+                    <h5 class="modal-title fw-bold" id="forgot-title">
+                      <i class="bi bi-envelope-at me-2"></i>Reset your password
+                    </h5>
+                    <button type="button" class="btn-close btn-close-white" id="forgot-close" aria-label="Close"></button>
+                  </div>
+                  <div class="modal-body p-4">
+                    <form id="forgot-form" novalidate>
+                      <div class="mb-3">
+                        <label for="forgot-email" class="form-label fw-semibold text-dark">
+                          <i class="bi bi-envelope me-1"></i>Email Address
+                        </label>
+              <input id="forgot-email" name="email" type="email" class="form-control form-control-lg" required 
+                placeholder="Enter your account email"
+                pattern="[^\\s].*"
+                oninput="this.value = this.value.replace(/^\\s+/, '')"
+                onkeydown="if(event.key === ' ' && this.value.length === 0) return false;"
+                autocomplete="email" spellcheck="false">
+                        <div class="invalid-feedback">
+                          <i class="bi bi-exclamation-circle me-1"></i>Please enter a valid email address
+                        </div>
+                      </div>
+                      <div class="d-grid gap-2">
+                        <button type="submit" class="btn btn-info btn-lg text-white">
+                          <i class="bi bi-send me-2"></i>Send reset link
+                        </button>
+                      </div>
+                      <div id="forgot-feedback" class="mt-3 alert" style="display:none;" role="alert"></div>
+                    </form>
+                    <hr class="my-4">
+                    <div class="text-center">
+                      <p class="mb-0 text-muted">
+                        Remembered your password?
+                        <a href="#" id="show-login-from-forgot" class="text-decoration-none fw-semibold text-primary">
+                          Back to sign in
+                        </a>
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
     <!-- SIGNUP MODAL (Fallback) -->
     <div id="signup-modal" class="modal d-none" tabindex="-1" aria-hidden="true">
       <div class="modal-dialog modal-dialog-centered">
@@ -338,6 +385,16 @@
       btn.addEventListener('click', e=>{
         addToCart(btn.getAttribute('data-add'));
         btn.blur();
+        // Visual feedback similar to modern app
+        const originalText = btn.textContent;
+        btn.textContent = 'Added!';
+        btn.classList.add('btn-success');
+        btn.classList.remove('btn-primary');
+        setTimeout(()=>{
+          btn.textContent = originalText;
+          btn.classList.add('btn-primary');
+          btn.classList.remove('btn-success');
+        }, 900);
       });
     });
   }
@@ -439,7 +496,41 @@
       if(btn){ removeFromCart(btn.getAttribute('data-remove')); draw(); }
     });
     clearBtn.addEventListener('click', ()=>{ clearCart(); draw(); });
-    checkoutBtn.addEventListener('click', ()=>{ checkoutMsg.classList.remove('d-none'); clearCart(); draw(); setTimeout(()=> checkoutMsg.classList.add('d-none'), 2500); });
+    checkoutBtn.addEventListener('click', ()=>{
+      // Require account for checkout: if not logged in, open Create Account modal
+      let user = null;
+      try { user = localStorage.getItem('eshop_user'); } catch {}
+      if (!user) {
+        // Remember intent so we can resume after signup/login
+        try { localStorage.setItem('eshop_intent', 'checkout'); } catch {}
+        if (window.LoginHandler && typeof window.LoginHandler.showLoginModal === 'function') {
+          window.LoginHandler.showLoginModal();
+        } else {
+          // Fallback: best-effort to show the login modal
+          const modal = document.getElementById('login-modal');
+          if (modal) {
+            modal.classList.remove('d-none');
+            modal.classList.add('show');
+            modal.style.display = 'block';
+            if (!document.querySelector('.modal-backdrop')) {
+              const bd = document.createElement('div');
+              bd.className = 'modal-backdrop fade show';
+              document.body.appendChild(bd);
+            }
+            document.body.classList.add('modal-open');
+          } else {
+            alert('Please log in to continue to checkout.');
+          }
+        }
+        return; // stop normal checkout until user signs up/logs in
+      }
+
+      // Proceed with demo checkout flow when logged in
+      checkoutMsg.classList.remove('d-none');
+      clearCart();
+      draw();
+      setTimeout(()=> checkoutMsg.classList.add('d-none'), 2500);
+    });
     draw();
   }
 

@@ -198,10 +198,105 @@
       }
     });
 
-    // forgot password link
+    // Forgot Password modal open
     $(document).on('click', '#forgot-password-link', function(e){
       e.preventDefault();
-      alert('Forgot Password feature coming soon!\n\nFor now, you can use any email and password to sign in.');
+      hideLoginModal();
+      var $m = $('#forgot-modal');
+      if ($m.length) {
+        $m.removeClass('d-none').addClass('show').css('display', 'block').attr('aria-hidden','false');
+        if ($('.modal-backdrop.show').length === 0) {
+          $('<div class="modal-backdrop fade show"></div>').appendTo(document.body);
+        }
+        $('body').addClass('modal-open');
+        $('#forgot-email').focus();
+      } else {
+        alert('Enter your email and we\'ll send you a reset link.');
+      }
+    });
+
+    // Forgot Password modal close
+    function hideForgotModal(){
+      var $m = $('#forgot-modal');
+      $m.removeClass('show').addClass('d-none').css('display','none').attr('aria-hidden','true');
+      $('.modal-backdrop').remove();
+      $('body').removeClass('modal-open');
+      var form = document.getElementById('forgot-form');
+      if (form) form.reset();
+      $('#forgot-feedback').hide().removeClass('alert-danger alert-success alert-info');
+      $('#forgot-email').removeClass('is-invalid');
+    }
+    $(document).on('click', '#forgot-close, #forgot-cancel', hideForgotModal);
+    $(document).on('click', '#forgot-modal', function(e){ if (e.target.id === 'forgot-modal') hideForgotModal(); });
+
+    // From Forgot back to Login
+    $(document).on('click', '#show-login-from-forgot', function(e){
+      e.preventDefault();
+      hideForgotModal();
+      showLoginModal();
+    });
+
+    // ESC closes forgot modal too
+    $(document).on('keydown', function(e){ if (e.key === 'Escape' && !$('#forgot-modal').hasClass('d-none')) hideForgotModal(); });
+
+    // Forgot Password submit handler with account existence validation
+    $(document).on('submit', '#forgot-form', function(e){
+      e.preventDefault();
+      var email = ($('#forgot-email').val() || '').trim();
+      var emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      var $feedback = $('#forgot-feedback');
+      var $submit = $('#forgot-form button[type="submit"]');
+      $('#forgot-email').removeClass('is-invalid');
+      $feedback.removeClass('alert-danger alert-success alert-info').hide();
+      if (!emailPattern.test(email)) {
+        $('#forgot-email').addClass('is-invalid');
+        return;
+      }
+      $feedback.addClass('alert-info').text('Checking account...').show();
+      $submit.prop('disabled', true);
+
+      $.ajax({
+        url: '../users.json',
+        method: 'GET',
+        dataType: 'json',
+        timeout: 5000,
+        success: function(data){
+          var exists = false;
+          if (data && Array.isArray(data.users)) {
+            exists = data.users.some(function(user){
+              return ((user.email||'').trim().toLowerCase() === email.toLowerCase());
+            });
+          }
+          if (exists) {
+            $feedback.removeClass('alert-info').addClass('alert-success')
+              .html('<i class="bi bi-check-circle me-1"></i>We found an account for <strong>'+email+'</strong>. A reset link has been sent (demo).')
+              .show();
+            setTimeout(function(){ hideForgotModal(); showLoginModal(); $('#login-email').val(email).focus(); }, 1200);
+          } else {
+            $feedback.removeClass('alert-info').addClass('alert-danger')
+              .html('<i class="bi bi-exclamation-triangle me-1"></i>No account found for <strong>'+email+'</strong>.')
+              .show();
+          }
+        },
+        error: function(){
+          // Offline/demo fallback: recognize demo user only
+          var demoUsers = [ { email: 'test@test.com' } ];
+          var exists = demoUsers.some(function(u){ return u.email.toLowerCase() === email.toLowerCase(); });
+          if (exists) {
+            $feedback.removeClass('alert-info').addClass('alert-success')
+              .html('<i class="bi bi-check-circle me-1"></i>We found an account for <strong>'+email+'</strong>. A reset link has been sent (demo).')
+              .show();
+            setTimeout(function(){ hideForgotModal(); showLoginModal(); $('#login-email').val(email).focus(); }, 1200);
+          } else {
+            $feedback.removeClass('alert-info').addClass('alert-danger')
+              .html('<i class="bi bi-exclamation-triangle me-1"></i>No account found for <strong>'+email+'</strong>.')
+              .show();
+          }
+        },
+        complete: function(){
+          setTimeout(function(){ $submit.prop('disabled', false); }, 400);
+        }
+      });
     });
 
     // Legacy create account link (now handled by modal switching)
@@ -229,8 +324,9 @@
     // simple validation and fake auth
     $(document).on('submit', '#login-form', function(e){
       e.preventDefault();
-      var email = $('#login-email').val() || '';
-      var pw = $('#login-password').val() || '';
+      // Trim inputs to avoid accidental leading/trailing spaces causing mismatches
+      var email = ($('#login-email').val() || '').trim();
+      var pw = ($('#login-password').val() || '').trim();
       var valid = true;
       
       // Enhanced email validation - check format, no spaces before @, and not just spaces
@@ -273,13 +369,11 @@
           // Find matching user
           var matchedUser = null;
           if (data && data.users) {
-            for (var i = 0; i < data.users.length; i++) {
-              var user = data.users[i];
-              if (user.email.toLowerCase() === email.toLowerCase() && user.password === pw) {
-                matchedUser = user;
-                break;
-              }
-            }
+            matchedUser = data.users.find(function(user){
+              var uEmail = (user.email || '').trim().toLowerCase();
+              var uPass = (user.password || '').trim();
+              return uEmail === email.toLowerCase() && uPass === pw;
+            }) || null;
           }
           
           if (matchedUser) {
@@ -292,7 +386,19 @@
               localStorage.setItem('eshop_user_role', matchedUser.role);
             } catch(e) {}
             setLoggedIn(email);
-            setTimeout(function(){ hideModal(); }, 800);
+            // Close login modal
+            setTimeout(function(){ hideLoginModal();
+              // If user came from checkout intent, resume checkout flow
+              try {
+                var intent = localStorage.getItem('eshop_intent');
+                if (intent === 'checkout') {
+                  localStorage.removeItem('eshop_intent');
+                  // Trigger checkout button if present on the page
+                  var btn = document.getElementById('checkout');
+                  if (btn) btn.click();
+                }
+              } catch(e) {}
+            }, 800);
           } else {
             // Login failed - clear field validation errors and show only auth error
             $('#login-email, #login-password').removeClass('is-invalid');
@@ -300,9 +406,39 @@
           }
         },
         error: function() {
-          // Show error when JSON file can't be loaded - clear field validation errors
+          // Offline/demo fallback: allow known demo credentials when JSON cannot be loaded
           $('#login-email, #login-password').removeClass('is-invalid');
-          $('#login-feedback').text('Unable to verify credentials. Please check your connection and try again.').removeClass('text-info').addClass('text-danger').show();
+          var demoUsers = [
+            { email: 'test@test.com', password: 'test123', name: 'Test User', role: 'user' }
+          ];
+          var matchedUser = demoUsers.find(function(user){
+            return (user.email || '').trim().toLowerCase() === email.toLowerCase() && (user.password || '').trim() === pw;
+          }) || null;
+
+          if (matchedUser) {
+            $('#login-feedback').text('Welcome, ' + matchedUser.name + '!').removeClass('text-info').addClass('text-success').show();
+            try {
+              localStorage.setItem('eshop_user', email);
+              localStorage.setItem('eshop_user_name', matchedUser.name);
+              localStorage.setItem('eshop_user_role', matchedUser.role);
+            } catch(e) {}
+            setLoggedIn(email);
+            setTimeout(function(){ hideLoginModal();
+              try {
+                var intent = localStorage.getItem('eshop_intent');
+                if (intent === 'checkout') {
+                  localStorage.removeItem('eshop_intent');
+                  var btn = document.getElementById('checkout');
+                  if (btn) btn.click();
+                }
+              } catch(e) {}
+            }, 800);
+          } else {
+            $('#login-feedback')
+              .removeClass('text-info').addClass('text-danger')
+              .html('Unable to verify credentials (offline).<br>Tip: Use demo account <strong>test@test.com</strong> / <strong>test123</strong>.')
+              .show();
+          }
         },
         complete: function() {
           // Re-enable submit button

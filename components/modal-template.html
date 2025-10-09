@@ -14,10 +14,10 @@
               <label for="login-email" class="form-label fw-semibold text-dark">
                 <i class="bi bi-envelope me-1"></i>Email Address
               </label>
-              <input id="login-email" name="email" type="email" class="form-control form-control-lg" required 
+    <input id="login-email" name="email" type="email" class="form-control form-control-lg" required 
                      placeholder="Enter your email" 
                      pattern="[^\s].*" 
-                     oninput="this.value = this.value.replace(/^\s+/, '')" 
+      oninput="var s=this.selectionStart,v=this.value,nv=v.replace(/^\s+/,'');if(nv!==v){this.value=nv;try{this.setSelectionRange(Math.min(s,nv.length),Math.min(s,nv.length));}catch(e){}}" 
                      onkeydown="if(event.key === ' ' && this.value.length === 0) return false;"
                      autocomplete="email" spellcheck="false">
               <div class="invalid-feedback">
@@ -116,7 +116,7 @@
     <input id="forgot-email" name="email" type="email" class="form-control form-control-lg" required 
       placeholder="Enter your account email" 
       pattern="[^\s].*" 
-      oninput="this.value = this.value.replace(/^\s+/, '')" 
+      oninput="var s=this.selectionStart,v=this.value,nv=v.replace(/^\s+/,'');if(nv!==v){this.value=nv;try{this.setSelectionRange(Math.min(s,nv.length),Math.min(s,nv.length));}catch(e){}}" 
       onkeydown="if(event.key === ' ' && this.value.length === 0) return false;"
       autocomplete="email" spellcheck="false">
               <div class="invalid-feedback">
@@ -162,9 +162,9 @@
               </label>
               <div class="row g-3">
                 <div class="col-12 col-md-4">
-                  <input id="signup-first-name" name="firstName" type="text" class="form-control form-control-lg" required 
+        <input id="signup-first-name" name="firstName" type="text" class="form-control form-control-lg" required 
                          placeholder="First name" minlength="2" maxlength="50"
-                         oninput="this.value = this.value.replace(/\s+$/, '')"
+          oninput="var s=this.selectionStart,v=this.value,nv=v.replace(/\s+$/,'');if(nv!==v){this.value=nv;try{this.setSelectionRange(Math.min(s,nv.length),Math.min(s,nv.length));}catch(e){}}"
                          onkeydown="if(event.key===' ' && this.selectionStart===this.value.length) return false;"
                          autocomplete="given-name">
                   <div class="invalid-feedback">
@@ -172,16 +172,16 @@
                   </div>
                 </div>
                 <div class="col-12 col-md-4">
-                  <input id="signup-middle-name" name="middleName" type="text" class="form-control form-control-lg"
+        <input id="signup-middle-name" name="middleName" type="text" class="form-control form-control-lg"
                          placeholder="Middle name (optional)" maxlength="50"
-                         oninput="this.value = this.value.replace(/\s+$/, '')"
+          oninput="var s=this.selectionStart,v=this.value,nv=v.replace(/\s+$/,'');if(nv!==v){this.value=nv;try{this.setSelectionRange(Math.min(s,nv.length),Math.min(s,nv.length));}catch(e){}}"
                          onkeydown="if(event.key===' ' && this.selectionStart===this.value.length) return false;"
                          autocomplete="additional-name">
                 </div>
                 <div class="col-12 col-md-4">
-                  <input id="signup-last-name" name="lastName" type="text" class="form-control form-control-lg" required 
+        <input id="signup-last-name" name="lastName" type="text" class="form-control form-control-lg" required 
                          placeholder="Last name" minlength="2" maxlength="50"
-                         oninput="this.value = this.value.replace(/\s+$/, '')"
+          oninput="var s=this.selectionStart,v=this.value,nv=v.replace(/\s+$/,'');if(nv!==v){this.value=nv;try{this.setSelectionRange(Math.min(s,nv.length),Math.min(s,nv.length));}catch(e){}}"
                          onkeydown="if(event.key===' ' && this.selectionStart===this.value.length) return false;"
                          autocomplete="family-name">
                   <div class="invalid-feedback">
@@ -194,10 +194,10 @@
               <label for="signup-email" class="form-label fw-semibold text-dark">
                 <i class="bi bi-envelope me-1"></i>Email Address
               </label>
-              <input id="signup-email" name="email" type="email" class="form-control form-control-lg" required 
+    <input id="signup-email" name="email" type="email" class="form-control form-control-lg" required 
                      placeholder="Enter your email address"
                      pattern="[^\s].*" 
-                     oninput="this.value = this.value.replace(/^\s+/, '')" 
+      oninput="var s=this.selectionStart,v=this.value,nv=v.replace(/^\s+/,'');if(nv!==v){this.value=nv;try{this.setSelectionRange(Math.min(s,nv.length),Math.min(s,nv.length));}catch(e){}}" 
                      onkeydown="if(event.key === ' ' && this.value.length === 0) return false;"
                      autocomplete="email" spellcheck="false">
               <div class="invalid-feedback">

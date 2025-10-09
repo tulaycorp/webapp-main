@@ -157,16 +157,37 @@
         <div class="modal-body p-4">
           <form id="signup-form" novalidate>
             <div class="mb-3">
-              <label for="signup-name" class="form-label fw-semibold text-dark">
-                <i class="bi bi-person me-1"></i>Full Name
+              <label class="form-label fw-semibold text-dark" for="signup-first-name">
+                <i class="bi bi-person me-1"></i>Name
               </label>
-              <input id="signup-name" name="name" type="text" class="form-control form-control-lg" required 
-                     placeholder="Enter your full name" minlength="2" maxlength="50"
-                     pattern="[a-zA-Z\s\-']{2,50}"
-                     oninput="this.value = this.value.replace(/[^a-zA-Z\s\-']/g, '')"
-                     autocomplete="name">
-              <div class="invalid-feedback">
-                <i class="bi bi-exclamation-circle me-1"></i>Please enter your full name (2-50 characters)
+              <div class="row g-3">
+                <div class="col-12 col-md-4">
+                  <input id="signup-first-name" name="firstName" type="text" class="form-control form-control-lg" required 
+                         placeholder="First name" minlength="2" maxlength="50"
+                         oninput="this.value = this.value.replace(/\s+$/, '')"
+                         onkeydown="if(event.key===' ' && this.selectionStart===this.value.length) return false;"
+                         autocomplete="given-name">
+                  <div class="invalid-feedback">
+                    <i class="bi bi-exclamation-circle me-1"></i>Please enter your first name (min 2 chars)
+                  </div>
+                </div>
+                <div class="col-12 col-md-4">
+                  <input id="signup-middle-name" name="middleName" type="text" class="form-control form-control-lg"
+                         placeholder="Middle name (optional)" maxlength="50"
+                         oninput="this.value = this.value.replace(/\s+$/, '')"
+                         onkeydown="if(event.key===' ' && this.selectionStart===this.value.length) return false;"
+                         autocomplete="additional-name">
+                </div>
+                <div class="col-12 col-md-4">
+                  <input id="signup-last-name" name="lastName" type="text" class="form-control form-control-lg" required 
+                         placeholder="Last name" minlength="2" maxlength="50"
+                         oninput="this.value = this.value.replace(/\s+$/, '')"
+                         onkeydown="if(event.key===' ' && this.selectionStart===this.value.length) return false;"
+                         autocomplete="family-name">
+                  <div class="invalid-feedback">
+                    <i class="bi bi-exclamation-circle me-1"></i>Please enter your last name (min 2 chars)
+                  </div>
+                </div>
               </div>
             </div>
             <div class="mb-3">

@@ -383,13 +383,13 @@
       var phone = $(this).val().trim();
       var cleanPhone = phone.replace(/[\s\-\(\)\.]/g, '');
       if (phone.length > 0) {
-        if (!/^\d{11}$/.test(cleanPhone)) {
+        if (!/^\d{7,15}$/.test(cleanPhone)) { // Allow 7-15 digits for international numbers
           $(this).addClass('is-invalid');
         } else {
           $(this).removeClass('is-invalid');
         }
       } else {
-        $(this).removeClass('is-invalid'); // Optional field, so empty is valid
+        $(this).removeClass('is-invalid'); // Optional field, so no validation needed when empty
       }
     });
 
@@ -400,6 +400,9 @@
       var middleName = ($('#signup-middle-name').val() || '').replace(/\s+$/, '');
       var lastName = ($('#signup-last-name').val() || '').replace(/\s+$/, '');
       var email = $('#signup-email').val().trim();
+      var address1 = ($('#signup-address1').val() || '').replace(/\s+$/, '');
+      var address2 = ($('#signup-address2').val() || '').replace(/\s+$/, '');
+      var countryCode = $('#signup-country-code').val() || '+64';
       var phone = ($('#signup-phone').val() || '').trim();
       var password = $('#signup-password').val();
       var confirmPassword = $('#signup-password-confirm').val();
@@ -420,10 +423,16 @@
         valid = false;
       }
 
-      // Validate phone number (must be exactly 11 digits)
-      var cleanPhone = phone.replace(/[\s\-\(\)\.]/g, ''); // Remove spaces, dashes, parentheses, dots
+      // Validate address1 (required)
+      if (address1.length < 3) {
+        $('#signup-address1').addClass('is-invalid');
+        valid = false;
+      }
+
+      // Validate phone number (optional, but if provided should be valid)
       if (phone.length > 0) {
-        if (!/^\d{11}$/.test(cleanPhone)) {
+        var cleanPhone = phone.replace(/[\s\-\(\)\.]/g, ''); // Remove spaces, dashes, parentheses, dots
+        if (!/^\d{7,15}$/.test(cleanPhone)) { // Allow 7-15 digits for international numbers
           $('#signup-phone').addClass('is-invalid');
           valid = false;
         }

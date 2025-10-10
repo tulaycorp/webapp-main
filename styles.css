@@ -133,6 +133,23 @@ footer {
   margin-top: auto;
 }
 
+/* Footer white text styling for light mode */
+.footer-white-text {
+  color: white !important;
+}
+
+.footer-white-text * {
+  color: white !important;
+}
+
+.footer-white-text .text-white-75 {
+  color: rgba(255, 255, 255, 0.75) !important;
+}
+
+.footer-white-text a:hover {
+  color: rgba(255, 255, 255, 0.8) !important;
+}
+
 /* Button improvements */
 .btn {
   font-weight: 500;

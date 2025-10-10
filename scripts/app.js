@@ -40,7 +40,7 @@
     <nav class="navbar navbar-expand-lg navbar-dark bg-primary sticky-top shadow no-theme-effect">
       <div class="container">
         <a class="navbar-brand fw-bold" href="bootstrap.html">
-          <i class="bi bi-shop me-2"></i>E-Shop
+          <i class="bi bi-shop me-2"></i>Framework
         </a>
         <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#mainNav" aria-controls="mainNav" aria-expanded="false" aria-label="Toggle navigation">
           <span class="navbar-toggler-icon"></span>
@@ -414,7 +414,7 @@
           <div class="col-md-6">
             <div class="d-flex align-items-center mb-3">
               <i class="bi bi-shop fs-3 me-2 text-white"></i>
-              <h5 class="mb-0 text-white">E-Shop</h5>
+              <h5 class="mb-0 text-white">Framework</h5>
             </div>
             <p class="text-white-75">Premium products for modern living. Quality, style, and convenience in every purchase.</p>
           </div>
@@ -439,7 +439,7 @@
         </div>
         <hr class="my-4">
         <div class="text-center">
-          <p class="mb-0 text-white-75">&copy; 2025 E-Shop. All rights reserved.</p>
+          <p class="mb-0 text-white-75">&copy; 2025 Framework. All rights reserved.</p>
         </div>
       </div>
     </footer>`;

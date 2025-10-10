@@ -313,6 +313,7 @@
                   <select id="signup-country-code" name="countryCode" class="form-select" style="max-width: 120px;">
                     <option value="+64" selected>+64 (NZ)</option>
                     <option value="+61">+61 (AU)</option>
+                    <option value="+63">+63 (PH)</option>
                     <option value="+1">+1 (US/CA)</option>
                     <option value="+44">+44 (UK)</option>
                     <option value="+33">+33 (FR)</option>

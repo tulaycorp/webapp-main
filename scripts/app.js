@@ -78,7 +78,7 @@
   function loadModalFallback(targetSelector) {
     const modalHTML = `
     <!-- LOGIN MODAL (Fallback) -->
-    <div id="login-modal" class="modal d-none" tabindex="-1" aria-hidden="true">
+    <div id="login-modal" class="modal d-none" tabindex="-1" aria-hidden="true" data-source="fallback">
       <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content shadow-lg border-0">
           <div class="modal-header bg-primary text-white border-0">
@@ -291,8 +291,6 @@
                   <div class="col-12">
                     <input id="signup-address1" name="address1" type="text" class="form-control form-control-lg" required 
                            placeholder="Address Line 1" maxlength="100"
-                           oninput="var s=this.selectionStart,v=this.value,nv=v.replace(/\\s{2,}/g,' ').replace(/^\\s+/,'').replace(/\\s+$/,'');if(nv!==v){this.value=nv;try{this.setSelectionRange(Math.min(s,nv.length),Math.min(s,nv.length));}catch(e){}}"
-                           onkeydown="if(event.key===' ' && (this.value.charAt(this.selectionStart-1)===' ' || this.selectionStart===0 || this.selectionStart===this.value.length)) return false;"
                            autocomplete="address-line1">
                     <div class="invalid-feedback">
                       <i class="bi bi-exclamation-circle me-1"></i>Please enter your address
@@ -301,8 +299,6 @@
                   <div class="col-12">
                     <input id="signup-address2" name="address2" type="text" class="form-control form-control-lg"
                            placeholder="Address Line 2 (optional)" maxlength="100"
-                           oninput="var s=this.selectionStart,v=this.value,nv=v.replace(/\\s{2,}/g,' ').replace(/^\\s+/,'').replace(/\\s+$/,'');if(nv!==v){this.value=nv;try{this.setSelectionRange(Math.min(s,nv.length),Math.min(s,nv.length));}catch(e){}}"
-                           onkeydown="if(event.key===' ' && (this.value.charAt(this.selectionStart-1)===' ' || this.selectionStart===0 || this.selectionStart===this.value.length)) return false;"
                            autocomplete="address-line2">
                   </div>
                 </div>

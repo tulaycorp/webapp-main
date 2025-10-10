@@ -5,6 +5,17 @@
       "password": "test123",
       "name": "Test User",
       "role": "user"
+    },
+    {
+      "email": "tes2t@test.com",
+      "password": "$2a$10$8sr5JM5Zm73LnHg0H3LRJ.b9g5QPNPS6je.v3incUjdZtbvohq5T6",
+      "name": "test test",
+      "role": "user",
+      "middleName": "",
+      "address1": "adsa",
+      "address2": "",
+      "countryCode": "+64",
+      "phone": "1023821083"
     }
   ]
 }

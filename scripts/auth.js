@@ -1,6 +1,13 @@
 // auth.js - Authentication utilities for signup and user management
 (function(window, $) {
   if (!window || !$) return;
+  var API_BASE = (function(){
+    try {
+      var fromLS = localStorage.getItem('eshop_api_base');
+      if (fromLS && /^https?:\/\//i.test(fromLS)) return fromLS.replace(/\/$/, '');
+    } catch(e) {}
+    return 'http://localhost:4000';
+  })();
 
   // Signup functionality
   function handleSignup() {
@@ -70,28 +77,37 @@
             role: "user"
           };
 
-          // Simulate account creation (in a real app, this would POST to a server)
-          try {
-            // For demo purposes, just show success message
-            $("#signup-success").removeClass("d-none").text(
-              `Account created successfully for ${payload.email}! You can now log in on any page.`
-            );
-            form.reset();
-            
-            // Optional: Add user to local users.json simulation
-            console.log("New user would be created:", payload);
-            
-            // Show login suggestion
-            setTimeout(function() {
-              if (confirm("Account created! Would you like to return to the homepage to log in?")) {
-                window.location.href = "../pages/bootstrap.html";
+          // Server-backed account creation
+          $.ajax({
+            url: API_BASE + '/api/auth/register',
+            method: 'POST',
+            contentType: 'application/json',
+            dataType: 'json',
+            data: JSON.stringify(payload),
+            success: function(resp){
+              const user = resp && resp.user; const token = resp && resp.token;
+              if (user && token){
+                try {
+                  localStorage.setItem('eshop_token', token);
+                  localStorage.setItem('eshop_user', user.email);
+                  localStorage.setItem('eshop_user_name', user.name);
+                  localStorage.setItem('eshop_user_role', user.role || 'user');
+                } catch(e) {}
+                $("#signup-success").removeClass("d-none").text(
+                  `Account created successfully for ${user.email}!`
+                );
+                form.reset();
+                setTimeout(function(){ window.location.href = "../pages/bootstrap.html"; }, 1200);
+              } else {
+                alert('Unexpected response from server.');
               }
-            }, 1500);
-            
-          } catch (err) {
-            alert("Error creating account. Please try again.");
-            console.error("Signup error:", err);
-          }
+            },
+            error: function(xhr){
+              var msg = 'Error creating account. Please try again.';
+              try { var j = JSON.parse(xhr.responseText); if (j && j.error) msg = j.error; } catch(e) {}
+              alert(msg);
+            }
+          });
         }
       });
     } else {

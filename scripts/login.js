@@ -5,6 +5,24 @@
   var loginModal = function() { return $('#login-modal'); };
   var signupModal = function() { return $('#signup-modal'); };
   var openBtn = function() { return $('#nav-login-btn'); };
+  var API_BASE = (function(){
+    // Configurable API base via localStorage for flexibility
+    try {
+      var fromLS = localStorage.getItem('eshop_api_base');
+      if (fromLS && /^https?:\/\//i.test(fromLS)) return fromLS.replace(/\/$/, '');
+    } catch(e) {}
+    return 'http://localhost:4000';
+  })();
+
+  function getToken(){ try { return localStorage.getItem('eshop_token'); } catch(e){ return null; } }
+  function setSession(token, user){
+    try {
+      if (token) localStorage.setItem('eshop_token', token);
+      if (user && user.email) localStorage.setItem('eshop_user', user.email);
+      if (user && user.name) localStorage.setItem('eshop_user_name', user.name);
+      if (user && user.role) localStorage.setItem('eshop_user_role', user.role);
+    } catch(e) {}
+  }
 
   function showLoginModal() {
     hideSignupModal();
@@ -68,6 +86,7 @@
       localStorage.removeItem('eshop_user');
       localStorage.removeItem('eshop_user_name');
       localStorage.removeItem('eshop_user_role');
+      localStorage.removeItem('eshop_token');
     } catch(e){}
     openBtn()
       .text('Login')
@@ -226,7 +245,7 @@
     // From Forgot back to Login
     $(document).on('click', '#show-login-from-forgot', function(e){ e.preventDefault(); hideForgotModal(); showLoginModal(); });
 
-    // Forgot Password submit handler with account existence validation
+    // Forgot Password submit handler with account existence validation (server-backed)
     $(document).on('submit', '#forgot-form', function(e){
       e.preventDefault();
       var email = ($('#forgot-email').val() || '').trim();
@@ -239,12 +258,10 @@
       $feedback.addClass('alert-info').text('Checking account...').show();
       $submit.prop('disabled', true);
       $.ajax({
-        url: '../users.json', method: 'GET', dataType: 'json', timeout: 5000,
+        url: API_BASE + '/api/auth/exists?email=' + encodeURIComponent(email),
+        method: 'GET', dataType: 'json', timeout: 5000,
         success: function(data){
-          var exists = false;
-          if (data && Array.isArray(data.users)) {
-            exists = data.users.some(function(user){ return ((user.email||'').trim().toLowerCase() === email.toLowerCase()); });
-          }
+          var exists = !!(data && data.exists);
           if (exists) {
             $feedback.removeClass('alert-info').addClass('alert-success')
               .html('<i class="bi bi-check-circle me-1"></i>We found an account for <strong>'+email+'</strong>. A reset link has been sent (demo).').show();
@@ -255,16 +272,8 @@
           }
         },
         error: function(){
-          var demoUsers = [ { email: 'test@test.com' } ];
-          var exists = demoUsers.some(function(u){ return u.email.toLowerCase() === email.toLowerCase(); });
-          if (exists) {
-            $feedback.removeClass('alert-info').addClass('alert-success')
-              .html('<i class="bi bi-check-circle me-1"></i>We found an account for <strong>'+email+'</strong>. A reset link has been sent (demo).').show();
-            setTimeout(function(){ hideForgotModal(); showLoginModal(); $('#login-email').val(email).focus(); }, 1200);
-          } else {
-            $feedback.removeClass('alert-info').addClass('alert-danger')
-              .html('<i class="bi bi-exclamation-triangle me-1"></i>No account found for <strong>'+email+'</strong>.').show();
-          }
+          $feedback.removeClass('alert-info').addClass('alert-danger')
+            .text('Unable to check account at the moment.').show();
         },
         complete: function(){ setTimeout(function(){ $submit.prop('disabled', false); }, 400); }
       });
@@ -285,7 +294,7 @@
       }
     });
 
-    // Login form submit (validate and authenticate)
+    // Login form submit (validate and authenticate via server)
     $(document).on('submit', '#login-form', function(e){
       e.preventDefault();
       var email = ($('#login-email').val() || '').trim();
@@ -301,24 +310,15 @@
       $btn.prop('disabled', true).text('Signing in...');
 
       $.ajax({
-        url: '../users.json', method: 'GET', dataType: 'json', timeout: 5000,
-        success: function(data){
-          var matchedUser = null;
-          if (data && data.users) {
-            matchedUser = data.users.find(function(user){
-              var uEmail = (user.email || '').trim().toLowerCase();
-              var uPass = (user.password || '').trim();
-              return uEmail === email.toLowerCase() && uPass === pw;
-            }) || null;
-          }
-          if (matchedUser) {
-            $('#login-feedback').text('Welcome, ' + matchedUser.name + '!').removeClass('text-info').addClass('text-success').show();
-            try {
-              localStorage.setItem('eshop_user', email);
-              localStorage.setItem('eshop_user_name', matchedUser.name);
-              localStorage.setItem('eshop_user_role', matchedUser.role);
-            } catch(e) {}
-            setLoggedIn(email);
+        url: API_BASE + '/api/auth/login', method: 'POST', contentType: 'application/json', dataType: 'json', timeout: 7000,
+        data: JSON.stringify({ email: email, password: pw }),
+        success: function(resp){
+          var token = resp && resp.token;
+          var user = resp && resp.user;
+          if (token && user){
+            setSession(token, user);
+            $('#login-feedback').text('Welcome, ' + (user.name || user.email) + '!').removeClass('text-info').addClass('text-success').show();
+            setLoggedIn(user.email);
             setTimeout(function(){
               hideLoginModal();
               try {
@@ -331,37 +331,13 @@
               } catch(e) {}
             }, 800);
           } else {
-            $('#login-feedback').text('Invalid email or password. Please try again.').removeClass('text-info').addClass('text-danger').show();
+            $('#login-feedback').text('Unexpected response from server.').addClass('text-danger').show();
           }
         },
-        error: function(){
-          var demoUsers = [ { email: 'test@test.com', password: 'test123', name: 'Test User', role: 'user' } ];
-          var matchedUser = demoUsers.find(function(user){
-            return (user.email || '').trim().toLowerCase() === email.toLowerCase() && (user.password || '').trim() === pw;
-          }) || null;
-          if (matchedUser) {
-            $('#login-feedback').text('Welcome, ' + matchedUser.name + '!').removeClass('text-info').addClass('text-success').show();
-            try {
-              localStorage.setItem('eshop_user', email);
-              localStorage.setItem('eshop_user_name', matchedUser.name);
-              localStorage.setItem('eshop_user_role', matchedUser.role);
-            } catch(e) {}
-            setLoggedIn(email);
-            setTimeout(function(){
-              hideLoginModal();
-              try {
-                var intent = localStorage.getItem('eshop_intent');
-                if (intent === 'checkout') {
-                  localStorage.removeItem('eshop_intent');
-                  var btn = document.getElementById('checkout');
-                  if (btn) btn.click();
-                }
-              } catch(e) {}
-            }, 800);
-          } else {
-            $('#login-feedback').removeClass('text-info').addClass('text-danger')
-              .html('Unable to verify credentials (offline).<br>Tip: Use demo account <strong>test@test.com</strong> / <strong>test123</strong>.').show();
-          }
+        error: function(xhr){
+          var msg = 'Login failed. Please try again.';
+          try { var j = JSON.parse(xhr.responseText); if (j && j.error) msg = j.error; } catch(e) {}
+          $('#login-feedback').text(msg).removeClass('text-info').addClass('text-danger').show();
         },
         complete: function(){ setTimeout(function(){ $btn.prop('disabled', false).text('Sign in'); }, 500); }
       });
@@ -393,7 +369,7 @@
       }
     });
 
-    // Signup form submission
+    // Signup form submission (server-backed)
     $(document).on('submit', '#signup-form', function(e){
       e.preventDefault();
       var firstName = ($('#signup-first-name').val() || '').replace(/\s+$/, '');
@@ -462,51 +438,53 @@
       $('#signup-feedback').removeClass('alert-danger alert-success').addClass('alert-info').text('Creating account...').show();
       $('#signup-form button[type="submit"]').prop('disabled', true);
 
-      // Check if user already exists
+      // Register on server
       $.ajax({
-        url: '../users.json',
-        method: 'GET',
-        dataType: 'json',
-        success: function(data) {
-          var existingUser = null;
-          if (data && data.users) {
-            existingUser = data.users.find(function(user) {
-              return user.email.toLowerCase() === email.toLowerCase();
-            });
-          }
-
-          if (existingUser) {
-            $('#signup-feedback').removeClass('alert-info').addClass('alert-danger')
-                                .html('<i class="bi bi-exclamation-triangle me-1"></i>An account with this email already exists.')
-                                .show();
-          } else {
-            // In a real app, you would send this to your backend
-            // For demo purposes, we'll simulate success
+        url: API_BASE + '/api/auth/register', method: 'POST', contentType: 'application/json', dataType: 'json', timeout: 7000,
+        data: JSON.stringify({
+          email: email,
+          password: password,
+          firstName: firstName,
+          middleName: middleName,
+          lastName: lastName,
+          name: (firstName + ' ' + lastName).trim(),
+          address1: address1,
+          address2: address2,
+          countryCode: countryCode,
+          phone: phone,
+          role: 'user'
+        }),
+        success: function(resp){
+          var user = resp && resp.user; var token = resp && resp.token;
+          if (user && token){
+            // Auto sign-in after registration
+            setSession(token, user);
             $('#signup-feedback').removeClass('alert-info').addClass('alert-success')
-                                .html('<i class="bi bi-check-circle me-1"></i>Account created successfully! You can now sign in.')
-                                .show();
-            
+                                .html('<i class="bi bi-check-circle me-1"></i>Account created successfully! You are now signed in.').show();
             setTimeout(function(){
               hideSignupModal();
-              showLoginModal();
-              $('#login-email').val(email);
-              $('#login-password').focus();
-            }, 2000);
+              setLoggedIn(user.email);
+              try {
+                var intent = localStorage.getItem('eshop_intent');
+                if (intent === 'checkout') {
+                  localStorage.removeItem('eshop_intent');
+                  var btn = document.getElementById('checkout');
+                  if (btn) btn.click();
+                }
+              } catch(e) {}
+            }, 1200);
+          } else {
+            $('#signup-feedback').removeClass('alert-info').addClass('alert-danger').text('Unexpected response from server.').show();
           }
         },
-        error: function() {
-          $('#signup-feedback').removeClass('alert-info').addClass('alert-success')
-                              .html('<i class="bi bi-check-circle me-1"></i>Account created successfully! You can now sign in.')
+        error: function(xhr){
+          var msg = 'Could not create account.';
+          try { var j = JSON.parse(xhr.responseText); if (j && j.error) msg = j.error; } catch(e) {}
+          $('#signup-feedback').removeClass('alert-info').addClass('alert-danger')
+                              .html('<i class="bi bi-exclamation-triangle me-1"></i>'+ msg)
                               .show();
-          
-          setTimeout(function(){
-            hideSignupModal();
-            showLoginModal();
-            $('#login-email').val(email);
-            $('#login-password').focus();
-          }, 2000);
         },
-        complete: function() {
+        complete: function(){
           $('#signup-form button[type="submit"]').prop('disabled', false);
         }
       });

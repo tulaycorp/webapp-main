@@ -519,8 +519,14 @@ class EShopApp {
   }
 
   bindGlobalEvents() {
-    // Add page transition class to body
-    document.body.classList.add('page-transition');
+    // Add page transition class to content wrapper (avoid animating navbar)
+    const content = document.getElementById('page-content');
+    if (content) {
+      content.classList.add('page-transition');
+    } else {
+      // Fallback for older pages
+      document.body.classList.add('page-transition');
+    }
   }
 
   async handleContactSubmission(form) {

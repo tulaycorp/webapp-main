@@ -178,14 +178,21 @@ footer {
 /* Animation for page transitions */
 .page-transition {
   opacity: 0;
-  transform: translateY(20px);
-  animation: fadeInUp 0.5s ease-out forwards;
+  animation: fadeIn 0.3s ease-out forwards;
 }
 
-@keyframes fadeInUp {
+@keyframes fadeIn {
   to {
     opacity: 1;
-    transform: translateY(0);
+  }
+}
+
+/* Respect reduced motion preferences */
+@media (prefers-reduced-motion: reduce) {
+  .page-transition {
+    animation: none !important;
+    opacity: 1 !important;
+    filter: none !important;
   }
 }
 

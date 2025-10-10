@@ -239,8 +239,8 @@
                 <label class="form-label fw-semibold text-dark" for="signup-first-name">
                   <i class="bi bi-person me-1"></i>Name
                 </label>
-                <div class="row g-3">
-                  <div class="col-12 col-md-4">
+                <div class="row g-2">
+                  <div class="col-12">
           <input id="signup-first-name" name="firstName" type="text" class="form-control form-control-lg" required 
                            placeholder="First name" minlength="2" maxlength="50"
             oninput="var s=this.selectionStart,v=this.value,nv=v.replace(/\\s+$/,'');if(nv!==v){this.value=nv;try{this.setSelectionRange(Math.min(s,nv.length),Math.min(s,nv.length));}catch(e){}}"
@@ -250,14 +250,14 @@
                       <i class="bi bi-exclamation-circle me-1"></i>Please enter your first name (min 2 chars)
                     </div>
                   </div>
-                  <div class="col-12 col-md-4">
+                  <div class="col-12">
           <input id="signup-middle-name" name="middleName" type="text" class="form-control form-control-lg"
                            placeholder="Middle name (optional)" maxlength="50"
             oninput="var s=this.selectionStart,v=this.value,nv=v.replace(/\\s+$/,'');if(nv!==v){this.value=nv;try{this.setSelectionRange(Math.min(s,nv.length),Math.min(s,nv.length));}catch(e){}}"
                            onkeydown="if(event.key===' ' && this.selectionStart===this.value.length) return false;"
                            autocomplete="additional-name">
                   </div>
-                  <div class="col-12 col-md-4">
+                  <div class="col-12">
           <input id="signup-last-name" name="lastName" type="text" class="form-control form-control-lg" required 
                            placeholder="Last name" minlength="2" maxlength="50"
             oninput="var s=this.selectionStart,v=this.value,nv=v.replace(/\\s+$/,'');if(nv!==v){this.value=nv;try{this.setSelectionRange(Math.min(s,nv.length),Math.min(s,nv.length));}catch(e){}}"
@@ -281,6 +281,19 @@
                        autocomplete="email" spellcheck="false">
                 <div class="invalid-feedback">
                   <i class="bi bi-exclamation-circle me-1"></i>Please enter a valid email address
+                </div>
+              </div>
+              <div class="mb-3">
+                <label for="signup-phone" class="form-label fw-semibold text-dark">
+                  <i class="bi bi-telephone me-1"></i>Phone Number
+                </label>
+                <input id="signup-phone" name="phone" type="tel" class="form-control form-control-lg" 
+                       placeholder="Enter your 11-digit phone number" maxlength="20"
+                       oninput="var s=this.selectionStart,v=this.value,nv=v.replace(/\\s+$/,'');if(nv!==v){this.value=nv;try{this.setSelectionRange(Math.min(s,nv.length),Math.min(s,nv.length));}catch(e){}}"
+                       onkeydown="if(event.key===' ' && this.selectionStart===this.value.length) return false;"
+                       autocomplete="tel">
+                <div class="invalid-feedback">
+                  <i class="bi bi-exclamation-circle me-1"></i>Please enter exactly 11 digits (optional)
                 </div>
               </div>
               <div class="mb-3">

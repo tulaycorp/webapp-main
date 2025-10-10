@@ -368,6 +368,21 @@
       }
     });
 
+    // Real-time phone validation
+    $(document).on('input', '#signup-phone', function(){
+      var phone = $(this).val().trim();
+      var cleanPhone = phone.replace(/[\s\-\(\)\.]/g, '');
+      if (phone.length > 0) {
+        if (!/^\d{11}$/.test(cleanPhone)) {
+          $(this).addClass('is-invalid');
+        } else {
+          $(this).removeClass('is-invalid');
+        }
+      } else {
+        $(this).removeClass('is-invalid'); // Optional field, so empty is valid
+      }
+    });
+
     // Signup form submission
     $(document).on('submit', '#signup-form', function(e){
       e.preventDefault();
@@ -375,6 +390,7 @@
       var middleName = ($('#signup-middle-name').val() || '').replace(/\s+$/, '');
       var lastName = ($('#signup-last-name').val() || '').replace(/\s+$/, '');
       var email = $('#signup-email').val().trim();
+      var phone = ($('#signup-phone').val() || '').trim();
       var password = $('#signup-password').val();
       var confirmPassword = $('#signup-password-confirm').val();
       var agreeTerms = $('#agree-terms').is(':checked');
@@ -392,6 +408,15 @@
       if (!emailPattern.test(email)) {
         $('#signup-email').addClass('is-invalid');
         valid = false;
+      }
+
+      // Validate phone number (must be exactly 11 digits)
+      var cleanPhone = phone.replace(/[\s\-\(\)\.]/g, ''); // Remove spaces, dashes, parentheses, dots
+      if (phone.length > 0) {
+        if (!/^\d{11}$/.test(cleanPhone)) {
+          $('#signup-phone').addClass('is-invalid');
+          valid = false;
+        }
       }
 
       // Validate password

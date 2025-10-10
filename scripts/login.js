@@ -56,7 +56,12 @@
         displayName = storedName.split(' ')[0]; // Use first name only
       }
     } catch(e) {}
-    openBtn().text(displayName).prop('disabled', false).removeClass('btn-outline-light').addClass('btn-success');
+    // Update nav link text and ensure proper classes without relying on button styles
+    openBtn()
+      .text(displayName)
+      .prop('disabled', false)
+      .removeClass('btn-outline-light btn-success btn btn-sm')
+      .addClass('nav-link');
   }
   function setLoggedOut() {
     try { 
@@ -64,7 +69,11 @@
       localStorage.removeItem('eshop_user_name');
       localStorage.removeItem('eshop_user_role');
     } catch(e){}
-    openBtn().text('Login').prop('disabled', false).removeClass('btn-success').addClass('btn-outline-light');
+    openBtn()
+      .text('Login')
+      .prop('disabled', false)
+      .removeClass('btn-success btn btn-sm')
+      .addClass('nav-link');
   }
 
   function init() {
@@ -123,8 +132,9 @@
       }
     });
 
-    // Wire up navbar Login/Sign Out button
-    openBtn().on('click', function(){
+    // Wire up navbar Login/Sign Out button (prevent default for anchor)
+    openBtn().on('click', function(e){
+      if (e && typeof e.preventDefault === 'function') e.preventDefault();
       var u = null;
       try { u = localStorage.getItem('eshop_user'); } catch(e) {}
       if (u) {

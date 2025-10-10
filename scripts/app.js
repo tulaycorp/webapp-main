@@ -56,11 +56,11 @@
                 <span class="badge bg-warning text-dark ms-1" id="cart-count">0</span>
               </a>
             </li>
-            <li class="nav-item ms-lg-2"><button class="btn btn-sm btn-outline-light" id="nav-login-btn" type="button">Login</button></li>
+            <li class="nav-item ms-lg-2"><a class="nav-link" id="nav-login-btn" href="#" role="button">Login</a></li>
             <li class="nav-item ms-lg-2">
-              <button id="theme-toggle" class="btn btn-sm btn-outline-light" type="button" aria-pressed="false" aria-label="Toggle theme">
-                <i class="bi bi-moon" id="theme-icon"></i>
-              </button>
+              <a id="theme-toggle" class="nav-link" href="#" aria-pressed="false" aria-label="Toggle theme">
+                <span id="theme-emoji" aria-hidden="true">🌙</span>
+              </a>
             </li>
           </ul>
         </div>
@@ -655,10 +655,9 @@
         document.documentElement.setAttribute('data-bs-theme', theme==='dark' ? 'dark' : 'light');
         try { localStorage.setItem(THEME_STORAGE_KEY, theme); } catch {}
         if(btn){
-          const icon = btn.querySelector('i');
-          if (icon){
-            icon.classList.remove('bi-moon','bi-sun');
-            icon.classList.add(theme==='dark' ? 'bi-sun' : 'bi-moon');
+          const emoji = btn.querySelector('#theme-emoji');
+          if (emoji){
+            emoji.textContent = theme==='dark' ? '☀️' : '🌙';
           }
           btn.setAttribute('aria-pressed', theme==='dark');
         }
@@ -666,16 +665,24 @@
       if(btn){
         // Initialize icon and aria state
         const current = document.documentElement.getAttribute('data-theme') || 'light';
-        const icon = btn.querySelector('i');
-        if (icon){
-          icon.classList.remove('bi-moon','bi-sun');
-          icon.classList.add(current==='dark' ? 'bi-sun' : 'bi-moon');
+        const emoji = btn.querySelector('#theme-emoji');
+        if (emoji){
+          emoji.textContent = current==='dark' ? '☀️' : '🌙';
         }
         btn.setAttribute('aria-pressed', current==='dark');
-        btn.addEventListener('click', ()=>{
-          const t = (document.documentElement.getAttribute('data-theme')==='dark') ? 'light' : 'dark';
-          applyTheme(t);
-        });
+        if (window.jQuery) {
+          window.jQuery(btn).on('click', function(e){
+            if (e && typeof e.preventDefault === 'function') e.preventDefault();
+            const t = (document.documentElement.getAttribute('data-theme')==='dark') ? 'light' : 'dark';
+            applyTheme(t);
+          });
+        } else {
+          btn.addEventListener('click', (e)=>{
+            if (e && typeof e.preventDefault === 'function') e.preventDefault();
+            const t = (document.documentElement.getAttribute('data-theme')==='dark') ? 'light' : 'dark';
+            applyTheme(t);
+          });
+        }
       }
 
       // If featured products container exists treat as home

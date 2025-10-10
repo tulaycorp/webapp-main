@@ -177,8 +177,10 @@ class EShopApp {
     if (themeBtn) {
       const currentTheme = this.getCurrentTheme();
       this.applyTheme(currentTheme);
-      themeBtn.addEventListener('click', () => {
-        const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+      themeBtn.addEventListener('click', (e) => {
+        if (e && typeof e.preventDefault === 'function') e.preventDefault();
+        const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
+        const newTheme = isDark ? 'light' : 'dark';
         this.applyTheme(newTheme);
       });
     }
@@ -202,7 +204,13 @@ class EShopApp {
     
     const btn = document.getElementById('theme-toggle');
     if (btn) {
-      btn.textContent = theme === 'dark' ? 'Light' : 'Dark';
+      const emoji = btn.querySelector('#theme-emoji');
+      if (emoji) {
+        emoji.textContent = theme === 'dark' ? '☀️' : '🌙';
+      } else {
+        // Fallback: set link text if emoji span not found
+        btn.textContent = theme === 'dark' ? '☀️' : '🌙';
+      }
       btn.setAttribute('aria-pressed', theme === 'dark');
     }
   }

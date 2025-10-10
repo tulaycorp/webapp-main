@@ -291,8 +291,8 @@
                   <div class="col-12">
                     <input id="signup-address1" name="address1" type="text" class="form-control form-control-lg" required 
                            placeholder="Address Line 1" maxlength="100"
-                           oninput="var s=this.selectionStart,v=this.value,nv=v.replace(/\\s+$/,'');if(nv!==v){this.value=nv;try{this.setSelectionRange(Math.min(s,nv.length),Math.min(s,nv.length));}catch(e){}}"
-                           onkeydown="if(event.key===' ' && this.selectionStart===this.value.length) return false;"
+                           oninput="var s=this.selectionStart,v=this.value,nv=v.replace(/\\s{2,}/g,' ').replace(/^\\s+/,'').replace(/\\s+$/,'');if(nv!==v){this.value=nv;try{this.setSelectionRange(Math.min(s,nv.length),Math.min(s,nv.length));}catch(e){}}"
+                           onkeydown="if(event.key===' ' && (this.value.charAt(this.selectionStart-1)===' ' || this.selectionStart===0 || this.selectionStart===this.value.length)) return false;"
                            autocomplete="address-line1">
                     <div class="invalid-feedback">
                       <i class="bi bi-exclamation-circle me-1"></i>Please enter your address
@@ -301,8 +301,8 @@
                   <div class="col-12">
                     <input id="signup-address2" name="address2" type="text" class="form-control form-control-lg"
                            placeholder="Address Line 2 (optional)" maxlength="100"
-                           oninput="var s=this.selectionStart,v=this.value,nv=v.replace(/\\s+$/,'');if(nv!==v){this.value=nv;try{this.setSelectionRange(Math.min(s,nv.length),Math.min(s,nv.length));}catch(e){}}"
-                           onkeydown="if(event.key===' ' && this.selectionStart===this.value.length) return false;"
+                           oninput="var s=this.selectionStart,v=this.value,nv=v.replace(/\\s{2,}/g,' ').replace(/^\\s+/,'').replace(/\\s+$/,'');if(nv!==v){this.value=nv;try{this.setSelectionRange(Math.min(s,nv.length),Math.min(s,nv.length));}catch(e){}}"
+                           onkeydown="if(event.key===' ' && (this.value.charAt(this.selectionStart-1)===' ' || this.selectionStart===0 || this.selectionStart===this.value.length)) return false;"
                            autocomplete="address-line2">
                   </div>
                 </div>

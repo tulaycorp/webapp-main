@@ -205,16 +205,53 @@
               </div>
             </div>
             <div class="mb-3">
-              <label for="signup-phone" class="form-label fw-semibold text-dark">
-                <i class="bi bi-telephone me-1"></i>Phone Number
+              <label class="form-label fw-semibold text-dark" for="signup-address1">
+                <i class="bi bi-geo-alt me-1"></i>Address
               </label>
-              <input id="signup-phone" name="phone" type="tel" class="form-control form-control-lg" 
-                     placeholder="Enter your 11-digit phone number" maxlength="20"
-                     oninput="var s=this.selectionStart,v=this.value,nv=v.replace(/\s+$/,'');if(nv!==v){this.value=nv;try{this.setSelectionRange(Math.min(s,nv.length),Math.min(s,nv.length));}catch(e){}}"
-                     onkeydown="if(event.key===' ' && this.selectionStart===this.value.length) return false;"
-                     autocomplete="tel">
+              <div class="row g-2">
+                <div class="col-12">
+                  <input id="signup-address1" name="address1" type="text" class="form-control form-control-lg" required 
+                         placeholder="Address Line 1" maxlength="100"
+                         oninput="var s=this.selectionStart,v=this.value,nv=v.replace(/\s+$/,'');if(nv!==v){this.value=nv;try{this.setSelectionRange(Math.min(s,nv.length),Math.min(s,nv.length));}catch(e){}}"
+                         onkeydown="if(event.key===' ' && this.selectionStart===this.value.length) return false;"
+                         autocomplete="address-line1">
+                  <div class="invalid-feedback">
+                    <i class="bi bi-exclamation-circle me-1"></i>Please enter your address
+                  </div>
+                </div>
+                <div class="col-12">
+                  <input id="signup-address2" name="address2" type="text" class="form-control form-control-lg"
+                         placeholder="Address Line 2 (optional)" maxlength="100"
+                         oninput="var s=this.selectionStart,v=this.value,nv=v.replace(/\s+$/,'');if(nv!==v){this.value=nv;try{this.setSelectionRange(Math.min(s,nv.length),Math.min(s,nv.length));}catch(e){}}"
+                         onkeydown="if(event.key===' ' && this.selectionStart===this.value.length) return false;"
+                         autocomplete="address-line2">
+                </div>
+              </div>
+            </div>
+            <div class="mb-3">
+              <label for="signup-phone" class="form-label fw-semibold text-dark">
+                <i class="bi bi-telephone me-1"></i>Phone Number (optional)
+              </label>
+              <div class="input-group">
+                <select id="signup-country-code" name="countryCode" class="form-select" style="max-width: 120px;">
+                  <option value="+64" selected>+64 (NZ)</option>
+                  <option value="+61">+61 (AU)</option>
+                  <option value="+1">+1 (US/CA)</option>
+                  <option value="+44">+44 (UK)</option>
+                  <option value="+33">+33 (FR)</option>
+                  <option value="+49">+49 (DE)</option>
+                </select>
+                <input id="signup-phone" name="phone" type="tel" class="form-control form-control-lg" 
+                       placeholder="Enter your phone number" maxlength="15"
+                       oninput="var s=this.selectionStart,v=this.value,nv=v.replace(/\s+$/,'');if(nv!==v){this.value=nv;try{this.setSelectionRange(Math.min(s,nv.length),Math.min(s,nv.length));}catch(e){}}"
+                       onkeydown="if(event.key===' ' && this.selectionStart===this.value.length) return false;"
+                       autocomplete="tel">
+              </div>
+              <div class="form-text text-muted small">
+                <i class="bi bi-info-circle me-1"></i>Optional field - enter your phone number without country code
+              </div>
               <div class="invalid-feedback">
-                <i class="bi bi-exclamation-circle me-1"></i>Please enter exactly 11 digits (optional)
+                <i class="bi bi-exclamation-circle me-1"></i>Please enter a valid phone number
               </div>
             </div>
             <div class="mb-3">

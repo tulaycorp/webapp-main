@@ -27,6 +27,8 @@
         loadNavbarFallback(targetSelector);
       } else if (componentName === 'modal-template') {
         loadModalFallback(targetSelector);
+      } else if (componentName === 'footer') {
+        loadFooterFallback(targetSelector);
       }
     }
   }
@@ -401,6 +403,52 @@
     }
   }
 
+  // Fallback footer for when component loading fails
+  function loadFooterFallback(targetSelector) {
+    const footerHTML = `
+    <!-- FOOTER COMPONENT (Fallback) -->
+    <footer class="bg-dark text-light py-4 mt-auto">
+      <div class="container">
+        <div class="row">
+          <div class="col-md-6">
+            <div class="d-flex align-items-center mb-3">
+              <i class="bi bi-shop fs-3 me-2"></i>
+              <h5 class="mb-0">E-Shop</h5>
+            </div>
+            <p class="text-muted">Premium products for modern living. Quality, style, and convenience in every purchase.</p>
+          </div>
+          <div class="col-md-6">
+            <h6 class="mb-3">Quick Links</h6>
+            <div class="row">
+              <div class="col-6">
+                <ul class="list-unstyled">
+                  <li><a href="bootstrap.html" class="text-light text-decoration-none">Home</a></li>
+                  <li><a href="products.html" class="text-light text-decoration-none">Products</a></li>
+                  <li><a href="cart.html" class="text-light text-decoration-none">Cart</a></li>
+                </ul>
+              </div>
+              <div class="col-6">
+                <ul class="list-unstyled">
+                  <li><a href="about.html" class="text-light text-decoration-none">About</a></li>
+                  <li><a href="contact.html" class="text-light text-decoration-none">Contact</a></li>
+                </ul>
+              </div>
+            </div>
+          </div>
+        </div>
+        <hr class="my-4">
+        <div class="text-center">
+          <p class="mb-0 text-muted">&copy; 2025 E-Shop. All rights reserved.</p>
+        </div>
+      </div>
+    </footer>`;
+    
+    const targetElement = document.querySelector(targetSelector);
+    if (targetElement) {
+      targetElement.innerHTML = footerHTML;
+    }
+  }
+
   // Set active navigation based on current page
   function setActiveNavigation() {
     const currentPage = window.location.pathname.split('/').pop().replace('.html', '');
@@ -664,6 +712,9 @@
     
     // Load modal components on all pages
     await loadComponent('modal-template', 'body');
+    
+    // Load footer component on all pages
+    await loadComponent('footer', '#footer-container');
     
     // Small delay to ensure navbar and modals are loaded before initializing functionality
     setTimeout(() => {

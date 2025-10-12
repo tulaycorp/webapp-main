@@ -2,13 +2,8 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>E-Shop - Contact</title>
-  <script>(function(){try{var t=localStorage.getItem('eshop-theme')||(window.matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light');document.documentElement.setAttribute('data-theme',t);document.documentElement.setAttribute('data-bs-theme',t==='dark'?'dark':'light');}catch(e){}})();</script>
-  <link href="../dist/styles.css" rel="stylesheet" />
-  <link href="../dist/theme.css" rel="stylesheet" />
-  <link href="../styles.css" rel="stylesheet" />
+  <?php include __DIR__ . '/../includes/head.php'; ?>
 </head>
 <body>
   <?php include __DIR__ . '/../components/navbar.php'; ?>
@@ -89,45 +84,10 @@
   <div id="footer-container"></div>
   </div>
 
-  <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+  <?php include __DIR__ . '/../includes/scripts.php'; ?>
   <script src="https://cdn.jsdelivr.net/npm/jquery-validation@1.20.0/dist/jquery.validate.min.js"></script>
-  <script src="../node_modules/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
-  <script src="../scripts/app.js"></script>
-  <script src="../scripts/login.js"></script>
-  <script>
-    window.Eshop && window.Eshop.pages.contact();
-    (function() {
-      if (!window.jQuery || !$.fn.validate) return;
-      $("#contact-form").validate({
-        errorPlacement: function(error, element) {
-          error.attr('style', 'font-style: italic; color: #dc3545; font-size: 0.875rem; margin-top: 0.25rem; display: block;');
-          error.insertAfter(element);
-        },
-        rules: {
-          firstName: { required: true, minlength: 2 },
-          middleName: { required: false },
-          lastName: { required: true, minlength: 2 },
-          email: { required: true, email: true },
-          topic: { required: true },
-          message: { required: true, minlength: 5 }
-        },
-        messages: {
-          firstName: "Please enter your first name (at least 2 characters).",
-          lastName: "Please enter your last name (at least 2 characters).",
-          email: "Enter a valid email address.",
-          topic: "Please choose a topic.",
-          message: "Message cannot be empty."
-        },
-        submitHandler: function(form, event) {
-          event.preventDefault();
-          $("#contact-success").removeClass("d-none");
-          form.reset();
-          $(form).find("select").prop("selectedIndex", 0);
-          $(form).validate().resetForm();
-        }
-      });
-    })();
-  </script>
+  <script src="../scripts/contact-validation.js"></script>
+  <script>window.Eshop && window.Eshop.pages.contact();</script>
   <?php include __DIR__ . '/../components/footer.php'; ?>
 </body>
 </html>

@@ -33,10 +33,14 @@
       $('<div class="modal-backdrop fade show"></div>').appendTo(document.body);
     }
     $('body').addClass('modal-open');
-  $('#signup-first-name').focus();
+    // Initialize tooltips for the signup modal
+    $('#signup-modal [data-bs-toggle="tooltip"]').tooltip();
+    $('#signup-first-name').focus();
   }
   
   function hideSignupModal() {
+    // Dispose of tooltips before hiding the modal
+    $('#signup-modal [data-bs-toggle="tooltip"]').tooltip('dispose');
     signupModal().removeClass('show').addClass('d-none').css('display', 'none').attr('aria-hidden','true');
     $('.modal-backdrop').remove();
     $('body').removeClass('modal-open');

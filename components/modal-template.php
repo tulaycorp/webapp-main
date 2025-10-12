@@ -1,2 +1,329 @@
-<?php /* MODALS (PHP include) */ ?>
-<?php echo file_get_contents(__DIR__ . '/modal-template.html'); ?>
+  <!-- LOGIN MODAL (Enhanced) -->
+  <div id="login-modal" class="modal d-none" tabindex="-1" aria-hidden="true" data-source="component">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content shadow-lg border-0">
+        <div class="modal-header bg-primary text-white border-0">
+          <h5 class="modal-title fw-bold" id="login-title">
+            <i class="bi bi-person-circle me-2"></i>Welcome Back
+          </h5>
+          <button type="button" class="btn-close btn-close-white" id="login-close" aria-label="Close"></button>
+        </div>
+        <div class="modal-body p-4">
+          <form id="login-form" novalidate>
+            <div class="mb-3">
+              <label for="login-email" class="form-label fw-semibold text-dark">
+                <i class="bi bi-envelope me-1"></i>Email Address <span class="text-danger">*</span>
+              </label>
+    <input id="login-email" name="email" type="email" class="form-control form-control-lg" required 
+                     placeholder="Enter your email" 
+                     pattern="[^\s].*" 
+      oninput="var s=this.selectionStart,v=this.value,nv=v.replace(/^\s+/,'');if(nv!==v){this.value=nv;try{this.setSelectionRange(Math.min(s,nv.length),Math.min(s,nv.length));}catch(e){}}" 
+                     onkeydown="if(event.key === ' ' && this.value.length === 0) return false;"
+                     autocomplete="email" spellcheck="false">
+              <div class="invalid-feedback">
+                <i class="bi bi-exclamation-circle me-1"></i>Please enter a valid email address
+              </div>
+            </div>
+            <div class="mb-3">
+              <label for="login-password" class="form-label fw-semibold text-dark">
+                <i class="bi bi-lock me-1"></i>Password <span class="text-danger">*</span>
+              </label>
+              <div class="input-group">
+                <input id="login-password" name="password" type="password" class="form-control form-control-lg" 
+                       required placeholder="Enter your password">
+                <button class="btn btn-outline-secondary" type="button" id="toggle-login-password">
+                  <i class="bi bi-eye" id="login-eye-icon"></i>
+                </button>
+              </div>
+              <div class="invalid-feedback">
+                <i class="bi bi-exclamation-circle me-1"></i>Password must be at least 3 characters
+              </div>
+            </div>
+            <div class="mb-3">
+              <div class="form-check">
+                <input class="form-check-input" type="checkbox" id="remember-me">
+                <label class="form-check-label text-muted small" for="remember-me">
+                  Remember me for 30 days
+                </label>
+              </div>
+            </div>
+            <div class="d-grid gap-2">
+              <button type="submit" class="btn btn-primary btn-lg">
+                <i class="bi bi-box-arrow-in-right me-2"></i>Sign In
+              </button>
+            </div>
+            <div id="login-feedback" class="mt-3 alert" style="display:none;" role="alert"></div>
+          </form>
+          <hr class="my-4">
+          <div class="text-center">
+            <p class="mb-2">
+              <a href="#" id="forgot-password-link" class="text-decoration-none text-primary">
+                <i class="bi bi-question-circle me-1"></i>Forgot your password?
+              </a>
+            </p>
+            <p class="mb-0 text-muted">
+              Don't have an account? 
+              <a href="#" id="show-signup-modal" class="text-decoration-none fw-semibold text-primary">
+                Sign up here
+              </a>
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SIGN OUT MODAL (New) -->
+  <div id="signout-modal" class="modal d-none" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content shadow-lg border-0">
+        <div class="modal-header bg-danger text-white border-0">
+          <h5 class="modal-title fw-bold">
+            <i class="bi bi-box-arrow-right me-2"></i>Sign out
+          </h5>
+          <button type="button" class="btn-close btn-close-white" id="signout-close" aria-label="Close"></button>
+        </div>
+        <div class="modal-body p-4">
+          <p class="mb-2">You're currently signed in as <strong id="signout-identity">user</strong>.</p>
+          <p class="mb-0">Are you sure you want to sign out?</p>
+        </div>
+        <div class="modal-footer border-0">
+          <button type="button" class="btn btn-secondary" id="signout-cancel">Cancel</button>
+          <button type="button" class="btn btn-danger" id="signout-confirm">
+            <i class="bi bi-box-arrow-right me-1"></i>Sign out
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- FORGOT PASSWORD MODAL (New) -->
+  <div id="forgot-modal" class="modal d-none" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content shadow-lg border-0">
+        <div class="modal-header bg-info text-white border-0">
+          <h5 class="modal-title fw-bold" id="forgot-title">
+            <i class="bi bi-envelope-at me-2"></i>Reset your password
+          </h5>
+          <button type="button" class="btn-close btn-close-white" id="forgot-close" aria-label="Close"></button>
+        </div>
+        <div class="modal-body p-4">
+          <form id="forgot-form" novalidate>
+            <div class="mb-3">
+              <label for="forgot-email" class="form-label fw-semibold text-dark">
+                <i class="bi bi-envelope me-1"></i>Email Address <span class="text-danger">*</span>
+              </label>
+    <input id="forgot-email" name="email" type="email" class="form-control form-control-lg" required 
+      placeholder="Enter your account email" 
+      pattern="[^\s].*" 
+      oninput="var s=this.selectionStart,v=this.value,nv=v.replace(/^\s+/,'');if(nv!==v){this.value=nv;try{this.setSelectionRange(Math.min(s,nv.length),Math.min(s,nv.length));}catch(e){}}" 
+      onkeydown="if(event.key === ' ' && this.value.length === 0) return false;"
+      autocomplete="email" spellcheck="false">
+              <div class="invalid-feedback">
+                <i class="bi bi-exclamation-circle me-1"></i>Please enter a valid email address
+              </div>
+            </div>
+            <div class="d-grid gap-2">
+              <button type="submit" class="btn btn-info btn-lg text-white">
+                <i class="bi bi-send me-2"></i>Send reset link
+              </button>
+            </div>
+            <div id="forgot-feedback" class="mt-3 alert" style="display:none;" role="alert"></div>
+          </form>
+          <hr class="my-4">
+          <div class="text-center">
+            <p class="mb-0 text-muted">
+              Remembered your password?
+              <a href="#" id="show-login-from-forgot" class="text-decoration-none fw-semibold text-primary">
+                Back to sign in
+              </a>
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SIGNUP MODAL (New) -->
+  <div id="signup-modal" class="modal d-none" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content shadow-lg border-0">
+        <div class="modal-header bg-success text-white border-0">
+          <h5 class="modal-title fw-bold" id="signup-title">
+            <i class="bi bi-person-plus me-2"></i>Create Account
+          </h5>
+          <button type="button" class="btn-close btn-close-white" id="signup-close" aria-label="Close"></button>
+        </div>
+        <div class="modal-body p-4">
+          <form id="signup-form" novalidate>
+            <div class="mb-3">
+              <label class="form-label fw-semibold text-dark" for="signup-first-name">
+                <i class="bi bi-person me-1"></i>Name <span class="text-danger">*</span>
+              </label>
+              <div class="row g-2">
+                <div class="col-12">
+        <input id="signup-first-name" name="firstName" type="text" class="form-control form-control-lg" required 
+                         placeholder="First name" minlength="2" maxlength="50"
+          oninput="var s=this.selectionStart,v=this.value,nv=v.replace(/\s+$/,'');if(nv!==v){this.value=nv;try{this.setSelectionRange(Math.min(s,nv.length),Math.min(s,nv.length));}catch(e){}}"
+                         onkeydown="if(event.key===' ' && this.selectionStart===this.value.length) return false;"
+                         autocomplete="given-name">
+                  <div class="invalid-feedback">
+                    <i class="bi bi-exclamation-circle me-1"></i>Please enter your first name (min 2 chars)
+                  </div>
+                </div>
+                <div class="col-12">
+        <input id="signup-middle-name" name="middleName" type="text" class="form-control form-control-lg"
+                         placeholder="Middle name (optional)" maxlength="50"
+          oninput="var s=this.selectionStart,v=this.value,nv=v.replace(/\s+$/,'');if(nv!==v){this.value=nv;try{this.setSelectionRange(Math.min(s,nv.length),Math.min(s,nv.length));}catch(e){}}"
+                         onkeydown="if(event.key===' ' && this.selectionStart===this.value.length) return false;"
+                         autocomplete="additional-name">
+                </div>
+                <div class="col-12">
+        <input id="signup-last-name" name="lastName" type="text" class="form-control form-control-lg" required 
+                         placeholder="Last name" minlength="2" maxlength="50"
+          oninput="var s=this.selectionStart,v=this.value,nv=v.replace(/\s+$/,'');if(nv!==v){this.value=nv;try{this.setSelectionRange(Math.min(s,nv.length),Math.min(s,nv.length));}catch(e){}}"
+                         onkeydown="if(event.key===' ' && this.selectionStart===this.value.length) return false;"
+                         autocomplete="family-name">
+                  <div class="invalid-feedback">
+                    <i class="bi bi-exclamation-circle me-1"></i>Please enter your last name (min 2 chars)
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="mb-3">
+              <label for="signup-email" class="form-label fw-semibold text-dark">
+                <i class="bi bi-envelope me-1"></i>Email Address <span class="text-danger">*</span>
+              </label>
+    <input id="signup-email" name="email" type="email" class="form-control form-control-lg" required 
+                     placeholder="Enter your email address"
+                     pattern="[^\s].*" 
+      oninput="var s=this.selectionStart,v=this.value,nv=v.replace(/^\s+/,'');if(nv!==v){this.value=nv;try{this.setSelectionRange(Math.min(s,nv.length),Math.min(s,nv.length));}catch(e){}}" 
+                     onkeydown="if(event.key === ' ' && this.value.length === 0) return false;"
+                     autocomplete="email" spellcheck="false">
+              <div class="invalid-feedback">
+                <i class="bi bi-exclamation-circle me-1"></i>Please enter a valid email address
+              </div>
+            </div>
+            <div class="mb-3">
+              <label class="form-label fw-semibold text-dark" for="signup-address1">
+                <i class="bi bi-geo-alt me-1"></i>Address <span class="text-danger">*</span>
+              </label>
+              <div class="row g-2">
+                <div class="col-12">
+                  <input id="signup-address1" name="address1" type="text" class="form-control form-control-lg" required 
+                         placeholder="Address Line 1" maxlength="100"
+                         autocomplete="address-line1">
+                  <div class="invalid-feedback">
+                    <i class="bi bi-exclamation-circle me-1"></i>Please enter your address
+                  </div>
+                </div>
+                <div class="col-12">
+                  <input id="signup-address2" name="address2" type="text" class="form-control form-control-lg"
+                         placeholder="Address Line 2" maxlength="100"
+                         autocomplete="address-line2">
+                  <small class="form-text text-muted">
+                    <i class="bi bi-info-circle me-1" 
+                       data-bs-toggle="tooltip" 
+                       data-bs-placement="top" 
+                       data-bs-title="Optional field - apartment, suite, unit, building, floor, etc."
+                       style="cursor: help;"></i>Optional
+                  </small>
+                </div>
+              </div>
+            </div>
+            <div class="mb-3">
+              <label for="signup-phone" class="form-label fw-semibold text-dark">
+                <i class="bi bi-telephone me-1"></i>Phone Number (optional)
+                <i class="bi bi-info-circle text-muted ms-1" 
+                   data-bs-toggle="tooltip" 
+                   data-bs-placement="top" 
+                   data-bs-title="Optional field - enter your phone number without country code"
+                   style="cursor: help;"></i>
+              </label>
+              <div class="input-group">
+                <select id="signup-country-code" name="countryCode" class="form-select" style="max-width: 120px;">
+                  <option value="+64" selected>+64 (NZ)</option>
+                  <option value="+61">+61 (AU)</option>
+                  <option value="+63">+63 (PH)</option>
+                  <option value="+1">+1 (US/CA)</option>
+                  <option value="+44">+44 (UK)</option>
+                  <option value="+33">+33 (FR)</option>
+                  <option value="+49">+49 (DE)</option>
+                </select>
+                <input id="signup-phone" name="phone" type="tel" class="form-control form-control-lg" 
+                       placeholder="Enter your phone number" maxlength="15"
+                       oninput="var s=this.selectionStart,v=this.value,nv=v.replace(/\s+$/,'');if(nv!==v){this.value=nv;try{this.setSelectionRange(Math.min(s,nv.length),Math.min(s,nv.length));}catch(e){}}"
+                       onkeydown="if(event.key===' ' && this.selectionStart===this.value.length) return false;"
+                       autocomplete="tel">
+              </div>
+              <div class="invalid-feedback">
+                <i class="bi bi-exclamation-circle me-1"></i>Please enter a valid phone number
+              </div>
+            </div>
+            <div class="mb-3">
+              <label for="signup-password" class="form-label fw-semibold text-dark">
+                <i class="bi bi-lock me-1"></i>Password <span class="text-danger">*</span>
+                <i class="bi bi-info-circle text-muted ms-1" 
+                   data-bs-toggle="tooltip" 
+                   data-bs-placement="top" 
+                   data-bs-title="At least 6 characters long"
+                   style="cursor: help;"></i>
+              </label>
+              <div class="input-group">
+                <input id="signup-password" name="password" type="password" class="form-control form-control-lg" 
+                       required placeholder="Create a password" minlength="6">
+                <button class="btn btn-outline-secondary" type="button" id="toggle-signup-password">
+                  <i class="bi bi-eye" id="signup-eye-icon"></i>
+                </button>
+              </div>
+              <div class="invalid-feedback">
+                <i class="bi bi-exclamation-circle me-1"></i>Password must be at least 6 characters
+              </div>
+            </div>
+            <div class="mb-3">
+              <label for="signup-password-confirm" class="form-label fw-semibold text-dark">
+                <i class="bi bi-lock-fill me-1"></i>Confirm Password <span class="text-danger">*</span>
+              </label>
+              <div class="input-group">
+                <input id="signup-password-confirm" name="password-confirm" type="password" class="form-control form-control-lg" 
+                       required placeholder="Confirm your password" minlength="6">
+                <button class="btn btn-outline-secondary" type="button" id="toggle-signup-confirm">
+                  <i class="bi bi-eye" id="signup-confirm-icon"></i>
+                </button>
+              </div>
+              <div class="invalid-feedback">
+                <i class="bi bi-exclamation-circle me-1"></i>Passwords do not match
+              </div>
+            </div>
+            <div class="mb-3">
+              <div class="form-check">
+                <input class="form-check-input" type="checkbox" id="agree-terms" required>
+                <label class="form-check-label text-muted small" for="agree-terms">
+                  I agree to the <a href="#" class="text-decoration-none">Terms of Service</a> and 
+                  <a href="#" class="text-decoration-none">Privacy Policy</a>
+                </label>
+                <div class="invalid-feedback">
+                  <i class="bi bi-exclamation-circle me-1"></i>You must agree to the terms
+                </div>
+              </div>
+            </div>
+            <div class="d-grid gap-2">
+              <button type="submit" class="btn btn-success btn-lg">
+                <i class="bi bi-person-check me-2"></i>Create Account
+              </button>
+            </div>
+            <div id="signup-feedback" class="mt-3 alert" style="display:none;" role="alert"></div>
+          </form>
+          <hr class="my-4">
+          <div class="text-center">
+            <p class="mb-0 text-muted">
+              Already have an account? 
+              <a href="#" id="show-login-modal" class="text-decoration-none fw-semibold text-primary">
+                Sign in here
+              </a>
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>

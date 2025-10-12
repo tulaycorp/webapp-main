@@ -9,7 +9,7 @@
     "watch:css": "postcss styles.css -o dist/styles.css --watch",
     "build": "npm run build:css",
     "setup": "npm install && npm run build",
-    "start": "echo \"Open pages/bootstrap.html in your browser to view the application\""
+    "start": "echo \"Open pages/index.php in your browser to view the application\""
   },
   "keywords": ["webapp", "ecommerce", "bootstrap", "modern-ui", "responsive"],
   "author": "",

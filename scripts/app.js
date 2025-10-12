@@ -44,7 +44,7 @@
     <!-- NAVBAR COMPONENT (Modern Fallback) -->
     <nav class="navbar navbar-expand-lg navbar-dark bg-primary sticky-top shadow no-theme-effect">
       <div class="container">
-        <a class="navbar-brand fw-bold" href="bootstrap.html">
+        <a class="navbar-brand fw-bold" href="pages/index.php">
           <i class="bi bi-shop me-2"></i>Framework
         </a>
         <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#mainNav" aria-controls="mainNav" aria-expanded="false" aria-label="Toggle navigation">
@@ -52,12 +52,12 @@
         </button>
         <div class="collapse navbar-collapse" id="mainNav">
           <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
-            <li class="nav-item"><a class="nav-link" href="bootstrap.html" data-page="home">Home</a></li>
-            <li class="nav-item"><a class="nav-link" href="products.html" data-page="products">Products</a></li>
-            <li class="nav-item"><a class="nav-link" href="about.html" data-page="about">About</a></li>
-            <li class="nav-item"><a class="nav-link" href="contact.html" data-page="contact">Contact</a></li>
+            <li class="nav-item"><a class="nav-link" href="pages/index.php" data-page="home">Home</a></li>
+            <li class="nav-item"><a class="nav-link" href="pages/products.php" data-page="products">Products</a></li>
+            <li class="nav-item"><a class="nav-link" href="pages/about.php" data-page="about">About</a></li>
+            <li class="nav-item"><a class="nav-link" href="pages/contact.php" data-page="contact">Contact</a></li>
             <li class="nav-item">
-              <a class="nav-link position-relative" href="cart.html" data-page="cart">
+              <a class="nav-link position-relative" href="pages/cart.php" data-page="cart">
                 <i class="bi bi-cart3"></i>
                 Cart
                 <span class="badge bg-warning text-dark ms-1" id="cart-count">0</span>
@@ -428,15 +428,15 @@
             <div class="row">
               <div class="col-6">
                 <ul class="list-unstyled">
-                  <li><a href="bootstrap.html" class="text-white text-decoration-none">Home</a></li>
-                  <li><a href="products.html" class="text-white text-decoration-none">Products</a></li>
-                  <li><a href="cart.html" class="text-white text-decoration-none">Cart</a></li>
+                  <li><a href="pages/index.php" class="text-white text-decoration-none">Home</a></li>
+                  <li><a href="pages/products.php" class="text-white text-decoration-none">Products</a></li>
+                  <li><a href="pages/cart.php" class="text-white text-decoration-none">Cart</a></li>
                 </ul>
               </div>
               <div class="col-6">
                 <ul class="list-unstyled">
-                  <li><a href="about.html" class="text-white text-decoration-none">About</a></li>
-                  <li><a href="contact.html" class="text-white text-decoration-none">Contact</a></li>
+                  <li><a href="pages/about.php" class="text-white text-decoration-none">About</a></li>
+                  <li><a href="pages/contact.php" class="text-white text-decoration-none">Contact</a></li>
                 </ul>
               </div>
             </div>

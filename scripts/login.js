@@ -239,7 +239,7 @@
       $feedback.addClass('alert-info').text('Checking account...').show();
       $submit.prop('disabled', true);
       $.ajax({
-        url: '../users.json', method: 'GET', dataType: 'json', timeout: 5000,
+        url: '../api/users.php', method: 'GET', dataType: 'json', timeout: 5000,
         success: function(data){
           var exists = false;
           if (data && Array.isArray(data.users)) {
@@ -301,7 +301,7 @@
       $btn.prop('disabled', true).text('Signing in...');
 
       $.ajax({
-        url: '../users.json', method: 'GET', dataType: 'json', timeout: 5000,
+        url: '../api/users.php', method: 'GET', dataType: 'json', timeout: 5000,
         success: function(data){
           var matchedUser = null;
           if (data && data.users) {

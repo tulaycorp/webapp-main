@@ -1,0 +1,12 @@
+# Make sure .php is preferred and default to index.php
+DirectoryIndex index.php index.html
+
+# Optional: remove .php extension (basic)
+<IfModule mod_rewrite.c>
+RewriteEngine On
+# Skip existing files/directories
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+# Redirect /pages/foo to /pages/foo.php
+RewriteRule ^(.+)$ $1.php [L,QSA]
+</IfModule>

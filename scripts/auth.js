@@ -84,7 +84,7 @@
             // Show login suggestion
             setTimeout(function() {
               if (confirm("Account created! Would you like to return to the homepage to log in?")) {
-                window.location.href = "../pages/bootstrap.html";
+                window.location.href = "../pages/bootstrap.php";
               }
             }, 1500);
             

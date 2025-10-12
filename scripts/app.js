@@ -3,6 +3,11 @@
   // Component loader function with fallback for direct file opening
   async function loadComponent(componentName, targetSelector) {
     try {
+      // If the component already exists in DOM (e.g., added via PHP include), skip fetch
+      if (componentName === 'navbar' && document.querySelector('nav.navbar')) return;
+      if (componentName === 'modal-template' && document.getElementById('login-modal')) return;
+      if (componentName === 'footer' && document.querySelector('footer')) return;
+
       const response = await fetch(`../components/${componentName}.html`);
       if (!response.ok) throw new Error(`Failed to load ${componentName}`);
       const html = await response.text();
@@ -452,7 +457,8 @@
 
   // Set active navigation based on current page
   function setActiveNavigation() {
-    const currentPage = window.location.pathname.split('/').pop().replace('.html', '');
+    const last = window.location.pathname.split('/').pop();
+    const currentPage = last.replace('.html', '').replace('.php', '');
     const navLinks = document.querySelectorAll('.nav-link[data-page]');
     
     navLinks.forEach(link => {

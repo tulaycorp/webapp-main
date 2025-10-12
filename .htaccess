@@ -1,12 +1,20 @@
 # Make sure .php is preferred and default to index.php
 DirectoryIndex index.php index.html
 
-# Optional: remove .php extension (basic)
 <IfModule mod_rewrite.c>
 RewriteEngine On
-# Skip existing files/directories
+
+# Specific rule for pages directory - redirect non-existent PHP files to 404
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_URI} ^/webapp-main/pages/[^/]+\.php$
+RewriteRule ^pages/(.*)\.php$ pages/404.php [L]
+
+# General rule - for non-existent files, try adding .php extension
 RewriteCond %{REQUEST_FILENAME} !-f
 RewriteCond %{REQUEST_FILENAME} !-d
-# Redirect /pages/foo to /pages/foo.php
+RewriteCond %{REQUEST_URI} !\.php$
 RewriteRule ^(.+)$ $1.php [L,QSA]
 </IfModule>
+
+# Fallback error document (if supported by server)
+ErrorDocument 404 /webapp-main/404.html

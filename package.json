@@ -6,8 +6,9 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "build:css": "postcss styles.css -o dist/styles.css",
+    "build:js": "node scripts/build-js.js",
     "watch:css": "postcss styles.css -o dist/styles.css --watch",
-    "build": "npm run build:css",
+    "build": "npm run build:css && npm run build:js",
     "setup": "npm install && npm run build",
     "start": "echo \"Open pages/index.php in your browser to view the application\""
   },

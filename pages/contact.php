@@ -85,7 +85,7 @@
   </div>
 
   <?php include __DIR__ . '/../includes/scripts.php'; ?>
-  <script src="https://cdn.jsdelivr.net/npm/jquery-validation@1.20.0/dist/jquery.validate.min.js"></script>
+  <script src="../dist/jquery.validate.min.js"></script>
   <script src="../scripts/contact-validation.js"></script>
   <script>window.Eshop && window.Eshop.pages.contact();</script>
   <?php include __DIR__ . '/../components/footer.php'; ?>

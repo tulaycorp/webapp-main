@@ -9,7 +9,7 @@
   <link href="../dist/styles.css" rel="stylesheet" />
   <link href="../dist/theme.css" rel="stylesheet" />
   <link href="../styles.css" rel="stylesheet" />
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet" />
+  
 </head>
 <body>
   <?php include __DIR__ . '/../components/navbar.php'; ?>

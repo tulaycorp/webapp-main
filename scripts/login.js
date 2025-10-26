@@ -5,6 +5,25 @@
   var loginModal = function() { return $('#login-modal'); };
   var signupModal = function() { return $('#signup-modal'); };
   var openBtn = function() { return $('#nav-login-btn'); };
+  var signupTooltips = [];
+
+  function initSignupTooltips() {
+    if (!window.bootstrap || !window.bootstrap.Tooltip) return;
+    disposeSignupTooltips();
+    signupTooltips = Array.from(document.querySelectorAll('#signup-modal [data-bs-toggle="tooltip"]'))
+      .map(function(el){ return new window.bootstrap.Tooltip(el); });
+  }
+
+  function disposeSignupTooltips() {
+    if (!signupTooltips || !signupTooltips.length) {
+      signupTooltips = [];
+      return;
+    }
+    signupTooltips.forEach(function(instance){
+      try { instance.dispose(); } catch(err) {}
+    });
+    signupTooltips = [];
+  }
 
   function showLoginModal() {
     hideSignupModal();
@@ -34,13 +53,13 @@
     }
     $('body').addClass('modal-open');
     // Initialize tooltips for the signup modal
-    $('#signup-modal [data-bs-toggle="tooltip"]').tooltip();
+  initSignupTooltips();
     $('#signup-first-name').focus();
   }
   
   function hideSignupModal() {
     // Dispose of tooltips before hiding the modal
-    $('#signup-modal [data-bs-toggle="tooltip"]').tooltip('dispose');
+  disposeSignupTooltips();
     signupModal().removeClass('show').addClass('d-none').css('display', 'none').attr('aria-hidden','true');
     $('.modal-backdrop').remove();
     $('body').removeClass('modal-open');

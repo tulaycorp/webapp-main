@@ -69,16 +69,16 @@
     $('#signup-feedback').hide();
   }
 
-  function setLoggedIn(email) {
-    try { localStorage.setItem('eshop_user', email); } catch(e){}
-    // Try to get user name from localStorage, fallback to email prefix
-    var displayName = email.split('@')[0];
-    try {
-      var storedName = localStorage.getItem('eshop_user_name');
-      if (storedName) {
-        displayName = storedName.split(' ')[0]; // Use first name only
-      }
-    } catch(e) {}
+  function setLoggedIn(userData) {
+    // Store session token and user data
+    try { 
+      sessionStorage.setItem('eshop_session_token', userData.session_token);
+      sessionStorage.setItem('eshop_user_email', userData.email);
+      sessionStorage.setItem('eshop_user_name', userData.first_name + ' ' + userData.last_name);
+      sessionStorage.setItem('eshop_user_role', userData.role || 'user');
+    } catch(e){}
+    
+    var displayName = userData.first_name || userData.email.split('@')[0];
     // Update nav link text and ensure proper classes without relying on button styles
     openBtn()
       .text(displayName)
@@ -86,12 +86,32 @@
       .removeClass('btn-outline-light btn-success btn btn-sm')
       .addClass('nav-link');
   }
+  
   function setLoggedOut() {
+    var sessionToken = null;
     try { 
-      localStorage.removeItem('eshop_user');
-      localStorage.removeItem('eshop_user_name');
-      localStorage.removeItem('eshop_user_role');
+      sessionToken = sessionStorage.getItem('eshop_session_token');
     } catch(e){}
+    
+    // Call logout API if we have a session token
+    if (sessionToken) {
+      $.ajax({
+        url: '../api/users.php?action=logout',
+        method: 'POST',
+        contentType: 'application/json',
+        data: JSON.stringify({ session_token: sessionToken }),
+        timeout: 3000
+      });
+    }
+    
+    // Clear session storage
+    try { 
+      sessionStorage.removeItem('eshop_session_token');
+      sessionStorage.removeItem('eshop_user_email');
+      sessionStorage.removeItem('eshop_user_name');
+      sessionStorage.removeItem('eshop_user_role');
+    } catch(e){}
+    
     openBtn()
       .text('Login')
       .prop('disabled', false)
@@ -158,10 +178,12 @@
     // Wire up navbar Login/Sign Out button (prevent default for anchor)
     openBtn().on('click', function(e){
       if (e && typeof e.preventDefault === 'function') e.preventDefault();
-      var u = null;
-      try { u = localStorage.getItem('eshop_user'); } catch(e) {}
-      if (u) {
-        $('#signout-identity').text(u);
+      var sessionToken = null;
+      try { sessionToken = sessionStorage.getItem('eshop_session_token'); } catch(e) {}
+      if (sessionToken) {
+        var userEmail = '';
+        try { userEmail = sessionStorage.getItem('eshop_user_email') || ''; } catch(e) {}
+        $('#signout-identity').text(userEmail);
         var $m = $('#signout-modal');
         if ($m.length) {
           $m.removeClass('d-none').addClass('show').css('display','block').attr('aria-hidden','false');
@@ -170,7 +192,7 @@
           }
           $('body').addClass('modal-open');
         } else {
-          if (confirm('Sign out ' + u + '?')) { setLoggedOut(); }
+          if (confirm('Sign out ' + userEmail + '?')) { setLoggedOut(); }
         }
         return;
       }
@@ -261,14 +283,14 @@
       if (!emailPattern.test(email)) { $('#forgot-email').addClass('is-invalid'); return; }
       $feedback.addClass('alert-info').text('Checking account...').show();
       $submit.prop('disabled', true);
+      
       $.ajax({
-        url: '../api/users.php', method: 'GET', dataType: 'json', timeout: 5000,
-        success: function(data){
-          var exists = false;
-          if (data && Array.isArray(data.users)) {
-            exists = data.users.some(function(user){ return ((user.email||'').trim().toLowerCase() === email.toLowerCase()); });
-          }
-          if (exists) {
+        url: '../api/users.php?action=check-email&email=' + encodeURIComponent(email),
+        method: 'GET',
+        dataType: 'json',
+        timeout: 5000,
+        success: function(response){
+          if (response && response.exists) {
             $feedback.removeClass('alert-info').addClass('alert-success')
               .html('<i class="bi bi-check-circle me-1"></i>We found an account for <strong>'+email+'</strong>. A reset link has been sent (demo).').show();
             setTimeout(function(){ hideForgotModal(); showLoginModal(); $('#login-email').val(email).focus(); }, 1200);
@@ -278,16 +300,8 @@
           }
         },
         error: function(){
-          var demoUsers = [ { email: 'test@test.com' } ];
-          var exists = demoUsers.some(function(u){ return u.email.toLowerCase() === email.toLowerCase(); });
-          if (exists) {
-            $feedback.removeClass('alert-info').addClass('alert-success')
-              .html('<i class="bi bi-check-circle me-1"></i>We found an account for <strong>'+email+'</strong>. A reset link has been sent (demo).').show();
-            setTimeout(function(){ hideForgotModal(); showLoginModal(); $('#login-email').val(email).focus(); }, 1200);
-          } else {
-            $feedback.removeClass('alert-info').addClass('alert-danger')
-              .html('<i class="bi bi-exclamation-triangle me-1"></i>No account found for <strong>'+email+'</strong>.').show();
-          }
+          $feedback.removeClass('alert-info').addClass('alert-danger')
+            .html('<i class="bi bi-exclamation-triangle me-1"></i>Unable to check account. Please try again later.').show();
         },
         complete: function(){ setTimeout(function(){ $submit.prop('disabled', false); }, 400); }
       });
@@ -324,67 +338,41 @@
       $btn.prop('disabled', true).text('Signing in...');
 
       $.ajax({
-        url: '../api/users.php', method: 'GET', dataType: 'json', timeout: 5000,
-        success: function(data){
-          var matchedUser = null;
-          if (data && data.users) {
-            matchedUser = data.users.find(function(user){
-              var uEmail = (user.email || '').trim().toLowerCase();
-              var uPass = (user.password || '').trim();
-              return uEmail === email.toLowerCase() && uPass === pw;
-            }) || null;
-          }
-          if (matchedUser) {
-            $('#login-feedback').text('Welcome, ' + matchedUser.name + '!').removeClass('text-info').addClass('text-success').show();
-            try {
-              localStorage.setItem('eshop_user', email);
-              localStorage.setItem('eshop_user_name', matchedUser.name);
-              localStorage.setItem('eshop_user_role', matchedUser.role);
-            } catch(e) {}
-            setLoggedIn(email);
+        url: '../api/users.php?action=login',
+        method: 'POST',
+        contentType: 'application/json',
+        data: JSON.stringify({ email: email, password: pw }),
+        dataType: 'json',
+        timeout: 5000,
+        success: function(response){
+          if (response && response.success && response.user) {
+            var userName = response.user.first_name + ' ' + response.user.last_name;
+            $('#login-feedback').text('Welcome, ' + response.user.first_name + '!').removeClass('text-info').addClass('text-success').show();
+            setLoggedIn(response.user);
             setTimeout(function(){
               hideLoginModal();
               try {
-                var intent = localStorage.getItem('eshop_intent');
+                var intent = sessionStorage.getItem('eshop_intent');
                 if (intent === 'checkout') {
-                  localStorage.removeItem('eshop_intent');
+                  sessionStorage.removeItem('eshop_intent');
                   var btn = document.getElementById('checkout');
                   if (btn) btn.click();
                 }
               } catch(e) {}
             }, 800);
           } else {
-            $('#login-feedback').text('Invalid email or password. Please try again.').removeClass('text-info').addClass('text-danger').show();
+            $('#login-feedback').text(response.error || 'Invalid email or password. Please try again.').removeClass('text-info').addClass('text-danger').show();
           }
         },
-        error: function(){
-          var demoUsers = [ { email: 'test@test.com', password: 'test123', name: 'Test User', role: 'user' } ];
-          var matchedUser = demoUsers.find(function(user){
-            return (user.email || '').trim().toLowerCase() === email.toLowerCase() && (user.password || '').trim() === pw;
-          }) || null;
-          if (matchedUser) {
-            $('#login-feedback').text('Welcome, ' + matchedUser.name + '!').removeClass('text-info').addClass('text-success').show();
-            try {
-              localStorage.setItem('eshop_user', email);
-              localStorage.setItem('eshop_user_name', matchedUser.name);
-              localStorage.setItem('eshop_user_role', matchedUser.role);
-            } catch(e) {}
-            setLoggedIn(email);
-            setTimeout(function(){
-              hideLoginModal();
-              try {
-                var intent = localStorage.getItem('eshop_intent');
-                if (intent === 'checkout') {
-                  localStorage.removeItem('eshop_intent');
-                  var btn = document.getElementById('checkout');
-                  if (btn) btn.click();
-                }
-              } catch(e) {}
-            }, 800);
-          } else {
-            $('#login-feedback').removeClass('text-info').addClass('text-danger')
-              .html('Unable to verify credentials (offline).<br>Tip: Use demo account <strong>test@test.com</strong> / <strong>test123</strong>.').show();
-          }
+        error: function(xhr){
+          var errorMsg = 'Unable to sign in. Please check your connection and try again.';
+          try {
+            var response = JSON.parse(xhr.responseText);
+            if (response && response.error) {
+              errorMsg = response.error;
+            }
+          } catch(e) {}
+          $('#login-feedback').text(errorMsg).removeClass('text-info').addClass('text-danger').show();
         },
         complete: function(){ setTimeout(function(){ $btn.prop('disabled', false).text('Sign in'); }, 500); }
       });
@@ -485,26 +473,33 @@
       $('#signup-feedback').removeClass('alert-danger alert-success').addClass('alert-info').text('Creating account...').show();
       $('#signup-form button[type="submit"]').prop('disabled', true);
 
-      // Check if user already exists
-      $.ajax({
-        url: '../users.json',
-        method: 'GET',
-        dataType: 'json',
-        success: function(data) {
-          var existingUser = null;
-          if (data && data.users) {
-            existingUser = data.users.find(function(user) {
-              return user.email.toLowerCase() === email.toLowerCase();
-            });
-          }
+      console.log('Sending signup request...', {
+        first_name: firstName,
+        last_name: lastName,
+        email: email
+      });
 
-          if (existingUser) {
-            $('#signup-feedback').removeClass('alert-info').addClass('alert-danger')
-                                .html('<i class="bi bi-exclamation-triangle me-1"></i>An account with this email already exists.')
-                                .show();
-          } else {
-            // In a real app, you would send this to your backend
-            // For demo purposes, we'll simulate success
+      // Send signup request to API
+      $.ajax({
+        url: '../api/users.php?action=signup',
+        method: 'POST',
+        contentType: 'application/json',
+        data: JSON.stringify({
+          first_name: firstName,
+          middle_name: middleName,
+          last_name: lastName,
+          email: email,
+          password: password,
+          address1: address1,
+          address2: address2,
+          country_code: countryCode,
+          phone: phone
+        }),
+        dataType: 'json',
+        timeout: 5000,
+        success: function(response) {
+          console.log('Signup success:', response);
+          if (response && response.success) {
             $('#signup-feedback').removeClass('alert-info').addClass('alert-success')
                                 .html('<i class="bi bi-check-circle me-1"></i>Account created successfully! You can now sign in.')
                                 .show();
@@ -515,19 +510,26 @@
               $('#login-email').val(email);
               $('#login-password').focus();
             }, 2000);
+          } else {
+            $('#signup-feedback').removeClass('alert-info').addClass('alert-danger')
+                                .html('<i class="bi bi-exclamation-triangle me-1"></i>' + (response.error || 'Unable to create account.'))
+                                .show();
           }
         },
-        error: function() {
-          $('#signup-feedback').removeClass('alert-info').addClass('alert-success')
-                              .html('<i class="bi bi-check-circle me-1"></i>Account created successfully! You can now sign in.')
+        error: function(xhr) {
+          console.error('Signup error:', xhr.status, xhr.responseText);
+          var errorMsg = 'Unable to create account. Please try again later.';
+          try {
+            var response = JSON.parse(xhr.responseText);
+            if (response && response.error) {
+              errorMsg = response.error;
+            }
+          } catch(e) {
+            console.error('Error parsing response:', e);
+          }
+          $('#signup-feedback').removeClass('alert-info').addClass('alert-danger')
+                              .html('<i class="bi bi-exclamation-triangle me-1"></i>' + errorMsg)
                               .show();
-          
-          setTimeout(function(){
-            hideSignupModal();
-            showLoginModal();
-            $('#login-email').val(email);
-            $('#login-password').focus();
-          }, 2000);
         },
         complete: function() {
           $('#signup-form button[type="submit"]').prop('disabled', false);
@@ -536,9 +538,30 @@
     });
 
     // restore session state
-    var saved = null;
-    try { saved = localStorage.getItem('eshop_user'); } catch(e){}
-    if (saved) setLoggedIn(saved);
+    var sessionToken = null;
+    try { sessionToken = sessionStorage.getItem('eshop_session_token'); } catch(e){}
+    if (sessionToken) {
+      // Verify session is still valid by checking user data
+      var userEmail = null;
+      var userName = null;
+      var userRole = null;
+      try {
+        userEmail = sessionStorage.getItem('eshop_user_email');
+        userName = sessionStorage.getItem('eshop_user_name');
+        userRole = sessionStorage.getItem('eshop_user_role');
+      } catch(e){}
+      
+      if (userEmail && userName) {
+        var userData = {
+          email: userEmail,
+          first_name: userName.split(' ')[0],
+          last_name: userName.split(' ').slice(1).join(' '),
+          role: userRole || 'user',
+          session_token: sessionToken
+        };
+        setLoggedIn(userData);
+      }
+    }
   }
 
   // Expose LoginHandler globally so app.js can initialize it after modals are loaded

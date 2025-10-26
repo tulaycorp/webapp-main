@@ -63,17 +63,29 @@
 
   const STORAGE_KEY = 'eshop-cart-v1';
   const THEME_STORAGE_KEY = 'eshop-theme';
-  const CATALOG = [
-    { id: 'chair-1', name: 'Elegant Chair', price: 99, category: 'Furniture', featured: true, img: 'https://picsum.photos/300/200?chair' },
-    { id: 'lamp-1', name: 'Smart Lamp', price: 49, category: 'Lighting', featured: true, img: 'https://picsum.photos/300/200?lamp' },
-    { id: 'desk-1', name: 'Modern Desk', price: 199, category: 'Furniture', featured: true, img: 'https://picsum.photos/300/200?desk' },
-    { id: 'headphones-1', name: 'Wireless Headphones', price: 149, category: 'Electronics', featured: false, img: 'https://picsum.photos/300/200?headphones' },
-    { id: 'plant-1', name: 'Decorative Plant', price: 25, category: 'Decor', featured: false, img: 'https://picsum.photos/300/200?plant' },
-    { id: 'mug-1', name: 'Ceramic Mug', price: 15, category: 'Kitchen', featured: false, img: 'https://picsum.photos/300/200?mug' },
-    { id: 'notebook-1', name: 'Premium Notebook', price: 12, category: 'Stationery', featured: false, img: 'https://picsum.photos/300/200?notebook' },
-    { id: 'backpack-1', name: 'Urban Backpack', price: 89, category: 'Accessories', featured: false, img: 'https://picsum.photos/300/200?backpack' },
-    { id: 'bottle-1', name: 'Steel Water Bottle', price: 29, category: 'Accessories', featured: false, img: 'https://picsum.photos/300/200?bottle' }
-  ];
+  // Product catalog - will be loaded from database
+  let CATALOG = [];
+  
+  // Load products from database
+  function loadCatalog() {
+    return $.ajax({
+      url: '../api/products.php?action=list',
+      method: 'GET',
+      dataType: 'json',
+      timeout: 5000
+    }).then(function(response) {
+      if (response && response.success && response.products) {
+        CATALOG = response.products;
+        return CATALOG;
+      } else {
+        console.error('Failed to load products');
+        return [];
+      }
+    }).catch(function(error) {
+      console.error('Error loading catalog:', error);
+      return [];
+    });
+  }
 
   function loadCart(){
     try { return JSON.parse(localStorage.getItem(STORAGE_KEY)||'[]'); } catch { return []; }
@@ -292,10 +304,25 @@
   // Page initializers
   window.Eshop = {
     pages: {
-      home(){ renderFeatured(); updateCartCount(CART); },
-      products(){ renderCatalog(); updateCartCount(CART); },
+      home(){ 
+        loadCatalog().then(function() {
+          renderFeatured(); 
+          updateCartCount(CART);
+        });
+      },
+      products(){ 
+        loadCatalog().then(function() {
+          renderCatalog(); 
+          updateCartCount(CART);
+        });
+      },
       cart(){ renderCart(); },
-      about(){ aboutStats(); updateCartCount(CART); },
+      about(){ 
+        loadCatalog().then(function() {
+          aboutStats(); 
+          updateCartCount(CART);
+        });
+      },
       contact(){ contactForm(); updateCartCount(CART); }
     }
   };

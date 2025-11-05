@@ -5,69 +5,58 @@ http_response_code(404);
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <title>Page Not Found - E-Shop</title>
+  <title>Page Not Found - FRAMEWORK Supply Co.</title>
   <?php include __DIR__ . '/../includes/head.php'; ?>
 </head>
-<body>
+<body class="bg-background min-h-screen">
   <?php include __DIR__ . '/../components/navbar.php'; ?>
   <?php include __DIR__ . '/../components/modal-template.php'; ?>
 
-  <div id="page-content" class="page-transition">
-    <div class="container py-5">
-      <div class="row justify-content-center">
-        <div class="col-lg-8 text-center">
-          <div class="mb-4">
-            <i class="bi bi-exclamation-triangle display-1 text-warning"></i>
-          </div>
-          <h1 class="display-4 fw-bold text-primary mb-3">404</h1>
-          <h2 class="h3 mb-4">Page Not Found</h2>
-          <p class="lead mb-4 text-muted">
-            Sorry, the page you're looking for doesn't exist. It might have been moved, deleted, or you entered the wrong URL.
-          </p>
-          
-          <div class="d-flex gap-3 justify-content-center flex-wrap mb-5">
-            <a href="index.php" class="btn btn-primary btn-lg">
-              <i class="bi bi-house me-2"></i>Go Home
-            </a>
-            <a href="products.php" class="btn btn-outline-primary btn-lg">
-              <i class="bi bi-shop me-2"></i>Browse Products
-            </a>
-            <button onclick="history.back()" class="btn btn-outline-secondary btn-lg">
-              <i class="bi bi-arrow-left me-2"></i>Go Back
-            </button>
-          </div>
+  <div id="page-content" class="page-transition pt-32">
+    <div class="max-w-7xl mx-auto px-6 lg:px-8 py-20">
+      <div class="max-w-4xl mx-auto text-center">
+        <div class="mb-8">
+          <i data-lucide="alert-triangle" class="w-24 h-24 text-primary mx-auto"></i>
+        </div>
+        <h1 class="text-9xl font-impact text-primary mb-4">404</h1>
+        <h2 class="heading-md mb-6">Page Not Found</h2>
+        <p class="text-secondary text-lg mb-12 max-w-2xl mx-auto">
+          Sorry, the page you're looking for doesn't exist. It might have been moved, deleted, or you entered the wrong URL.
+        </p>
+        
+        <div class="flex gap-4 justify-center flex-wrap mb-16">
+          <a href="index.php" class="btn-primary inline-flex items-center gap-2">
+            <i data-lucide="home" class="w-5 h-5"></i>
+            <span>Go Home</span>
+          </a>
+          <a href="products.php" class="btn-secondary inline-flex items-center gap-2">
+            <i data-lucide="shopping-bag" class="w-5 h-5"></i>
+            <span>Browse Products</span>
+          </a>
+          <button onclick="history.back()" class="btn-secondary inline-flex items-center gap-2">
+            <i data-lucide="arrow-left" class="w-5 h-5"></i>
+            <span>Go Back</span>
+          </button>
+        </div>
 
-          <div class="row g-4 mt-4">
-            <div class="col-md-4">
-              <div class="card h-100 shadow-sm">
-                <div class="card-body text-center">
-                  <i class="bi bi-search fs-1 text-primary mb-3"></i>
-                  <h5 class="card-title">Search</h5>
-                  <p class="card-text">Try searching for what you need using our product search.</p>
-                  <a href="products.php" class="btn btn-outline-primary btn-sm">Search Products</a>
-                </div>
-              </div>
-            </div>
-            <div class="col-md-4">
-              <div class="card h-100 shadow-sm">
-                <div class="card-body text-center">
-                  <i class="bi bi-question-circle fs-1 text-info mb-3"></i>
-                  <h5 class="card-title">Need Help?</h5>
-                  <p class="card-text">Contact our support team if you need assistance finding something.</p>
-                  <a href="contact.php" class="btn btn-outline-info btn-sm">Contact Us</a>
-                </div>
-              </div>
-            </div>
-            <div class="col-md-4">
-              <div class="card h-100 shadow-sm">
-                <div class="card-body text-center">
-                  <i class="bi bi-info-circle fs-1 text-success mb-3"></i>
-                  <h5 class="card-title">Learn More</h5>
-                  <p class="card-text">Find out more about our company and what we offer.</p>
-                  <a href="about.php" class="btn btn-outline-success btn-sm">About Us</a>
-                </div>
-              </div>
-            </div>
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+          <div class="modern-card p-8 text-center">
+            <i data-lucide="search" class="w-12 h-12 text-primary mx-auto mb-4"></i>
+            <h5 class="text-xl uppercase tracking-tight text-primary font-semibold mb-3">Search</h5>
+            <p class="text-secondary text-sm mb-4">Try searching for what you need using our product search.</p>
+            <a href="products.php" class="btn-secondary text-sm">Search Products</a>
+          </div>
+          <div class="modern-card p-8 text-center">
+            <i data-lucide="help-circle" class="w-12 h-12 text-primary mx-auto mb-4"></i>
+            <h5 class="text-xl uppercase tracking-tight text-primary font-semibold mb-3">Need Help?</h5>
+            <p class="text-secondary text-sm mb-4">Contact our support team if you need assistance.</p>
+            <a href="contact.php" class="btn-secondary text-sm">Contact Us</a>
+          </div>
+          <div class="modern-card p-8 text-center">
+            <i data-lucide="info" class="w-12 h-12 text-primary mx-auto mb-4"></i>
+            <h5 class="text-xl uppercase tracking-tight text-primary font-semibold mb-3">Learn More</h5>
+            <p class="text-secondary text-sm mb-4">Find out more about our company and what we offer.</p>
+            <a href="about.php" class="btn-secondary text-sm">About Us</a>
           </div>
         </div>
       </div>

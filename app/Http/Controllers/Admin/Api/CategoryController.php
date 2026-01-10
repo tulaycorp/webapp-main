@@ -1,0 +1,156 @@
+<?php
+
+namespace App\Http\Controllers\Admin\Api;
+
+use App\Http\Controllers\Controller;
+use App\Models\Category;
+use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
+
+class CategoryController extends Controller
+{
+    /**
+     * List all categories.
+     */
+    public function index(Request $request): JsonResponse
+    {
+        $query = Category::query();
+
+        // Filter by active status
+        if ($request->has('active_only')) {
+            $query->active();
+        }
+
+        // Filter by parent (root categories only)
+        if ($request->has('root_only')) {
+            $query->root();
+        }
+
+        // Search
+        if ($search = $request->query('search')) {
+            $query->where('name', 'like', "%{$search}%");
+        }
+
+        // Eager load children and product counts to prevent N+1
+        // We load children's product count too for the recursive calculation
+        $categories = $query->with(['children' => function($q) {
+            $q->withCount('products');
+        }])
+        ->withCount('products')
+        ->orderBy('sort_order')
+        ->orderBy('name')
+        ->get();
+
+        return response()->json([
+            'success' => true,
+            'categories' => $categories->map(fn($cat) => $cat->toApiArray()),
+        ]);
+    }
+
+    /**
+     * Get a single category.
+     */
+    public function show(int $id): JsonResponse
+    {
+        $category = Category::with('children', 'parent')->find($id);
+
+        if (!$category) {
+            return response()->json(['error' => 'Category not found'], 404);
+        }
+
+        return response()->json([
+            'success' => true,
+            'category' => $category->toApiArray(),
+            'children' => $category->children->map(fn($c) => $c->toApiArray()),
+        ]);
+    }
+
+    /**
+     * Create a new category.
+     */
+    public function store(Request $request): JsonResponse
+    {
+        $validated = $request->validate([
+            'name' => 'required|string|max:255',
+            'slug' => 'nullable|string|max:255|unique:categories,slug',
+            'description' => 'nullable|string',
+            'image_url' => 'nullable|url|max:2048',
+            'parent_id' => 'nullable|exists:categories,id',
+            'sort_order' => 'nullable|integer',
+            'is_active' => 'nullable|boolean',
+        ]);
+
+        $category = Category::create($validated);
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Category created successfully',
+            'category' => $category->toApiArray(),
+        ], 201);
+    }
+
+    /**
+     * Update a category.
+     */
+    public function update(Request $request, int $id): JsonResponse
+    {
+        $category = Category::find($id);
+
+        if (!$category) {
+            return response()->json(['error' => 'Category not found'], 404);
+        }
+
+        $validated = $request->validate([
+            'name' => 'sometimes|required|string|max:255',
+            'slug' => 'sometimes|string|max:255|unique:categories,slug,' . $id,
+            'description' => 'nullable|string',
+            'image_url' => 'nullable|url|max:2048',
+            'parent_id' => 'nullable|exists:categories,id',
+            'sort_order' => 'nullable|integer',
+            'is_active' => 'nullable|boolean',
+        ]);
+
+        // Prevent category from being its own parent
+        if (isset($validated['parent_id']) && $validated['parent_id'] == $id) {
+            return response()->json(['error' => 'Category cannot be its own parent'], 422);
+        }
+
+        $category->update($validated);
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Category updated successfully',
+            'category' => $category->fresh()->toApiArray(),
+        ]);
+    }
+
+    /**
+     * Delete a category.
+     */
+    public function destroy(int $id): JsonResponse
+    {
+        $category = Category::find($id);
+
+        if (!$category) {
+            return response()->json(['error' => 'Category not found'], 404);
+        }
+
+        // Check for products in this category
+        $productCount = $category->products()->count();
+        if ($productCount > 0) {
+            return response()->json([
+                'error' => "Cannot delete category with {$productCount} products. Move products first.",
+            ], 422);
+        }
+
+        // Move child categories to parent
+        Category::where('parent_id', $id)->update(['parent_id' => $category->parent_id]);
+
+        $category->delete();
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Category deleted successfully',
+        ]);
+    }
+}

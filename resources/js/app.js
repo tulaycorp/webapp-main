@@ -111,25 +111,39 @@
   }
   function formatMoney(n) { return `$${n.toFixed(2)}`; }
 
-  // Shared state
   let CART = loadCart();
+
+  // Helper to get session token from localStorage
+  function getSessionToken() {
+    try {
+      const user = JSON.parse(localStorage.getItem('eshop_user') || 'null');
+      return user?.session_token || null;
+    } catch { return null; }
+  }
 
   // Sync Cart with Server (Background)
   function syncCartServer() {
-    if (CART.length === 0) return;
+    // Note: We sync even when cart is empty to handle removals
 
     // We need CSRF token for Laravel Post requests
-    const token = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');
-    if (!token) return;
+    const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');
+    if (!csrfToken) return;
+
+    const sessionToken = getSessionToken();
+    const headers = {
+      'Content-Type': 'application/json',
+      'X-CSRF-TOKEN': csrfToken,
+      'Accept': 'application/json'
+    };
+    if (sessionToken) {
+      headers['Authorization'] = `Bearer ${sessionToken}`;
+    }
 
     console.log('Syncing cart to server...', CART);
     fetch('/cart/sync', {
       method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'X-CSRF-TOKEN': token,
-        'Accept': 'application/json'
-      },
+      credentials: 'same-origin',
+      headers: headers,
       body: JSON.stringify({ cart: CART })
     }).then(res => res.json())
       .then(data => console.log('Sync response:', data))
@@ -139,7 +153,16 @@
   // Load Cart from Server (Merge/Overwrite local)
   function fetchCartFromServer() {
     console.log('Fetching cart from server...');
-    fetch('/cart/data')
+    const sessionToken = getSessionToken();
+    const headers = { 'Accept': 'application/json' };
+    if (sessionToken) {
+      headers['Authorization'] = `Bearer ${sessionToken}`;
+    }
+
+    fetch('/cart/data', {
+      credentials: 'same-origin',
+      headers: headers
+    })
       .then(res => res.json())
       .then(data => {
         console.log('Server cart response:', data);
@@ -318,29 +341,53 @@
 
       if (CART.length === 0) {
         wrap.innerHTML = '';
-        empty.classList.remove('d-none');
+        empty.classList.remove('hidden');
+        empty.classList.add('block');
         checkoutBtn.disabled = clearBtn.disabled = true;
       } else {
-        empty.classList.add('d-none');
+        empty.classList.add('hidden');
+        empty.classList.remove('block');
         wrap.innerHTML = CART.map(item => {
           const p = getProduct(item.id);
           if (!p) {
             console.warn(`Product not found for ID: "${item.id}" (Type: ${typeof item.id}). Catalog IDs:`, CATALOG.map(c => c.id).slice(0, 3));
-            return `<div class="text-danger p-2">Product not found: ${item.id}</div>`;
+            return `<div class="bg-red-100 dark:bg-red-900/30 border border-red-300 dark:border-red-700 p-4 text-red-600 dark:text-red-400">Product not found: ${item.id}</div>`;
           }
           console.log(`Rendering item: ${item.id} -> ${p.name}`);
-          return `<div class="card shadow-sm"><div class="card-body d-flex align-items-center gap-3 flex-wrap">
-            <img src="${p.img || p.image_url || 'https://via.placeholder.com/60'}" alt="${p.name}" class="rounded" style="width:90px;height:60px;object-fit:cover;">
-            <div class="flex-grow-1">
-              <h5 class="mb-1">${p.name}</h5>
-              <div class="small text-muted">${formatMoney(Number(p.price))} each</div>
-            </div>
-            <div class="d-flex align-items-center gap-2">
-              <input type="number" min="1" value="${item.qty}" data-qty="${item.id}" class="form-control form-control-sm" style="width:80px;" />
-              <button class="btn btn-outline-danger btn-sm" data-remove="${item.id}">×</button>
-            </div>
-            <div class="ms-auto fw-semibold">${formatMoney(Number(p.price) * item.qty)}</div>
-          </div></div>`;
+          return `
+            <div style="background:white; border:1px solid #e5e7eb; padding:1.5rem; margin-bottom:1rem; display:flex; align-items:center; gap:1.5rem;" class="modern-card dark:bg-gray-800 dark:border-gray-700">
+              <img src="${p.img || p.image_url || 'https://via.placeholder.com/96'}" 
+                   alt="${p.name}" 
+                   style="width:96px; height:96px; object-fit:cover; flex-shrink:0; background:#f3f4f6;">
+              
+              <div style="flex:1; min-width:0;">
+                <h3 style="font-size:1.125rem; font-weight:600; text-transform:uppercase; letter-spacing:-0.025em; margin:0 0 0.25rem 0; color:#111827;" class="dark:text-white">${p.name}</h3>
+                <p style="font-size:0.875rem; text-transform:uppercase; letter-spacing:0.05em; color:#64748b; margin:0 0 0.5rem 0;">${p.category || 'Apparel'}</p>
+                <p style="font-family:Impact,sans-serif; font-size:1.25rem; color:#111827; margin:0;" class="dark:text-white">${formatMoney(Number(p.price))}</p>
+              </div>
+              
+              <div style="display:flex; align-items:center; border:2px solid #e5e7eb;">
+                <button style="width:40px; height:40px; display:flex; align-items:center; justify-content:center; border:none; background:transparent; cursor:pointer; font-size:1.25rem; font-weight:bold;" 
+                        onclick="(function(e){e.stopPropagation();var inp=document.querySelector('[data-qty=\\'${item.id}\\']');if(inp){inp.value=Math.max(1,parseInt(inp.value)-1);inp.dispatchEvent(new Event('input',{bubbles:true}));}})(event)">−</button>
+                <input type="number" min="1" value="${item.qty}" data-qty="${item.id}" 
+                       style="width:50px; height:40px; text-align:center; border:none; border-left:2px solid #e5e7eb; border-right:2px solid #e5e7eb; font-weight:600; font-size:1rem;">
+                <button style="width:40px; height:40px; display:flex; align-items:center; justify-content:center; border:none; background:transparent; cursor:pointer; font-size:1.25rem; font-weight:bold;"
+                        onclick="(function(e){e.stopPropagation();var inp=document.querySelector('[data-qty=\\'${item.id}\\']');if(inp){inp.value=parseInt(inp.value)+1;inp.dispatchEvent(new Event('input',{bubbles:true}));}})(event)">+</button>
+              </div>
+              
+              <div style="text-align:right; min-width:100px;">
+                <p style="font-family:Impact,sans-serif; font-size:1.5rem; color:#111827; margin:0;" class="dark:text-white">${formatMoney(Number(p.price) * item.qty)}</p>
+              </div>
+              
+              <button data-remove="${item.id}" 
+                      style="width:40px; height:40px; display:flex; align-items:center; justify-content:center; border:2px solid transparent; background:transparent; cursor:pointer; color:#64748b; transition:all 0.2s;"
+                      onmouseover="this.style.color='#ef4444'; this.style.borderColor='#fecaca';"
+                      onmouseout="this.style.color='#64748b'; this.style.borderColor='transparent';">
+                <svg style="width:20px; height:20px;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                </svg>
+              </button>
+            </div>`;
         }).join('');
         checkoutBtn.disabled = clearBtn.disabled = false;
       }

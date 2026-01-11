@@ -21,10 +21,14 @@ Route::get('/', [PageController::class, 'home'])->name('home');
 Route::get('/products', [ProductController::class, 'index'])->name('products');
 Route::get('/products/{id}/{slug?}', [ProductController::class, 'show'])->name('products.show');
 
-// Cart Routes
-Route::post('/cart/sync', [CartController::class, 'sync']);
-Route::get('/cart/data', [CartController::class, 'index']); // New API endpoint
-Route::get('/cart', [PageController::class, 'cart'])->name('cart'); // Restore UI route
+// Cart Routes (with optional token auth for logged-in user detection)
+Route::middleware(['web', \App\Http\Middleware\WebTokenAuthOptional::class])->group(function () {
+    Route::post('/cart/sync', [CartController::class, 'sync']);
+    Route::get('/cart/data', [CartController::class, 'index']);
+    Route::get('/cart', [PageController::class, 'cart'])->name('cart');
+    Route::post('/cart/guest/reset', [CartController::class, 'resetGuest']);
+});
+
 Route::get('/about', [PageController::class, 'about'])->name('about');
 Route::get('/contact', [PageController::class, 'contact'])->name('contact');
 

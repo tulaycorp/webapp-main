@@ -14,7 +14,11 @@ return Application::configure(basePath: dirname(__DIR__))
     ->withMiddleware(function (Middleware $middleware): void {
         $middleware->alias([
             'admin.api' => \App\Http\Middleware\AdminApiAuth::class,
+            'web.token.optional' => \App\Http\Middleware\WebTokenAuthOptional::class,
         ]);
+        
+        // Exclude eshop_session_id from cookie encryption so JavaScript can read it
+        $middleware->encryptCookies(except: ['eshop_session_id']);
     })
     ->withExceptions(function (Exceptions $exceptions): void {
         //

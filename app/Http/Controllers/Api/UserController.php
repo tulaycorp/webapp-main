@@ -9,6 +9,7 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
+use App\Services\CartMergeService;
 
 class UserController extends Controller
 {
@@ -30,6 +31,17 @@ class UserController extends Controller
 
         if (!$user || !Hash::check($request->password, $user->password_hash)) {
             return response()->json(['error' => 'Invalid email or password'], 401);
+        }
+
+        // Merge guest cart into user cart (if guest had items)
+        // Note: We get session_id from request body because API routes can't decrypt cookies
+        $guestId = $request->input('guest_session_id');
+        \Log::info('UserController login: guest_session_id from request', [
+            'guest_id' => $guestId,
+            'all_input' => $request->all(),
+        ]);
+        if ($guestId) {
+            app(CartMergeService::class)->mergeGuestIntoUser($guestId, $user->id);
         }
 
         // Create session token

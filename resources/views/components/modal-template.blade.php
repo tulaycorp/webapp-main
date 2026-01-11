@@ -410,17 +410,43 @@ document.addEventListener('DOMContentLoaded', function() {
   const signoutConfirm = document.getElementById('signout-confirm');
   if (signoutConfirm) {
     signoutConfirm.addEventListener('click', async () => {
+      // Get user data BEFORE clearing
+      let sessionToken = null;
       try {
         const user = JSON.parse(localStorage.getItem('eshop_user') || '{}');
-        if (user.session_token) {
+        sessionToken = user.session_token;
+      } catch {}
+      
+      // Clear localStorage
+      localStorage.removeItem('eshop_user');
+      localStorage.removeItem('eshop-cart-v1');
+      
+      // Call logout API
+      if (sessionToken) {
+        try {
           await fetch('/api/users/logout', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ session_token: user.session_token })
+            body: JSON.stringify({ session_token: sessionToken })
+          });
+        } catch {}
+      }
+      
+      // Reset guest cart session (rotate cookie, delete old cart)
+      try {
+        const csrfToken = document.querySelector('meta[name="csrf-token"]')?.content;
+        if (csrfToken) {
+          await fetch('/cart/guest/reset', {
+            method: 'POST',
+            headers: { 
+              'Content-Type': 'application/json',
+              'X-CSRF-TOKEN': csrfToken
+            },
+            credentials: 'include'
           });
         }
       } catch {}
-      localStorage.removeItem('eshop_user');
+      
       hideModal('signout-modal');
       window.location.reload();
     });
@@ -435,16 +461,29 @@ document.addEventListener('DOMContentLoaded', function() {
       const password = document.getElementById('login-password').value;
       const feedback = document.getElementById('login-feedback');
       
+      // Get guest session ID from cookie for cart merge
+      function getGuestSessionId() {
+        const match = document.cookie.match(/eshop_session_id=([^;]+)/);
+        return match ? decodeURIComponent(match[1]) : null;
+      }
+      
       try {
         const response = await fetch('/api/users/login', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ email, password })
+          credentials: 'include',
+          body: JSON.stringify({ 
+            email, 
+            password,
+            guest_session_id: getGuestSessionId()
+          })
         });
         const data = await response.json();
         
         if (data.success) {
           localStorage.setItem('eshop_user', JSON.stringify(data.user));
+          // Clear local cart - server will have merged cart
+          localStorage.removeItem('eshop-cart-v1');
           feedback.className = 'p-4 border-l-4 border-green-500 bg-green-50 text-green-700';
           feedback.textContent = 'Login successful! Redirecting...';
           feedback.classList.remove('hidden');

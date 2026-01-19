@@ -39,31 +39,7 @@
                     data-filter="All">
               All Products
             </button>
-            <button data-animate="fade-in" data-delay="500" data-hover="lift"
-                    class="filter-tag px-8 py-4 uppercase text-base tracking-wider transition-all shadow-lg hover:shadow-xl bg-white dark:bg-gray-700 text-primary dark:text-white border-2 border-border dark:border-gray-600 hover:border-primary dark:hover:border-white font-medium"
-                    data-filter="Hoodies">
-              Hoodies
-            </button>
-            <button data-animate="fade-in" data-delay="550" data-hover="lift"
-                    class="filter-tag px-8 py-4 uppercase text-base tracking-wider transition-all shadow-lg hover:shadow-xl bg-white dark:bg-gray-700 text-primary dark:text-white border-2 border-border dark:border-gray-600 hover:border-primary dark:hover:border-white font-medium"
-                    data-filter="T-Shirts">
-              T-Shirts
-            </button>
-            <button data-animate="fade-in" data-delay="600" data-hover="lift"
-                    class="filter-tag px-8 py-4 uppercase text-base tracking-wider transition-all shadow-lg hover:shadow-xl bg-white dark:bg-gray-700 text-primary dark:text-white border-2 border-border dark:border-gray-600 hover:border-primary dark:hover:border-white font-medium"
-                    data-filter="Bottoms">
-              Bottoms
-            </button>
-            <button data-animate="fade-in" data-delay="650" data-hover="lift"
-                    class="filter-tag px-8 py-4 uppercase text-base tracking-wider transition-all shadow-lg hover:shadow-xl bg-white dark:bg-gray-700 text-primary dark:text-white border-2 border-border dark:border-gray-600 hover:border-primary dark:hover:border-white font-medium"
-                    data-filter="Outerwear">
-              Outerwear
-            </button>
-            <button data-animate="fade-in" data-delay="700" data-hover="lift"
-                    class="filter-tag px-8 py-4 uppercase text-base tracking-wider transition-all shadow-lg hover:shadow-xl bg-white dark:bg-gray-700 text-primary dark:text-white border-2 border-border dark:border-gray-600 hover:border-primary dark:hover:border-white font-medium"
-                    data-filter="Accessories">
-              Accessories
-            </button>
+            {{-- Categories will be dynamically loaded via JavaScript --}}
           </div>
         </div>
       </div>
@@ -86,31 +62,27 @@
 
 @push('scripts')
 <script>
-  // Filter Button Logic
+  // Filter button styling is now handled by app.js via renderCategoryFilters()
+  // This script adds additional active state styling for visual feedback
   document.addEventListener('DOMContentLoaded', () => {
-     // Wait a bit for app.js to initialize Eshop
-     setTimeout(() => {
-        const buttons = document.querySelectorAll('.filter-tag');
-        buttons.forEach(btn => {
-          btn.addEventListener('click', function() {
-            // Update UI
-            buttons.forEach(b => {
-                b.classList.remove('active', 'bg-primary', 'text-white');
-                b.classList.add('bg-white', 'text-primary'); 
-                 if(b.classList.contains('dark:bg-white')) {
-                     b.classList.remove('dark:bg-white', 'dark:text-gray-900');
-                     b.classList.add('dark:bg-gray-700', 'dark:text-white');
-                 }
-            });
-            this.classList.add('active');
-            
-            const filter = this.getAttribute('data-filter');
-            if (window.Eshop && window.Eshop.filterProducts) {
-                window.Eshop.filterProducts(filter === 'All' ? '' : filter);
-            }
+    // Wait for categories to be loaded and rendered by app.js
+    setTimeout(() => {
+      const container = document.getElementById('filter-container');
+      if (container) {
+        container.addEventListener('click', function(e) {
+          const btn = e.target.closest('.filter-tag');
+          if (!btn) return;
+          
+          // Update active button styling
+          container.querySelectorAll('.filter-tag').forEach(b => {
+            b.classList.remove('active', 'bg-primary', 'text-white', 'dark:bg-white', 'dark:text-gray-900');
+            b.classList.add('bg-white', 'text-primary', 'dark:bg-gray-700', 'dark:text-white');
           });
+          btn.classList.add('active', 'bg-primary', 'text-white', 'dark:bg-white', 'dark:text-gray-900');
+          btn.classList.remove('bg-white', 'text-primary', 'dark:bg-gray-700', 'dark:text-white');
         });
-     }, 300); // Slight delay to match app.js init
+      }
+    }, 500);
   });
 </script>
 @endpush

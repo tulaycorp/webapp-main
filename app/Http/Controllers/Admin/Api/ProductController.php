@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Admin\Api;
 
 use App\Http\Controllers\Controller;
+use App\Models\Category;
 use App\Models\Product;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -26,8 +27,11 @@ class ProductController extends Controller
             });
         }
         
-        // Filter by category
-        if ($category = $request->get('category')) {
+        // Filter by category (supports both category name and category_id)
+        if ($categoryId = $request->get('category_id')) {
+            $query->where('category_id', $categoryId);
+        } elseif ($category = $request->get('category')) {
+            // Support legacy string-based filtering
             $query->where('category', $category);
         }
         
@@ -66,6 +70,7 @@ class ProductController extends Controller
             'name' => 'required|string|max:255',
             'description' => 'nullable|string',
             'price' => 'required|numeric|min:0',
+            'category_id' => 'nullable|exists:categories,id',
             'category' => 'nullable|string|max:255',
             'featured' => 'boolean',
             'stock_quantity' => 'required|integer|min:0',
@@ -75,6 +80,14 @@ class ProductController extends Controller
         // Generate ID from name if not provided
         $validated['id'] = $request->get('id', Str::slug($validated['name']) . '-' . Str::random(4));
         $validated['featured'] = $validated['featured'] ?? false;
+        
+        // If category_id is provided, also set the category name for backward compatibility
+        if (!empty($validated['category_id'])) {
+            $category = Category::find($validated['category_id']);
+            if ($category) {
+                $validated['category'] = $category->name;
+            }
+        }
         
         $product = Product::create($validated);
         
@@ -90,7 +103,7 @@ class ProductController extends Controller
      */
     public function show(string $id): JsonResponse
     {
-        $product = Product::findOrFail($id);
+        $product = Product::with('categoryRelation')->findOrFail($id);
         
         return response()->json([
             'success' => true,
@@ -109,18 +122,32 @@ class ProductController extends Controller
             'name' => 'sometimes|required|string|max:255',
             'description' => 'nullable|string',
             'price' => 'sometimes|required|numeric|min:0',
+            'category_id' => 'nullable|exists:categories,id',
             'category' => 'nullable|string|max:255',
             'featured' => 'boolean',
             'stock_quantity' => 'sometimes|required|integer|min:0',
             'image_url' => 'nullable|url|max:500',
         ]);
         
+        // If category_id is provided, also update the category name for backward compatibility
+        if (isset($validated['category_id'])) {
+            if ($validated['category_id']) {
+                $category = Category::find($validated['category_id']);
+                if ($category) {
+                    $validated['category'] = $category->name;
+                }
+            } else {
+                // category_id is null, clear both
+                $validated['category'] = null;
+            }
+        }
+        
         $product->update($validated);
         
         return response()->json([
             'success' => true,
             'message' => 'Product updated successfully',
-            'data' => $product->fresh()->toApiArray(),
+            'data' => $product->fresh()->load('categoryRelation')->toApiArray(),
         ]);
     }
 
@@ -139,15 +166,19 @@ class ProductController extends Controller
     }
 
     /**
-     * Get all categories.
+     * Get all categories from Category model.
      */
     public function categories(): JsonResponse
     {
-        $categories = Product::distinct()
-            ->whereNotNull('category')
-            ->pluck('category')
-            ->sort()
-            ->values();
+        $categories = Category::active()
+            ->orderBy('sort_order')
+            ->orderBy('name')
+            ->get()
+            ->map(fn($cat) => [
+                'id' => $cat->id,
+                'name' => $cat->name,
+                'slug' => $cat->slug,
+            ]);
         
         return response()->json([
             'success' => true,

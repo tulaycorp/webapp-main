@@ -69,6 +69,8 @@
   const THEME_STORAGE_KEY = 'eshop-theme';
   // Product catalog - will be loaded from database
   let CATALOG = [];
+  // Categories - will be loaded from database
+  let CATEGORIES = [];
 
   // Load products from database
   function loadCatalog() {
@@ -90,6 +92,87 @@
         console.error('Error loading catalog:', error);
         return [];
       });
+  }
+
+  // Load categories from database (Category model managed via admin panel)
+  function loadCategories() {
+    return fetch('/api/products/categories')
+      .then(res => {
+        if (!res.ok) throw new Error('Categories API Request Failed');
+        return res.json();
+      })
+      .then(response => {
+        if (response && response.success && response.categories) {
+          CATEGORIES = response.categories;
+          return CATEGORIES;
+        } else {
+          console.error('Failed to load categories: Invalid response', response);
+          return [];
+        }
+      })
+      .catch(error => {
+        console.error('Error loading categories:', error);
+        return [];
+      });
+  }
+
+  // Render category filter buttons dynamically
+  function renderCategoryFilters() {
+    const container = document.getElementById('filter-container');
+    if (!container || CATEGORIES.length === 0) return;
+
+    // Keep the "All Products" button, remove any dynamically added ones
+    const allButton = container.querySelector('[data-filter="All"]');
+    container.innerHTML = '';
+    if (allButton) {
+      container.appendChild(allButton);
+    }
+
+    // Add category buttons
+    let delay = 500;
+    CATEGORIES.forEach(cat => {
+      const btn = document.createElement('button');
+      btn.setAttribute('data-animate', 'fade-in');
+      btn.setAttribute('data-delay', delay.toString());
+      btn.setAttribute('data-hover', 'lift');
+      btn.setAttribute('data-filter', cat.name);
+      btn.setAttribute('data-category-id', cat.id);
+      btn.className = 'filter-tag px-8 py-4 uppercase text-base tracking-wider transition-all shadow-lg hover:shadow-xl bg-white dark:bg-gray-700 text-primary dark:text-white border-2 border-border dark:border-gray-600 hover:border-primary dark:hover:border-white font-medium';
+      btn.textContent = cat.name;
+      container.appendChild(btn);
+      delay += 50;
+    });
+
+    // Bind click handlers to all filter buttons
+    bindFilterButtons();
+  }
+
+  // Bind click handlers to filter buttons
+  function bindFilterButtons() {
+    const buttons = document.querySelectorAll('.filter-tag');
+    buttons.forEach(btn => {
+      btn.addEventListener('click', function() {
+        // Update UI - remove active from all
+        buttons.forEach(b => {
+          b.classList.remove('active', 'bg-primary', 'text-white');
+          b.classList.add('bg-white', 'text-primary');
+          if (b.classList.contains('dark:bg-white')) {
+            b.classList.remove('dark:bg-white', 'dark:text-gray-900');
+            b.classList.add('dark:bg-gray-700', 'dark:text-white');
+          }
+        });
+        
+        // Add active to clicked
+        this.classList.add('active');
+        this.classList.remove('bg-white', 'text-primary', 'dark:bg-gray-700', 'dark:text-white');
+        this.classList.add('bg-primary', 'text-white', 'dark:bg-white', 'dark:text-gray-900');
+        
+        const filter = this.getAttribute('data-filter');
+        if (window.Eshop && window.Eshop.filterProducts) {
+          window.Eshop.filterProducts(filter === 'All' ? '' : filter);
+        }
+      });
+    });
   }
 
   function loadCart() {
@@ -214,6 +297,7 @@
   }
 
   function productCard(product) {
+    const categoryDisplay = product.category_name || product.category || 'Uncategorized';
     return `<div class="group">
       <div class="modern-card dark:bg-gray-800 dark:border-gray-700 overflow-hidden transition-all duration-300 hover:shadow-xl">
         <a href="/products/${product.id}" class="block relative aspect-square overflow-hidden bg-gray-100 dark:bg-gray-700">
@@ -223,7 +307,7 @@
           ${product.featured ? '<span class="absolute top-4 left-4 px-3 py-1 bg-primary dark:bg-white text-white dark:text-gray-900 text-xs uppercase tracking-wider font-medium">Featured</span>' : ''}
         </a>
         <div class="p-6">
-          <p class="text-xs text-secondary dark:text-gray-400 uppercase tracking-wider mb-2">${product.category || 'Uncategorized'}</p>
+          <p class="text-xs text-secondary dark:text-gray-400 uppercase tracking-wider mb-2">${categoryDisplay}</p>
           <a href="/products/${product.id}" class="block">
             <h3 class="text-lg font-semibold text-primary dark:text-white mb-2 truncate group-hover:text-secondary transition-colors">${product.name}</h3>
           </a>
@@ -273,10 +357,21 @@
     // Current filter state
     let currentCategory = '';
 
-    // Populate categories dropdown if it exists
+    // Populate categories dropdown if it exists (using CATEGORIES from API)
     if (catSel) {
-      const cats = [...new Set(CATALOG.map(p => p.category))];
-      cats.sort().forEach(c => { if (![...catSel.options].some(o => o.value === c)) catSel.append(new Option(c, c)); });
+      if (CATEGORIES.length > 0) {
+        CATEGORIES.forEach(cat => {
+          if (![...catSel.options].some(o => o.value === cat.name)) {
+            catSel.append(new Option(cat.name, cat.name));
+          }
+        });
+      } else {
+        // Fallback to extracting from products if no categories loaded
+        const cats = [...new Set(CATALOG.map(p => p.category || p.category_name).filter(Boolean))];
+        cats.sort().forEach(c => {
+          if (![...catSel.options].some(o => o.value === c)) catSel.append(new Option(c, c));
+        });
+      }
     }
 
     function apply() {
@@ -284,7 +379,10 @@
       const q = search ? (search.value || '').trim().toLowerCase() : '';
       const cat = catSel ? catSel.value : currentCategory;
       if (q) list = list.filter(p => p.name.toLowerCase().includes(q));
-      if (cat && cat !== 'All') list = list.filter(p => p.category === cat);
+      if (cat && cat !== 'All') {
+        // Filter by category name or category_name (supports both legacy and new)
+        list = list.filter(p => p.category === cat || p.category_name === cat);
+      }
       if (sortSel) {
         switch (sortSel.value) {
           case 'price-asc': list.sort((a, b) => a.price - b.price); break;
@@ -456,7 +554,7 @@
     const cEl = document.getElementById('stat-categories');
     const ciEl = document.getElementById('stat-cart-items');
     if (pEl) pEl.textContent = CATALOG.length;
-    if (cEl) cEl.textContent = new Set(CATALOG.map(p => p.category)).size;
+    if (cEl) cEl.textContent = CATEGORIES.length || new Set(CATALOG.map(p => p.category)).size;
     if (ciEl) ciEl.textContent = CART.reduce((a, i) => a + i.qty, 0);
   }
 
@@ -483,7 +581,9 @@
         });
       },
       products() {
-        loadCatalog().then(function () {
+        // Load both categories and products, then render
+        Promise.all([loadCategories(), loadCatalog()]).then(function () {
+          renderCategoryFilters();
           renderCatalog();
           updateCartCount(CART);
         });
@@ -494,7 +594,7 @@
         });
       },
       about() {
-        loadCatalog().then(function () {
+        Promise.all([loadCategories(), loadCatalog()]).then(function () {
           aboutStats();
           updateCartCount(CART);
         });

@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Models\Category;
 use App\Models\Product;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -11,15 +12,34 @@ class ProductController extends Controller
 {
     /**
      * Get all products or filter by category.
+     * Supports both category name (legacy) and category_id (new system).
      */
     public function list(Request $request): JsonResponse
     {
         $category = $request->query('category', '');
+        $categoryId = $request->query('category_id');
 
-        $query = Product::query();
+        $query = Product::query()->with('categoryRelation');
 
-        if (!empty($category)) {
-            $query->byCategory($category)->orderBy('name');
+        if (!empty($categoryId)) {
+            // Filter by category_id (new system - linked to Category model)
+            $query->byCategoryId((int) $categoryId)->orderBy('name');
+        } elseif (!empty($category)) {
+            // Filter by category name or slug (supports both legacy string and new slug)
+            $categoryModel = Category::where('name', $category)
+                ->orWhere('slug', $category)
+                ->first();
+            
+            if ($categoryModel) {
+                // If we find a matching category, use category_id for products that have it
+                $query->where(function ($q) use ($category, $categoryModel) {
+                    $q->where('category_id', $categoryModel->id)
+                      ->orWhere('category', $category);
+                })->orderBy('name');
+            } else {
+                // Fallback to legacy string matching
+                $query->byCategory($category)->orderBy('name');
+            }
         } else {
             $query->orderBy('category')->orderBy('name');
         }
@@ -70,12 +90,23 @@ class ProductController extends Controller
 
     /**
      * Get all product categories.
+     * Returns categories from the Category model (managed via admin panel).
      */
     public function categories(): JsonResponse
     {
-        $categories = Product::distinct()
-            ->orderBy('category')
-            ->pluck('category');
+        $categories = Category::active()
+            ->orderBy('sort_order')
+            ->orderBy('name')
+            ->get()
+            ->map(fn($cat) => [
+                'id' => $cat->id,
+                'name' => $cat->name,
+                'slug' => $cat->slug,
+                'description' => $cat->description,
+                'image_url' => $cat->image_url,
+                'parent_id' => $cat->parent_id,
+                'sort_order' => $cat->sort_order,
+            ]);
 
         return response()->json([
             'success' => true,

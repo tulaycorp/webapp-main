@@ -25,6 +25,7 @@ class Product extends Model
     protected $fillable = [
         'id',
         'sku',
+        'barcode',
         'name',
         'description',
         'price',
@@ -32,6 +33,7 @@ class Product extends Model
         'cost_per_item',
         'category',
         'category_id',
+        'vendor',
         'product_type',
         'tags',
         'featured',
@@ -40,8 +42,18 @@ class Product extends Model
         'track_inventory',
         'continue_selling_when_out_of_stock',
         'image_url',
+        'weight',
+        'weight_unit',
+        'requires_shipping',
+        'length',
+        'width',
+        'height',
+        'dimension_unit',
+        'taxable',
+        'tax_code',
         'seo_title',
         'seo_description',
+        'metafields',
     ];
 
     /**
@@ -57,6 +69,13 @@ class Product extends Model
             'stock_quantity' => 'integer',
             'track_inventory' => 'boolean',
             'continue_selling_when_out_of_stock' => 'boolean',
+            'weight' => 'float',
+            'length' => 'float',
+            'width' => 'float',
+            'height' => 'float',
+            'requires_shipping' => 'boolean',
+            'taxable' => 'boolean',
+            'metafields' => 'array',
         ];
     }
 
@@ -169,6 +188,7 @@ class Product extends Model
         return [
             'id' => $this->id,
             'sku' => $this->sku,
+            'barcode' => $this->barcode,
             'name' => $this->name,
             'description' => $this->description,
             'price' => $this->price,
@@ -179,6 +199,7 @@ class Product extends Model
             'category' => $this->category,
             'category_id' => $this->category_id,
             'category_name' => $this->categoryRelation?->name,
+            'vendor' => $this->vendor,
             'product_type' => $this->product_type,
             'tags' => $this->tags,
             'tags_array' => $this->tags_array,
@@ -190,8 +211,22 @@ class Product extends Model
             'in_stock' => $this->in_stock,
             'image_url' => $this->image_url,
             'img' => $this->image_url,
+            // Shipping information
+            'weight' => $this->weight,
+            'weight_unit' => $this->weight_unit,
+            'requires_shipping' => $this->requires_shipping,
+            'length' => $this->length,
+            'width' => $this->width,
+            'height' => $this->height,
+            'dimension_unit' => $this->dimension_unit,
+            // Tax settings
+            'taxable' => $this->taxable,
+            'tax_code' => $this->tax_code,
+            // SEO
             'seo_title' => $this->seo_title,
             'seo_description' => $this->seo_description,
+            // Custom metafields
+            'metafields' => $this->metafields ?? [],
             'created_at' => $this->created_at?->toISOString(),
             'updated_at' => $this->updated_at?->toISOString(),
         ];

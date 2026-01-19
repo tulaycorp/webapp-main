@@ -40,6 +40,11 @@ class ProductController extends Controller
             $query->where('featured', $request->boolean('featured'));
         }
         
+        // Filter by status
+        if ($status = $request->get('status')) {
+            $query->where('status', $status);
+        }
+        
         // Sorting
         $sortBy = $request->get('sort_by', 'created_at');
         $sortDir = $request->get('sort_dir', 'desc');
@@ -67,19 +72,68 @@ class ProductController extends Controller
     public function store(Request $request): JsonResponse
     {
         $validated = $request->validate([
+            // Basic info
             'name' => 'required|string|max:255',
             'description' => 'nullable|string',
+            
+            // Pricing
             'price' => 'required|numeric|min:0',
+            'compare_at_price' => 'nullable|numeric|min:0',
+            'cost_per_item' => 'nullable|numeric|min:0',
+            
+            // Organization
             'category_id' => 'nullable|exists:categories,id',
             'category' => 'nullable|string|max:255',
+            'vendor' => 'nullable|string|max:255',
+            'product_type' => 'nullable|string|max:255',
+            'tags' => 'nullable|string|max:1000',
             'featured' => 'boolean',
+            'status' => 'nullable|in:active,draft,archived',
+            
+            // Inventory
+            'sku' => 'nullable|string|max:255|unique:products,sku',
+            'barcode' => 'nullable|string|max:255',
             'stock_quantity' => 'required|integer|min:0',
+            'track_inventory' => 'boolean',
+            'continue_selling_when_out_of_stock' => 'boolean',
+            
+            // Media
             'image_url' => 'nullable|url|max:500',
+            
+            // Shipping
+            'weight' => 'nullable|numeric|min:0',
+            'weight_unit' => 'nullable|in:kg,g,lb,oz',
+            'requires_shipping' => 'boolean',
+            'length' => 'nullable|numeric|min:0',
+            'width' => 'nullable|numeric|min:0',
+            'height' => 'nullable|numeric|min:0',
+            'dimension_unit' => 'nullable|in:cm,in,m',
+            
+            // Tax
+            'taxable' => 'boolean',
+            'tax_code' => 'nullable|string|max:100',
+            
+            // SEO
+            'seo_title' => 'nullable|string|max:255',
+            'seo_description' => 'nullable|string|max:500',
+            
+            // Custom metafields
+            'metafields' => 'nullable|array',
+            'metafields.*.key' => 'required_with:metafields|string|max:255',
+            'metafields.*.value' => 'required_with:metafields',
+            'metafields.*.type' => 'nullable|string|in:string,integer,boolean,json,url,date',
         ]);
         
         // Generate ID from name if not provided
         $validated['id'] = $request->get('id', Str::slug($validated['name']) . '-' . Str::random(4));
         $validated['featured'] = $validated['featured'] ?? false;
+        $validated['status'] = $validated['status'] ?? 'active';
+        $validated['track_inventory'] = $validated['track_inventory'] ?? true;
+        $validated['continue_selling_when_out_of_stock'] = $validated['continue_selling_when_out_of_stock'] ?? false;
+        $validated['requires_shipping'] = $validated['requires_shipping'] ?? true;
+        $validated['taxable'] = $validated['taxable'] ?? true;
+        $validated['weight_unit'] = $validated['weight_unit'] ?? 'kg';
+        $validated['dimension_unit'] = $validated['dimension_unit'] ?? 'cm';
         
         // If category_id is provided, also set the category name for backward compatibility
         if (!empty($validated['category_id'])) {
@@ -119,14 +173,56 @@ class ProductController extends Controller
         $product = Product::findOrFail($id);
         
         $validated = $request->validate([
+            // Basic info
             'name' => 'sometimes|required|string|max:255',
             'description' => 'nullable|string',
+            
+            // Pricing
             'price' => 'sometimes|required|numeric|min:0',
+            'compare_at_price' => 'nullable|numeric|min:0',
+            'cost_per_item' => 'nullable|numeric|min:0',
+            
+            // Organization
             'category_id' => 'nullable|exists:categories,id',
             'category' => 'nullable|string|max:255',
+            'vendor' => 'nullable|string|max:255',
+            'product_type' => 'nullable|string|max:255',
+            'tags' => 'nullable|string|max:1000',
             'featured' => 'boolean',
+            'status' => 'nullable|in:active,draft,archived',
+            
+            // Inventory
+            'sku' => 'nullable|string|max:255|unique:products,sku,' . $product->id,
+            'barcode' => 'nullable|string|max:255',
             'stock_quantity' => 'sometimes|required|integer|min:0',
+            'track_inventory' => 'boolean',
+            'continue_selling_when_out_of_stock' => 'boolean',
+            
+            // Media
             'image_url' => 'nullable|url|max:500',
+            
+            // Shipping
+            'weight' => 'nullable|numeric|min:0',
+            'weight_unit' => 'nullable|in:kg,g,lb,oz',
+            'requires_shipping' => 'boolean',
+            'length' => 'nullable|numeric|min:0',
+            'width' => 'nullable|numeric|min:0',
+            'height' => 'nullable|numeric|min:0',
+            'dimension_unit' => 'nullable|in:cm,in,m',
+            
+            // Tax
+            'taxable' => 'boolean',
+            'tax_code' => 'nullable|string|max:100',
+            
+            // SEO
+            'seo_title' => 'nullable|string|max:255',
+            'seo_description' => 'nullable|string|max:500',
+            
+            // Custom metafields
+            'metafields' => 'nullable|array',
+            'metafields.*.key' => 'required_with:metafields|string|max:255',
+            'metafields.*.value' => 'required_with:metafields',
+            'metafields.*.type' => 'nullable|string|in:string,integer,boolean,json,url,date',
         ]);
         
         // If category_id is provided, also update the category name for backward compatibility
@@ -184,5 +280,43 @@ class ProductController extends Controller
             'success' => true,
             'data' => $categories,
         ]);
+    }
+
+    /**
+     * Upload a product image to Cloudflare R2.
+     */
+    public function uploadImage(Request $request): JsonResponse
+    {
+        $request->validate([
+            'image' => 'required|image|mimes:jpeg,png,gif,webp|max:5120', // 5MB max
+        ]);
+        
+        $file = $request->file('image');
+        $filename = Str::uuid() . '.' . $file->getClientOriginalExtension();
+        $path = 'products/' . $filename;
+        
+        try {
+            // Upload to R2
+            $disk = \Illuminate\Support\Facades\Storage::disk('r2');
+            $disk->put($path, file_get_contents($file), 'public');
+            
+            // Get the public URL
+            $url = config('filesystems.disks.r2.url') . '/' . $path;
+            
+            return response()->json([
+                'success' => true,
+                'message' => 'Image uploaded successfully',
+                'data' => [
+                    'url' => $url,
+                    'path' => $path,
+                    'filename' => $filename,
+                ],
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Failed to upload image: ' . $e->getMessage(),
+            ], 500);
+        }
     }
 }

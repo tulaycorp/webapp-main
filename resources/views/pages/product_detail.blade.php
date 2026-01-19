@@ -1,6 +1,25 @@
 @extends('layouts.app')
 
-@section('title', $product->name . ' - FRAMEWORK Supply Co.')
+@section('title', ($product->seo_title ?: $product->name) . ' - FRAMEWORK Supply Co.')
+
+@section('meta')
+@if($product->seo_description)
+<meta name="description" content="{{ $product->seo_description }}">
+@endif
+<meta property="og:title" content="{{ $product->seo_title ?: $product->name }}">
+<meta property="og:description" content="{{ $product->seo_description ?: Str::limit($product->description, 160) }}">
+@if($product->image_url)
+<meta property="og:image" content="{{ $product->image_url }}">
+@endif
+<meta property="og:type" content="product">
+<meta property="product:price:amount" content="{{ $product->price }}">
+<meta property="product:price:currency" content="USD">
+@if($product->in_stock)
+<meta property="product:availability" content="in stock">
+@else
+<meta property="product:availability" content="out of stock">
+@endif
+@endsection
 
 @section('content')
 <div class="pt-32 pb-16">
@@ -11,6 +30,10 @@
             <a href="{{ route('home') }}" class="hover:text-primary dark:hover:text-white transition-colors">Home</a>
             <span class="mx-2">/</span>
             <a href="{{ route('products') }}" class="hover:text-primary dark:hover:text-white transition-colors">Products</a>
+            @if($product->category)
+            <span class="mx-2">/</span>
+            <a href="{{ route('products') }}?category={{ urlencode($product->category) }}" class="hover:text-primary dark:hover:text-white transition-colors">{{ $product->category }}</a>
+            @endif
             <span class="mx-2">/</span>
             <span class="text-primary dark:text-white">{{ $product->name }}</span>
         </nav>
@@ -23,34 +46,194 @@
                 @if($product->featured)
                     <span class="absolute top-6 left-6 px-4 py-2 bg-primary dark:bg-white text-white dark:text-gray-900 text-sm uppercase tracking-wider font-medium">Featured</span>
                 @endif
+                @if($product->on_sale)
+                    <span class="absolute top-6 right-6 px-4 py-2 bg-red-600 text-white text-sm uppercase tracking-wider font-medium">{{ $product->discount_percent }}% Off</span>
+                @endif
             </div>
 
             {{-- Product Info --}}
             <div data-animate="slide-left" data-delay="200">
+                {{-- Vendor / Brand --}}
+                @if($product->vendor)
+                <p class="text-xs text-secondary dark:text-gray-500 uppercase tracking-widest font-medium mb-2">{{ $product->vendor }}</p>
+                @endif
+                
+                {{-- Category --}}
                 <p class="text-secondary dark:text-gray-400 uppercase tracking-widest font-medium mb-4">{{ $product->category }}</p>
+                
+                {{-- Product Name --}}
                 <h1 class="text-4xl lg:text-5xl font-impact uppercase text-primary dark:text-white mb-6 leading-tight">{{ $product->name }}</h1>
                 
-                <div class="flex items-center gap-6 mb-8">
+                {{-- Price Section --}}
+                <div class="flex items-center gap-6 mb-6">
                     <span class="text-3xl font-bold text-primary dark:text-white">${{ number_format($product->price, 2) }}</span>
                     @if($product->compare_at_price > $product->price)
                         <span class="text-xl text-secondary dark:text-gray-500 line-through">${{ number_format($product->compare_at_price, 2) }}</span>
+                        <span class="px-3 py-1 bg-red-100 dark:bg-red-900 text-red-600 dark:text-red-300 text-sm font-medium rounded">Save ${{ number_format($product->compare_at_price - $product->price, 2) }}</span>
+                    @endif
+                </div>
+                
+                {{-- Stock Status --}}
+                <div class="mb-6">
+                    @if($product->in_stock)
+                        <span class="inline-flex items-center gap-2 text-green-600 dark:text-green-400 font-medium">
+                            <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path></svg>
+                            In Stock
+                            @if($product->track_inventory && $product->stock_quantity <= 10 && $product->stock_quantity > 0)
+                            <span class="text-orange-500 dark:text-orange-400 text-sm">(Only {{ $product->stock_quantity }} left!)</span>
+                            @endif
+                        </span>
+                    @else
+                        <span class="inline-flex items-center gap-2 text-red-600 dark:text-red-400 font-medium">
+                            <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd"></path></svg>
+                            Out of Stock
+                        </span>
                     @endif
                 </div>
 
-                <div class="prose dark:prose-invert max-w-none text-secondary dark:text-gray-300 mb-10 leading-relaxed">
+                {{-- Description --}}
+                <div class="prose dark:prose-invert max-w-none text-secondary dark:text-gray-300 mb-8 leading-relaxed">
                     {{ $product->description }}
                 </div>
+                
+                {{-- Product Details Accordion --}}
+                <div class="border-t border-b border-gray-200 dark:border-gray-700 mb-8">
+                    {{-- SKU & Product Info --}}
+                    @if($product->sku || $product->barcode || $product->product_type)
+                    <details class="group">
+                        <summary class="py-4 flex items-center justify-between cursor-pointer list-none">
+                            <span class="font-medium text-primary dark:text-white uppercase tracking-wider text-sm">Product Details</span>
+                            <i data-lucide="chevron-down" class="w-5 h-5 text-secondary transition-transform group-open:rotate-180"></i>
+                        </summary>
+                        <div class="pb-4 text-sm text-secondary dark:text-gray-400 space-y-2">
+                            @if($product->sku)
+                            <div class="flex justify-between">
+                                <span>SKU:</span>
+                                <span class="font-mono">{{ $product->sku }}</span>
+                            </div>
+                            @endif
+                            @if($product->barcode)
+                            <div class="flex justify-between">
+                                <span>Barcode:</span>
+                                <span class="font-mono">{{ $product->barcode }}</span>
+                            </div>
+                            @endif
+                            @if($product->product_type)
+                            <div class="flex justify-between">
+                                <span>Type:</span>
+                                <span>{{ $product->product_type }}</span>
+                            </div>
+                            @endif
+                            @if($product->vendor)
+                            <div class="flex justify-between">
+                                <span>Vendor:</span>
+                                <span>{{ $product->vendor }}</span>
+                            </div>
+                            @endif
+                        </div>
+                    </details>
+                    @endif
+                    
+                    {{-- Shipping Information --}}
+                    @if($product->requires_shipping && ($product->weight || $product->length || $product->width || $product->height))
+                    <details class="group border-t border-gray-200 dark:border-gray-700">
+                        <summary class="py-4 flex items-center justify-between cursor-pointer list-none">
+                            <span class="font-medium text-primary dark:text-white uppercase tracking-wider text-sm">Shipping Information</span>
+                            <i data-lucide="chevron-down" class="w-5 h-5 text-secondary transition-transform group-open:rotate-180"></i>
+                        </summary>
+                        <div class="pb-4 text-sm text-secondary dark:text-gray-400 space-y-2">
+                            @if($product->weight)
+                            <div class="flex justify-between">
+                                <span>Weight:</span>
+                                <span>{{ $product->weight }} {{ $product->weight_unit }}</span>
+                            </div>
+                            @endif
+                            @if($product->length || $product->width || $product->height)
+                            <div class="flex justify-between">
+                                <span>Dimensions:</span>
+                                <span>{{ $product->length ?? '-' }} x {{ $product->width ?? '-' }} x {{ $product->height ?? '-' }} {{ $product->dimension_unit }}</span>
+                            </div>
+                            @endif
+                        </div>
+                    </details>
+                    @endif
+                    
+                    {{-- Tags --}}
+                    @if($product->tags)
+                    <details class="group border-t border-gray-200 dark:border-gray-700">
+                        <summary class="py-4 flex items-center justify-between cursor-pointer list-none">
+                            <span class="font-medium text-primary dark:text-white uppercase tracking-wider text-sm">Tags</span>
+                            <i data-lucide="chevron-down" class="w-5 h-5 text-secondary transition-transform group-open:rotate-180"></i>
+                        </summary>
+                        <div class="pb-4">
+                            <div class="flex flex-wrap gap-2">
+                                @foreach($product->tags_array as $tag)
+                                <a href="{{ route('products') }}?search={{ urlencode($tag) }}" 
+                                   class="px-3 py-1 bg-gray-100 dark:bg-gray-800 text-secondary dark:text-gray-400 text-sm rounded-full hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors">
+                                    {{ $tag }}
+                                </a>
+                                @endforeach
+                            </div>
+                        </div>
+                    </details>
+                    @endif
+                    
+                    {{-- Custom Metafields --}}
+                    @if($product->metafields && count($product->metafields) > 0)
+                    <details class="group border-t border-gray-200 dark:border-gray-700">
+                        <summary class="py-4 flex items-center justify-between cursor-pointer list-none">
+                            <span class="font-medium text-primary dark:text-white uppercase tracking-wider text-sm">Additional Information</span>
+                            <i data-lucide="chevron-down" class="w-5 h-5 text-secondary transition-transform group-open:rotate-180"></i>
+                        </summary>
+                        <div class="pb-4 text-sm text-secondary dark:text-gray-400 space-y-2">
+                            @foreach($product->metafields as $metafield)
+                            <div class="flex justify-between">
+                                <span>{{ ucfirst(str_replace('_', ' ', $metafield['key'])) }}:</span>
+                                <span>{{ is_array($metafield['value']) ? json_encode($metafield['value']) : $metafield['value'] }}</span>
+                            </div>
+                            @endforeach
+                        </div>
+                    </details>
+                    @endif
+                </div>
 
+                {{-- Action Buttons --}}
                 <div class="flex flex-col sm:flex-row gap-4">
+                    @if($product->in_stock || $product->continue_selling_when_out_of_stock)
                     <button data-add="{{ $product->id }}" 
                             class="flex-1 px-8 py-4 bg-primary dark:bg-white text-white dark:text-gray-900 text-base uppercase tracking-wider font-medium hover:opacity-90 transition-opacity text-center">
                         Add to Cart
                     </button>
-                    {{-- Share Button (Mock functionality) --}}
+                    @else
+                    <button disabled
+                            class="flex-1 px-8 py-4 bg-gray-300 dark:bg-gray-700 text-gray-500 dark:text-gray-400 text-base uppercase tracking-wider font-medium cursor-not-allowed text-center">
+                        Sold Out
+                    </button>
+                    @endif
+                    
+                    {{-- Share Button --}}
                     <button onclick="navigator.clipboard.writeText(window.location.href); alert('Link copied!');"
                             class="px-8 py-4 border-2 border-primary dark:border-white text-primary dark:text-white text-base uppercase tracking-wider font-medium hover:bg-primary dark:hover:bg-white hover:text-white dark:hover:text-gray-900 transition-colors">
                         Share <i data-lucide="share-2" class="inline-block w-4 h-4 ml-2"></i>
                     </button>
+                </div>
+                
+                {{-- Trust Badges --}}
+                <div class="mt-8 pt-6 border-t border-gray-200 dark:border-gray-700">
+                    <div class="grid grid-cols-3 gap-4 text-center text-xs text-secondary dark:text-gray-400">
+                        <div class="flex flex-col items-center gap-2">
+                            <i data-lucide="shield-check" class="w-6 h-6"></i>
+                            <span>Secure Checkout</span>
+                        </div>
+                        <div class="flex flex-col items-center gap-2">
+                            <i data-lucide="truck" class="w-6 h-6"></i>
+                            <span>Fast Shipping</span>
+                        </div>
+                        <div class="flex flex-col items-center gap-2">
+                            <i data-lucide="refresh-cw" class="w-6 h-6"></i>
+                            <span>Easy Returns</span>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -86,19 +269,10 @@
 @push('scripts')
 <script>
     document.addEventListener('DOMContentLoaded', () => {
-        // Re-bind add buttons for static content
-        if(window.Eshop && window.Eshop.bindAddButtons) {
-            // Wait for app.js to expose this or manually re-bind if it's not exposed
+        // Re-initialize Lucide icons for dynamically added elements
+        if (typeof lucide !== 'undefined') {
+            lucide.createIcons();
         }
-        // Since app.js binds to document, it might miss these static buttons if logic differs. 
-        // But app.js logic mainly targets dynamically rendered lists. 
-        // We might need to manually trigger the bind logic.
-        // Actually, app.js doesn't expose bindAddButtons globally in the snippet.
-        // We'll rely on app.js "pages" logic or modify app.js to bind globally.
-        // However, standard HTML buttons with data-add might need manual binding if app.js only runs on "renderCatalog".
-        
-        // Let's adding a simple inline script to bridge this gap or update app.js to bind universally.
-        // Better: Update app.js to handle this page type.
     });
 </script>
 @endpush

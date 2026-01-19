@@ -13,13 +13,14 @@ class ProductController extends Controller
     /**
      * Get all products or filter by category.
      * Supports both category name (legacy) and category_id (new system).
+     * Only returns active products (excludes draft/archived).
      */
     public function list(Request $request): JsonResponse
     {
         $category = $request->query('category', '');
         $categoryId = $request->query('category_id');
 
-        $query = Product::query()->with('categoryRelation');
+        $query = Product::query()->active()->with('categoryRelation');
 
         if (!empty($categoryId)) {
             // Filter by category_id (new system - linked to Category model)

@@ -36,4 +36,12 @@ class PageController extends Controller
     {
         return view('pages.cart');
     }
+
+    /**
+     * Privacy Policy page.
+     */
+    public function privacyPolicy(): View
+    {
+        return view('privacy-policy');
+    }
 }

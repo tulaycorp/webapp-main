@@ -17,9 +17,16 @@ class User extends Authenticatable
      * @var list<string>
      */
     protected $fillable = [
-        'name',
+        'first_name',
+        'middle_name',
+        'last_name',
         'email',
         'password_hash',
+        'address1',
+        'address2',
+        'country_code',
+        'phone',
+        'role',
     ];
 
     /**
@@ -49,14 +56,25 @@ class User extends Authenticatable
     }
 
     /**
+     * Get the user's full name.
+     */
+    public function getFullNameAttribute(): string
+    {
+        $parts = array_filter([$this->first_name, $this->middle_name, $this->last_name]);
+        return implode(' ', $parts);
+    }
+
+    /**
      * Return user data for API response (without sensitive info).
      */
     public function toApiArray(): array
     {
         return [
             'id' => $this->id,
-            'name' => $this->name,
             'email' => $this->email,
+            'first_name' => $this->first_name,
+            'last_name' => $this->last_name,
+            'role' => $this->role,
         ];
     }
 }

@@ -30,13 +30,6 @@ class AuthController extends Controller
             ], 401);
         }
         
-        if ($user->role !== 'admin') {
-            return response()->json([
-                'success' => false,
-                'message' => 'Access denied. Admin privileges required.',
-            ], 403);
-        }
-        
         // Create session token
         $session = Session::createForUser($user);
         

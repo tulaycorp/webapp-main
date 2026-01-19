@@ -13,11 +13,11 @@
 -- =============================================================================
 
 -- Create database if not exists
-CREATE DATABASE IF NOT EXISTS `webapp_store` 
+CREATE DATABASE IF NOT EXISTS `webapp_db` 
     CHARACTER SET utf8mb4 
     COLLATE utf8mb4_unicode_ci;
 
-USE `webapp_store`;
+USE `webapp_db`;
 
 -- =============================================================================
 -- Drop existing tables (in correct order due to foreign keys)
@@ -57,17 +57,10 @@ CREATE TABLE `migrations` (
 -- =============================================================================
 CREATE TABLE `users` (
     `id` BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
-    `first_name` VARCHAR(255) NOT NULL,
-    `middle_name` VARCHAR(255) NULL DEFAULT NULL,
-    `last_name` VARCHAR(255) NOT NULL,
+    `name` VARCHAR(255) NOT NULL,
     `email` VARCHAR(255) NOT NULL,
     `email_verified_at` TIMESTAMP NULL DEFAULT NULL,
     `password_hash` VARCHAR(255) NOT NULL,
-    `address1` TEXT NULL,
-    `address2` TEXT NULL,
-    `country_code` VARCHAR(10) NULL DEFAULT NULL,
-    `phone` VARCHAR(50) NULL DEFAULT NULL,
-    `role` VARCHAR(50) NOT NULL DEFAULT 'customer',
     `remember_token` VARCHAR(100) NULL DEFAULT NULL,
     `created_at` TIMESTAMP NULL DEFAULT NULL,
     `updated_at` TIMESTAMP NULL DEFAULT NULL,
@@ -311,10 +304,11 @@ INSERT INTO `migrations` (`migration`, `batch`) VALUES
     ('2026_01_19_000001_sync_products_category_to_category_id', 1);
 
 -- =============================================================================
--- Default Test User (password: 'password')
+-- Default Test Users (password: 'password')
 -- =============================================================================
-INSERT INTO `users` (`first_name`, `last_name`, `email`, `email_verified_at`, `password_hash`, `role`, `created_at`, `updated_at`) VALUES
-    ('Test', 'User', 'test@example.com', NOW(), '$2y$12$XLYJyFIH/1x0F0J7fS6TKuKS1k3PdCUw.uS2Oj0xPFQq/I6IkCHXW', 'customer', NOW(), NOW());
+INSERT INTO `users` (`name`, `email`, `email_verified_at`, `password_hash`, `created_at`, `updated_at`) VALUES
+    ('Admin User', 'admin@example.com', NOW(), '$2y$10$aFh9HtXZAh1j3giTROc9OenBis50Kwy4TKYlWUxl3sBsYTybafLoi', NOW(), NOW()),
+    ('Test User', 'test@example.com', NOW(), '$2y$10$aFh9HtXZAh1j3giTROc9OenBis50Kwy4TKYlWUxl3sBsYTybafLoi', NOW(), NOW());
 
 -- =============================================================================
 -- Sample Categories

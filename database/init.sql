@@ -30,7 +30,7 @@ DROP TABLE IF EXISTS `product_images`;
 DROP TABLE IF EXISTS `products`;
 DROP TABLE IF EXISTS `categories`;
 DROP TABLE IF EXISTS `orders`;
-DROP TABLE IF EXISTS `sessions`;
+DROP TABLE IF EXISTS `admin_sessions`;
 DROP TABLE IF EXISTS `personal_access_tokens`;
 DROP TABLE IF EXISTS `users`;
 DROP TABLE IF EXISTS `migrations`;
@@ -71,20 +71,19 @@ CREATE TABLE `users` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- =============================================================================
--- Sessions Table
+-- Admin Sessions Table
 -- =============================================================================
-CREATE TABLE `sessions` (
+CREATE TABLE `admin_sessions` (
     `id` BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
     `user_id` BIGINT UNSIGNED NOT NULL,
     `session_token` VARCHAR(255) NOT NULL,
     `expires_at` TIMESTAMP NOT NULL,
     `created_at` TIMESTAMP NULL DEFAULT NULL,
-    `updated_at` TIMESTAMP NULL DEFAULT NULL,
     PRIMARY KEY (`id`),
     UNIQUE KEY `session_token` (`session_token`),
     KEY `user_id` (`user_id`),
     KEY `expires_at` (`expires_at`),
-    CONSTRAINT `sessions_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE
+    CONSTRAINT `admin_sessions_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- =============================================================================

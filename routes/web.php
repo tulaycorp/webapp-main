@@ -32,6 +32,8 @@ Route::middleware(['web', \App\Http\Middleware\WebTokenAuthOptional::class])->gr
 Route::get('/about', [PageController::class, 'about'])->name('about');
 Route::get('/contact', [PageController::class, 'contact'])->name('contact');
 Route::get('/privacy-policy', [PageController::class, 'privacyPolicy'])->name('privacy-policy');
+Route::get('/terms-of-service', [PageController::class, 'termsOfService'])->name('terms-of-service');
+Route::get('/shipping-policy', [PageController::class, 'shippingPolicy'])->name('shipping-policy');
 
 // Legacy URL support (redirect old PHP URLs)
 Route::get('/pages/index.php', fn() => redirect('/'));

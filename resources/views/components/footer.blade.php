@@ -60,8 +60,8 @@
         <p class="text-white/60 text-sm">&copy; {{ date('Y') }} FRAMEWORK Supply Co. All rights reserved.</p>
         <div class="flex space-x-6">
           <a href="{{ route('privacy-policy') }}" class="text-white/60 hover:text-white transition-colors duration-200 text-sm">Privacy Policy</a>
-          <a href="#" class="text-white/60 hover:text-white transition-colors duration-200 text-sm">Terms of Service</a>
-          <a href="#" class="text-white/60 hover:text-white transition-colors duration-200 text-sm">Shipping</a>
+          <a href="{{ route('terms-of-service') }}" class="text-white/60 hover:text-white transition-colors duration-200 text-sm">Terms of Service</a>
+          <a href="{{ route('shipping-policy') }}" class="text-white/60 hover:text-white transition-colors duration-200 text-sm">Shipping Policy</a>
         </div>
       </div>
     </div>

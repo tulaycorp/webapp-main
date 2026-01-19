@@ -44,4 +44,20 @@ class PageController extends Controller
     {
         return view('privacy-policy');
     }
+
+    /**
+     * Terms of Service page.
+     */
+    public function termsOfService(): View
+    {
+        return view('terms-of-service');
+    }
+
+    /**
+     * Shipping Policy page.
+     */
+    public function shippingPolicy(): View
+    {
+        return view('shipping-policy');
+    }
 }

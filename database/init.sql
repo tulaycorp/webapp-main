@@ -57,10 +57,17 @@ CREATE TABLE `migrations` (
 -- =============================================================================
 CREATE TABLE `users` (
     `id` BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
-    `name` VARCHAR(255) NOT NULL,
+    `first_name` VARCHAR(255) NOT NULL,
+    `middle_name` VARCHAR(255) NULL DEFAULT NULL,
+    `last_name` VARCHAR(255) NOT NULL,
     `email` VARCHAR(255) NOT NULL,
     `email_verified_at` TIMESTAMP NULL DEFAULT NULL,
-    `password` VARCHAR(255) NOT NULL,
+    `password_hash` VARCHAR(255) NOT NULL,
+    `address1` TEXT NULL,
+    `address2` TEXT NULL,
+    `country_code` VARCHAR(10) NULL DEFAULT NULL,
+    `phone` VARCHAR(50) NULL DEFAULT NULL,
+    `role` VARCHAR(50) NOT NULL DEFAULT 'customer',
     `remember_token` VARCHAR(100) NULL DEFAULT NULL,
     `created_at` TIMESTAMP NULL DEFAULT NULL,
     `updated_at` TIMESTAMP NULL DEFAULT NULL,
@@ -306,8 +313,8 @@ INSERT INTO `migrations` (`migration`, `batch`) VALUES
 -- =============================================================================
 -- Default Test User (password: 'password')
 -- =============================================================================
-INSERT INTO `users` (`name`, `email`, `email_verified_at`, `password`, `created_at`, `updated_at`) VALUES
-    ('Test User', 'test@example.com', NOW(), '$2y$12$XLYJyFIH/1x0F0J7fS6TKuKS1k3PdCUw.uS2Oj0xPFQq/I6IkCHXW', NOW(), NOW());
+INSERT INTO `users` (`first_name`, `last_name`, `email`, `email_verified_at`, `password_hash`, `role`, `created_at`, `updated_at`) VALUES
+    ('Test', 'User', 'test@example.com', NOW(), '$2y$12$XLYJyFIH/1x0F0J7fS6TKuKS1k3PdCUw.uS2Oj0xPFQq/I6IkCHXW', 'customer', NOW(), NOW());
 
 -- =============================================================================
 -- Sample Categories

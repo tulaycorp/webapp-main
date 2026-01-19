@@ -2,6 +2,8 @@
 
 // Import animations module
 import './animations.js';
+// Import footer animations
+import './footer-animations.js';
 
 (function () {
   // Component loader function

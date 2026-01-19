@@ -394,6 +394,84 @@ html {
   background: #111827;
 }
 
+/* Sticky Footer Animations */
+@keyframes footerFadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes footerFadeInLeft {
+  from {
+    opacity: 0;
+    transform: translateX(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes footerPulse {
+  0%, 100% {
+    opacity: 0.3;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.6;
+    transform: scale(1.1);
+  }
+}
+
+@keyframes footerGlow {
+  0%, 100% {
+    opacity: 0.2;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.5;
+    transform: scale(1.2);
+  }
+}
+
+@keyframes lineExpand {
+  0% {
+    transform: scaleX(0);
+  }
+  100% {
+    transform: scaleX(1);
+  }
+}
+
+/* Footer utility classes */
+.sticky-footer-container {
+  position: relative;
+  clip-path: polygon(0% 0, 100% 0%, 100% 100%, 0 100%);
+}
+
+.footer-animate-in {
+  animation: footerFadeInUp 0.8s ease-out forwards;
+}
+
+.footer-animate-left {
+  animation: footerFadeInLeft 0.6s ease-out forwards;
+}
+
+.footer-bg-glow-primary {
+  animation: footerPulse 4s ease-in-out infinite;
+  background: rgba(17, 24, 39, 0.05);
+}
+
+.footer-bg-glow-secondary {
+  animation: footerGlow 5s ease-in-out infinite 1s;
+  background: rgba(100, 116, 139, 0.05);
+}
+
 /* Reduced motion */
 @media (prefers-reduced-motion: reduce) {
 

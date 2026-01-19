@@ -10,7 +10,7 @@
     <div class="absolute inset-0 bg-pattern dark:opacity-10"></div>
 
     {{-- Content --}}
-    <div class="relative max-w-7xl mx-auto px-6 lg:px-8 py-20" style="opacity: 1;" id="hero-content">
+    <div class="relative max-w-7xl mx-auto px-6 lg:px-8 py-20" id="hero-content">
       <div class="grid lg:grid-cols-2 gap-16 items-center">
         {{-- Left: Content --}}
         <div class="space-y-8 z-10">

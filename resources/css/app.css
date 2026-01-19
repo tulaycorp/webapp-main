@@ -1,5 +1,7 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
 @import 'tailwindcss';
 
+/* Font Faces */
 @source '../**/*.blade.php';
 @source '../**/*.js';
 
@@ -31,8 +33,7 @@
   --animate-pulse-slow: pulse 2s ease-in-out infinite;
 }
 
-/* Font Faces */
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+
 
 /* CSS Variables for fallback */
 :root {
@@ -361,8 +362,7 @@ body {
 
 /* Page transitions */
 .page-transition {
-  opacity: 0;
-  animation: fadeIn 0.3s ease-out forwards;
+  opacity: 1;
 }
 
 /* Selection */

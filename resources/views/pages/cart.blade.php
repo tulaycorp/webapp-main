@@ -71,7 +71,7 @@
               </div>
               <div class="flex justify-between items-center pb-6 border-b-2 border-border dark:border-gray-700">
                 <span class="text-secondary dark:text-gray-400 uppercase text-base tracking-wider font-medium">Shipping</span>
-                <strong class="text-green-600 dark:text-green-400 text-xl font-impact">FREE</strong>
+                <strong class="text-xl font-impact" id="summary-shipping">$0.00</strong>
               </div>
               <div class="flex justify-between items-center pb-6 border-b-2 border-border dark:border-gray-700">
                 <span class="text-secondary dark:text-gray-400 uppercase text-base tracking-wider font-medium">Tax (8%)</span>

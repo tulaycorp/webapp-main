@@ -37,7 +37,6 @@
       <div>
         <h6 class="text-xs uppercase tracking-ultra text-white mb-4 font-semibold">Company</h6>
         <ul class="space-y-3">
-          <li><a href="{{ route('home') }}" class="text-white/75 hover:text-white transition-colors duration-200 text-sm">Home</a></li>
           <li><a href="{{ route('about') }}" class="text-white/75 hover:text-white transition-colors duration-200 text-sm">About Us</a></li>
           <li><a href="{{ route('contact') }}" class="text-white/75 hover:text-white transition-colors duration-200 text-sm">Contact</a></li>
         </ul>
@@ -60,9 +59,9 @@
       <div class="flex flex-col md:flex-row justify-between items-center space-y-4 md:space-y-0">
         <p class="text-white/60 text-sm">&copy; {{ date('Y') }} FRAMEWORK Supply Co. All rights reserved.</p>
         <div class="flex space-x-6">
-          <a href="#" class="text-white/60 hover:text-white transition-colors duration-200 text-sm">Privacy Policy</a>
-          <a href="#" class="text-white/60 hover:text-white transition-colors duration-200 text-sm">Terms of Service</a>
-          <a href="#" class="text-white/60 hover:text-white transition-colors duration-200 text-sm">Shipping</a>
+          <a href="{{ route('privacy-policy') }}" class="text-white/60 hover:text-white transition-colors duration-200 text-sm">Privacy Policy</a>
+          <a href="{{ route('terms-of-service') }}" class="text-white/60 hover:text-white transition-colors duration-200 text-sm">Terms of Service</a>
+          <a href="{{ route('shipping-policy') }}" class="text-white/60 hover:text-white transition-colors duration-200 text-sm">Shipping Policy</a>
         </div>
       </div>
     </div>

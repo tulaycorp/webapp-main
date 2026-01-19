@@ -1,4 +1,8 @@
 /* E-Shop Demo JS (no external dependencies) */
+
+// Import animations module
+import './animations.js';
+
 (function () {
   // Component loader function
   async function loadComponent(componentName, targetSelector) {
@@ -490,9 +494,20 @@
         checkoutBtn.disabled = clearBtn.disabled = false;
       }
       const subtotal = CART.reduce((a, i) => a + (Number(getProduct(i.id)?.price || 0)) * i.qty, 0);
+      const shipping = subtotal === 0 ? 0 : (subtotal >= 150 ? 0 : 10);
       const tax = subtotal * 0.08;
-      const total = subtotal + tax;
+      const total = subtotal + shipping + tax;
       subtotalEl.textContent = formatMoney(subtotal);
+      const shippingEl = document.getElementById('summary-shipping');
+      if (shippingEl) {
+        if (shipping === 0 && subtotal >= 150) {
+          shippingEl.textContent = 'FREE';
+          shippingEl.className = 'text-green-600 dark:text-green-400 text-xl font-impact';
+        } else {
+          shippingEl.textContent = formatMoney(shipping);
+          shippingEl.className = 'text-primary dark:text-white text-2xl font-impact';
+        }
+      }
       taxEl.textContent = formatMoney(tax);
       totalEl.textContent = formatMoney(total);
       updateCartCount(CART);

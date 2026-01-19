@@ -25,6 +25,7 @@
       element.style.transition = `opacity ${duration}ms ease, transform ${duration}ms ease`;
       
       setTimeout(() => {
+        console.log('Fading in element after delay:', delay);
         element.style.opacity = '1';
         element.style.transform = 'translateY(0)';
       }, delay);
@@ -289,10 +290,13 @@
   window.ScrollProgress = ScrollProgress;
   window.LazyImage = LazyImage;
 
-  // Auto-initialize scroll animations
-  document.addEventListener('DOMContentLoaded', () => {
+  // Initialize animations function
+  function initAnimations() {
+    console.log('Initializing animations...');
+    
     // Fade in elements with data-animate="fade-in"
     const fadeElements = document.querySelectorAll('[data-animate="fade-in"]');
+    console.log('Found fade elements:', fadeElements.length);
     fadeElements.forEach((el, index) => {
       const delay = parseInt(el.dataset.delay) || index * 100;
       AnimEngine.fadeIn(el, delay);
@@ -332,6 +336,13 @@
     // Initialize lazy loading
     const lazyImages = document.querySelectorAll('img[data-src]');
     lazyImages.forEach(img => new LazyImage(img));
-  });
+  }
+
+  // Auto-initialize scroll animations - run immediately if DOM is ready, otherwise wait
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initAnimations);
+  } else {
+    initAnimations();
+  }
 
 })();

@@ -1,4 +1,8 @@
 /* E-Shop Demo JS (no external dependencies) */
+
+// Import animations module
+import './animations.js';
+
 (function () {
   // Component loader function
   async function loadComponent(componentName, targetSelector) {

@@ -9,9 +9,8 @@ class Session extends Model
 {
     /**
      * The table associated with the model.
-     * (Using 'sessions' which matches the existing schema)
      */
-    protected $table = 'sessions';
+    protected $table = 'admin_sessions';
 
     /**
      * The attributes that are mass assignable.

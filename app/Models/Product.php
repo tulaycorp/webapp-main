@@ -42,6 +42,7 @@ class Product extends Model
         'track_inventory',
         'continue_selling_when_out_of_stock',
         'image_url',
+        'images',
         'weight',
         'weight_unit',
         'requires_shipping',
@@ -76,6 +77,7 @@ class Product extends Model
             'requires_shipping' => 'boolean',
             'taxable' => 'boolean',
             'metafields' => 'array',
+            'images' => 'array',
         ];
     }
 
@@ -210,6 +212,7 @@ class Product extends Model
             'continue_selling_when_out_of_stock' => $this->continue_selling_when_out_of_stock,
             'in_stock' => $this->in_stock,
             'image_url' => $this->image_url,
+            'images' => $this->images ?? [],
             'img' => $this->image_url,
             // Shipping information
             'weight' => $this->weight,

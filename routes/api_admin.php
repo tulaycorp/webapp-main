@@ -46,6 +46,7 @@ Route::prefix('admin')->middleware('admin.api')->group(function () {
     
     // Products
     Route::get('/products/categories', [ProductController::class, 'categories'])->name('admin.api.products.categories');
+    Route::post('/products/presigned-upload-url', [ProductController::class, 'getPresignedUploadUrl'])->name('admin.api.products.presigned-upload-url');
     Route::post('/products/upload-image', [ProductController::class, 'uploadImage'])->name('admin.api.products.upload-image');
     Route::apiResource('products', ProductController::class)->names([
         'index' => 'admin.api.products.index',

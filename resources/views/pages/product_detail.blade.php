@@ -40,14 +40,49 @@
 
         {{-- Main Product Section --}}
         <div class="grid grid-cols-1 lg:grid-cols-2 gap-16 mb-24">
-            {{-- Image Gallery --}}
-            <div data-animate="fade-in" class="relative aspect-square bg-gray-100 dark:bg-gray-800 rounded-lg overflow-hidden">
-                <img src="{{ $product->img }}" alt="{{ $product->name }}" class="w-full h-full object-cover">
-                @if($product->featured)
-                    <span class="absolute top-6 left-6 px-4 py-2 bg-primary dark:bg-white text-white dark:text-gray-900 text-sm uppercase tracking-wider font-medium">Featured</span>
-                @endif
-                @if($product->on_sale)
-                    <span class="absolute top-6 right-6 px-4 py-2 bg-red-600 text-white text-sm uppercase tracking-wider font-medium">{{ $product->discount_percent }}% Off</span>
+            {{-- Image Gallery: Hero + Scrollable Reel --}}
+            @php
+                // Combine main image with additional images array
+                $allImages = collect([$product->image_url])->filter();
+                if ($product->images && is_array($product->images)) {
+                    $allImages = $allImages->merge($product->images);
+                }
+                $allImages = $allImages->unique()->values();
+            @endphp
+            <div data-animate="fade-in" class="w-full">
+                {{-- Hero Image --}}
+                <div class="relative aspect-square bg-gray-100 dark:bg-gray-800 rounded-lg overflow-hidden w-full">
+                    <img id="hero-image" 
+                         src="{{ $allImages->first() ?? asset('images/placeholder.png') }}" 
+                         alt="{{ $product->name }}" 
+                         class="w-full h-full object-cover transition-opacity duration-300">
+                    @if($product->featured)
+                        <span class="absolute top-6 left-6 px-4 py-2 bg-primary dark:bg-white text-white dark:text-gray-900 text-sm uppercase tracking-wider font-medium">Featured</span>
+                    @endif
+                    @if($product->on_sale)
+                        <span class="absolute top-6 right-6 px-4 py-2 bg-red-600 text-white text-sm uppercase tracking-wider font-medium">{{ $product->discount_percent }}% Off</span>
+                    @endif
+                </div>
+
+                {{-- Scrollable Thumbnail Carousel - matches hero width --}}
+                @if($allImages->count() > 1)
+                <div class="mt-4 w-full max-w-full overflow-hidden">
+                    {{-- Thumbnail reel container --}}
+                    <div id="thumbnail-reel" class="overflow-x-auto scrollbar-hide scroll-smooth">
+                        <div class="flex gap-3 py-1">
+                            @foreach($allImages as $index => $imageUrl)
+                            <button type="button"
+                                    class="thumbnail-btn flex-shrink-0 w-20 h-20 rounded-lg overflow-hidden border-2 transition-all duration-200 {{ $index === 0 ? 'border-primary dark:border-white ring-2 ring-primary/20 dark:ring-white/20' : 'border-transparent opacity-60 hover:opacity-80' }}"
+                                    data-index="{{ $index }}"
+                                    data-src="{{ $imageUrl }}">
+                                <img src="{{ $imageUrl }}" 
+                                     alt="{{ $product->name }} - Image {{ $index + 1 }}" 
+                                     class="w-full h-full object-cover">
+                            </button>
+                            @endforeach
+                        </div>
+                    </div>
+                </div>
                 @endif
             </div>
 
@@ -272,6 +307,99 @@
         // Re-initialize Lucide icons for dynamically added elements
         if (typeof lucide !== 'undefined') {
             lucide.createIcons();
+        }
+
+        // Image Gallery Functionality
+        const heroImage = document.getElementById('hero-image');
+        const thumbnailBtns = document.querySelectorAll('.thumbnail-btn');
+        const thumbnailReel = document.getElementById('thumbnail-reel');
+        
+        if (thumbnailBtns.length > 0) {
+            let currentIndex = 0;
+            const totalImages = thumbnailBtns.length;
+
+            // Update hero image and active thumbnail
+            function updateGallery(index, wrapAround = false) {
+                currentIndex = index;
+                const btn = thumbnailBtns[index];
+                const newSrc = btn.dataset.src;
+
+                // Fade transition for hero image
+                heroImage.style.opacity = '0.5';
+                setTimeout(() => {
+                    heroImage.src = newSrc;
+                    heroImage.style.opacity = '1';
+                }, 150);
+
+                // Update thumbnail active states (opacity for inactive, full for active)
+                thumbnailBtns.forEach((b, i) => {
+                    if (i === index) {
+                        b.classList.remove('border-transparent', 'opacity-60', 'hover:opacity-80');
+                        b.classList.add('border-primary', 'dark:border-white', 'ring-2', 'ring-primary/20', 'dark:ring-white/20');
+                    } else {
+                        b.classList.remove('border-primary', 'dark:border-white', 'ring-2', 'ring-primary/20', 'dark:ring-white/20');
+                        b.classList.add('border-transparent', 'opacity-60', 'hover:opacity-80');
+                    }
+                });
+
+                // Scroll behavior: if wrap-around, scroll to the edge first
+                if (wrapAround && thumbnailReel) {
+                    if (index === 0) {
+                        // Wrapped to first: scroll to start
+                        thumbnailReel.scrollTo({ left: 0, behavior: 'smooth' });
+                    } else if (index === totalImages - 1) {
+                        // Wrapped to last: scroll to end
+                        thumbnailReel.scrollTo({ left: thumbnailReel.scrollWidth, behavior: 'smooth' });
+                    }
+                } else {
+                    // Normal: scroll thumbnail into view
+                    btn.scrollIntoView({ behavior: 'smooth', inline: 'center', block: 'nearest' });
+                }
+            }
+
+            // Thumbnail click handlers with edge detection for wrap-around
+            thumbnailBtns.forEach((btn) => {
+                btn.addEventListener('click', () => {
+                    const index = parseInt(btn.dataset.index, 10);
+                    
+                    // Check if clicking on edge thumbnails should trigger wrap-around
+                    const isFirstThumbnail = index === 0;
+                    const isLastThumbnail = index === totalImages - 1;
+                    const isCurrentFirst = currentIndex === 0;
+                    const isCurrentLast = currentIndex === totalImages - 1;
+                    
+                    // If clicking on first thumbnail while already on first, go to last
+                    if (isFirstThumbnail && isCurrentFirst && totalImages > 1) {
+                        updateGallery(totalImages - 1, true);
+                        return;
+                    }
+                    
+                    // If clicking on last thumbnail while already on last, go to first
+                    if (isLastThumbnail && isCurrentLast && totalImages > 1) {
+                        updateGallery(0, true);
+                        return;
+                    }
+                    
+                    updateGallery(index);
+                });
+            });
+
+            // Keyboard navigation
+            document.addEventListener('keydown', (e) => {
+                // Only handle if not focused on an input
+                if (document.activeElement.tagName === 'INPUT' || document.activeElement.tagName === 'TEXTAREA') {
+                    return;
+                }
+                if (e.key === 'ArrowLeft') {
+                    const isWrap = currentIndex === 0;
+                    const newIndex = isWrap ? totalImages - 1 : currentIndex - 1;
+                    updateGallery(newIndex, isWrap);
+                } else if (e.key === 'ArrowRight') {
+                    const isWrap = currentIndex === totalImages - 1;
+                    const newIndex = isWrap ? 0 : currentIndex + 1;
+                    updateGallery(newIndex, isWrap);
+                }
+            });
         }
     });
 </script>

@@ -98,7 +98,9 @@ class ProductController extends Controller
             'continue_selling_when_out_of_stock' => 'boolean',
             
             // Media
-            'image_url' => 'nullable|url|max:500',
+            'image_url' => 'nullable|string|max:500',
+            'images' => 'nullable|array|max:9',
+            'images.*' => 'nullable|string|max:500',
             
             // Shipping
             'weight' => 'nullable|numeric|min:0',
@@ -199,7 +201,9 @@ class ProductController extends Controller
             'continue_selling_when_out_of_stock' => 'boolean',
             
             // Media
-            'image_url' => 'nullable|url|max:500',
+            'image_url' => 'nullable|string|max:500',
+            'images' => 'nullable|array|max:9',
+            'images.*' => 'nullable|string|max:500',
             
             // Shipping
             'weight' => 'nullable|numeric|min:0',
@@ -280,6 +284,60 @@ class ProductController extends Controller
             'success' => true,
             'data' => $categories,
         ]);
+    }
+
+    /**
+     * Generate a presigned URL for direct upload to Cloudflare R2.
+     */
+    public function getPresignedUploadUrl(Request $request): JsonResponse
+    {
+        $validated = $request->validate([
+            'fileName' => 'required|string|max:255',
+            'fileType' => 'required|string|max:100',
+        ]);
+        
+        // Generate unique file key
+        $fileKey = 'uploads/' . Str::uuid() . '-' . $validated['fileName'];
+        
+        try {
+            // Create S3 client directly for Cloudflare R2
+            $s3Config = [
+                'version' => 'latest',
+                'region' => 'auto',
+                'endpoint' => env('CLOUDFLARE_R2_ENDPOINT'),
+                'credentials' => [
+                    'key' => env('CLOUDFLARE_R2_ACCESS_KEY_ID'),
+                    'secret' => env('CLOUDFLARE_R2_SECRET_ACCESS_KEY'),
+                ],
+                'use_path_style_endpoint' => false,
+            ];
+            
+            $s3Client = new \Aws\S3\S3Client($s3Config);
+            
+            // Create PutObject command
+            $command = $s3Client->getCommand('PutObject', [
+                'Bucket' => env('CLOUDFLARE_R2_BUCKET'),
+                'Key' => $fileKey,
+                'ContentType' => $validated['fileType'],
+            ]);
+            
+            // Generate presigned URL valid for 60 seconds
+            $presignedRequest = $s3Client->createPresignedRequest($command, '+60 seconds');
+            $uploadUrl = (string) $presignedRequest->getUri();
+            
+            return response()->json([
+                'success' => true,
+                'data' => [
+                    'uploadUrl' => $uploadUrl,
+                    'fileKey' => $fileKey,
+                ],
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Failed to generate presigned URL: ' . $e->getMessage(),
+            ], 500);
+        }
     }
 
     /**

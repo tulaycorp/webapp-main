@@ -318,6 +318,8 @@ import './footer-animations.js';
 
   function productCard(product, animationDelay = 0) {
     const categoryDisplay = product.category_name || product.category || 'Uncategorized';
+    const isOnSale = parseFloat(product.compare_at_price) > parseFloat(product.price);
+
     return `<div class="group" data-animate="fade-in" data-delay="${animationDelay}" data-hover="lift">
       <div class="modern-card dark:bg-gray-800 dark:border-gray-700 overflow-hidden transition-all duration-300 hover:shadow-xl">
         <a href="/products/${product.id}" class="block relative aspect-square overflow-hidden bg-gray-100 dark:bg-gray-700">
@@ -325,6 +327,7 @@ import './footer-animations.js';
                alt="${product.name}" 
                class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105">
           ${product.featured ? '<span class="absolute top-4 left-4 px-3 py-1 bg-primary dark:bg-white text-white dark:text-gray-900 text-xs uppercase tracking-wider font-medium">Featured</span>' : ''}
+          ${isOnSale ? '<span class="absolute top-4 right-4 px-3 py-1 bg-red-600 text-white text-xs uppercase tracking-wider font-medium shadow-md">Sale</span>' : ''}
         </a>
         <div class="p-6">
           <p class="text-xs text-secondary dark:text-gray-400 uppercase tracking-wider mb-2">${categoryDisplay}</p>
@@ -332,7 +335,13 @@ import './footer-animations.js';
             <h3 class="text-lg font-semibold text-primary dark:text-white mb-2 truncate group-hover:text-secondary transition-colors">${product.name}</h3>
           </a>
           <div class="flex items-center justify-between">
-            <span class="text-xl font-bold text-primary dark:text-white">${formatMoney(product.price)}</span>
+            <div class="flex items-baseline gap-2">
+                ${isOnSale
+        ? `<span class="text-xl font-bold text-red-600">${formatMoney(product.price)}</span>
+                     <span class="text-sm text-gray-500 line-through">${formatMoney(parseFloat(product.compare_at_price))}</span>`
+        : `<span class="text-xl font-bold text-primary dark:text-white">${formatMoney(product.price)}</span>`
+      }
+            </div>
             <button data-add="${product.id}" 
                     class="px-4 py-2 bg-primary dark:bg-white text-white dark:text-gray-900 text-sm uppercase tracking-wider font-medium hover:opacity-90 transition-opacity">
               Add

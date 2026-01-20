@@ -47,6 +47,10 @@
               <i data-lucide="package" class="w-4 h-4"></i>
               <span>My Orders</span>
             </a>
+            <a href="/account" class="flex items-center gap-3 px-4 py-3 text-sm text-primary dark:text-white hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors">
+              <i data-lucide="user-cog" class="w-4 h-4"></i>
+              <span>My Account</span>
+            </a>
             <button id="user-dropdown-signout" class="flex items-center gap-3 px-4 py-3 text-sm text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors w-full text-left border-t border-border dark:border-gray-700">
               <i data-lucide="log-out" class="w-4 h-4"></i>
               <span>Sign Out</span>

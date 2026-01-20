@@ -57,7 +57,7 @@ body {
 /* Impact Font */
 .font-impact {
   font-family: Impact, 'Arial Black', sans-serif;
-  letter-spacing: -0.05em;
+  letter-spacing: 0.02em;
 }
 
 /* Text Color Utilities - explicit definitions for custom colors */
@@ -301,6 +301,18 @@ body {
 .btn-secondary:disabled {
   opacity: 0.5;
   cursor: not-allowed;
+}
+
+/* Hide number input spinners (for quantity inputs with custom +/- buttons) */
+input[type="number"]::-webkit-inner-spin-button,
+input[type="number"]::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+input[type="number"] {
+  -moz-appearance: textfield;
+  appearance: textfield;
 }
 
 /* Form Inputs */

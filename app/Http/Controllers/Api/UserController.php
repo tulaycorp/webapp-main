@@ -174,4 +174,120 @@ class UserController extends Controller
             ],
         ]);
     }
+
+    /**
+     * Update user profile data.
+     */
+    public function updateProfile(Request $request): JsonResponse
+    {
+        $sessionToken = $request->bearerToken() ?? $request->input('session_token');
+
+        if (empty($sessionToken)) {
+            return response()->json(['error' => 'Authentication required'], 401);
+        }
+
+        $session = Session::where('session_token', $sessionToken)
+            ->where('expires_at', '>', now())
+            ->first();
+
+        if (!$session) {
+            return response()->json(['error' => 'Invalid or expired session'], 401);
+        }
+
+        $user = User::find($session->user_id);
+
+        if (!$user) {
+            return response()->json(['error' => 'User not found'], 404);
+        }
+
+        $validator = Validator::make($request->all(), [
+            'first_name' => 'sometimes|string|max:50',
+            'middle_name' => 'sometimes|nullable|string|max:50',
+            'last_name' => 'sometimes|string|max:50',
+            'address1' => 'sometimes|nullable|string|max:100',
+            'address2' => 'sometimes|nullable|string|max:100',
+            'country_code' => 'sometimes|nullable|string|max:10',
+            'phone' => 'sometimes|nullable|string|max:15',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json(['error' => 'Validation failed', 'details' => $validator->errors()], 400);
+        }
+
+        // Update only the fields that are provided
+        $updateFields = ['first_name', 'middle_name', 'last_name', 'address1', 'address2', 'country_code', 'phone'];
+        foreach ($updateFields as $field) {
+            if ($request->has($field)) {
+                $user->$field = $request->input($field);
+            }
+        }
+
+        $user->save();
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Profile updated successfully',
+            'user' => [
+                'id' => $user->id,
+                'first_name' => $user->first_name,
+                'middle_name' => $user->middle_name,
+                'last_name' => $user->last_name,
+                'email' => $user->email,
+                'address1' => $user->address1,
+                'address2' => $user->address2,
+                'country_code' => $user->country_code,
+                'phone' => $user->phone,
+            ],
+        ]);
+    }
+
+    /**
+     * Change user password.
+     */
+    public function changePassword(Request $request): JsonResponse
+    {
+        $sessionToken = $request->bearerToken() ?? $request->input('session_token');
+
+        if (empty($sessionToken)) {
+            return response()->json(['error' => 'Authentication required'], 401);
+        }
+
+        $session = Session::where('session_token', $sessionToken)
+            ->where('expires_at', '>', now())
+            ->first();
+
+        if (!$session) {
+            return response()->json(['error' => 'Invalid or expired session'], 401);
+        }
+
+        $user = User::find($session->user_id);
+
+        if (!$user) {
+            return response()->json(['error' => 'User not found'], 404);
+        }
+
+        $validator = Validator::make($request->all(), [
+            'current_password' => 'required|string',
+            'new_password' => 'required|string|min:6',
+            'confirm_password' => 'required|string|same:new_password',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json(['error' => 'Validation failed', 'details' => $validator->errors()], 400);
+        }
+
+        // Verify current password
+        if (!Hash::check($request->current_password, $user->password_hash)) {
+            return response()->json(['error' => 'Current password is incorrect'], 400);
+        }
+
+        // Update password
+        $user->password_hash = Hash::make($request->new_password);
+        $user->save();
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Password changed successfully',
+        ]);
+    }
 }

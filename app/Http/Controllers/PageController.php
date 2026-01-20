@@ -60,4 +60,12 @@ class PageController extends Controller
     {
         return view('shipping-policy');
     }
+
+    /**
+     * Account page.
+     */
+    public function account(): View
+    {
+        return view('pages.account');
+    }
 }

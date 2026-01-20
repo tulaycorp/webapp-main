@@ -60,7 +60,7 @@
         @yield('content')
     </div>
 
-    @if(!request()->routeIs('checkout'))
+    @if(!request()->routeIs('checkout') && !request()->routeIs('account') && !request()->routeIs('orders'))
         @include('components.footer')
     @endif
 

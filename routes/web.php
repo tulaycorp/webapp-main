@@ -38,6 +38,9 @@ Route::middleware(['web', \App\Http\Middleware\WebTokenAuthOptional::class])->gr
     // Orders Routes
     Route::get('/orders', [OrderController::class, 'index'])->name('orders');
     Route::get('/orders/data', [OrderController::class, 'getOrders'])->name('orders.data');
+    
+    // Account Route
+    Route::get('/account', [PageController::class, 'account'])->name('account');
 });
 
 Route::get('/about', [PageController::class, 'about'])->name('about');

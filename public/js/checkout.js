@@ -324,18 +324,23 @@
                 return;
             }
 
+            // Disable button and show loading immediately
+            placeOrderBtn.disabled = true;
+            placeOrderBtn.innerHTML = '<span class="inline-flex items-center justify-center gap-2"><span class="loading-spinner"></span><span>Processing...</span></span>';
+
+            // Simulate processing delay (1.5 to 2.5 seconds) for realistic UX
+            const processingDelay = 1500 + Math.random() * 1000;
+            await new Promise(resolve => setTimeout(resolve, processingDelay));
+
             const isCardValid = validateLuhn(cardNumberInput.value);
             const isExpiryValid = validateExpiry(cardExpiryInput.value);
 
             // Generic error for any card issue
             if (!isCardValid || !isExpiryValid) {
                 showError('Failed to process order. Please check your credit card information');
+                resetSubmitButton();
                 return;
             }
-
-            // Disable button and show loading
-            placeOrderBtn.disabled = true;
-            placeOrderBtn.innerHTML = '<span class="loading-spinner"></span><span class="ml-2">Processing...</span>';
 
             try {
                 const formData = new FormData(form);

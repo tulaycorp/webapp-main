@@ -43,7 +43,6 @@
               <span>Shop Now</span>
               <i data-lucide="arrow-right" class="w-5 h-5 transition-transform group-hover:translate-x-1"></i>
             </a>
-            <button data-hover="scale" class="btn-secondary dark:border-white dark:text-white dark:hover:bg-white dark:hover:text-gray-900">View Lookbook</button>
           </div>
 
           {{-- Stats with Animated Counters --}}

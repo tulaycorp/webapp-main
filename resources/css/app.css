@@ -378,7 +378,8 @@ html {
 
 /* Custom scrollbar */
 ::-webkit-scrollbar {
-  width: 8px;
+  width: 3px;
+  height: 3px;
 }
 
 ::-webkit-scrollbar-track {
@@ -393,6 +394,36 @@ html {
 ::-webkit-scrollbar-thumb:hover {
   background: #111827;
 }
+
+/* Thumbnail reel scrollbar - expand on hover without layout shift */
+#thumbnail-reel::-webkit-scrollbar {
+  height: 6px;
+  /* Always reserve 6px to prevent layout shift */
+}
+
+#thumbnail-reel::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+#thumbnail-reel::-webkit-scrollbar-thumb {
+  background: rgba(100, 116, 139, 0.3);
+  /* Subtle when not hovered */
+  border-radius: 3px;
+  border: 1.5px solid transparent;
+  /* Creates visual 3px thumb */
+  background-clip: padding-box;
+  transition: background 0.3s ease, border-width 0.3s ease;
+}
+
+#thumbnail-reel:hover::-webkit-scrollbar-thumb {
+  background: rgba(100, 116, 139, 0.8);
+  /* More visible on hover */
+  border: 0px solid transparent;
+  /* Full 6px thumb on hover */
+  background-clip: padding-box;
+}
+
+
 
 /* Sticky Footer Animations */
 @keyframes footerFadeInUp {

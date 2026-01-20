@@ -720,39 +720,30 @@ import './footer-animations.js';
     });
     clearBtn.addEventListener('click', () => { clearCart(); draw(); });
     checkoutBtn.addEventListener('click', () => {
-      // Require account for checkout: if not logged in, open Create Account modal
+      // Require account for checkout: if not logged in, open login modal
       let user = null;
       try { user = localStorage.getItem('eshop_user'); } catch { }
       if (!user) {
         // Remember intent so we can resume after signup/login
         try { localStorage.setItem('eshop_intent', 'checkout'); } catch { }
-        if (window.LoginHandler && typeof window.LoginHandler.showLoginModal === 'function') {
-          window.LoginHandler.showLoginModal();
+
+        // Show the login modal using the same Tailwind-based approach as modal-template.blade.php
+        const modal = document.getElementById('login-modal');
+        if (modal) {
+          modal.classList.remove('hidden');
+          modal.classList.add('flex');
+          document.body.style.overflow = 'hidden';
         } else {
-          // Fallback: best-effort to show the login modal
-          const modal = document.getElementById('login-modal');
-          if (modal) {
-            modal.classList.remove('d-none');
-            modal.classList.add('show');
-            modal.style.display = 'block';
-            if (!document.querySelector('.modal-backdrop')) {
-              const bd = document.createElement('div');
-              bd.className = 'modal-backdrop fade show';
-              document.body.appendChild(bd);
-            }
-            document.body.classList.add('modal-open');
-          } else {
-            alert('Please log in to continue to checkout.');
-          }
+          alert('Please log in to continue to checkout.');
         }
         return; // stop normal checkout until user signs up/logs in
       }
 
       // Proceed with demo checkout flow when logged in
-      checkoutMsg.classList.remove('d-none');
+      checkoutMsg.classList.remove('hidden');
       clearCart();
       draw();
-      setTimeout(() => checkoutMsg.classList.add('d-none'), 2500);
+      setTimeout(() => checkoutMsg.classList.add('hidden'), 2500);
     });
     draw();
   }

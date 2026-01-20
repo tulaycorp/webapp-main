@@ -86,7 +86,11 @@ class CustomerController extends Controller
         $customer = User::where('role', '!=', 'admin')->findOrFail($id);
         
         // Include order history
-        $orders = $customer->orders ?? collect();
+        $orders = $customer->orders;
+        
+        $totalSpent = $orders->sum('total');
+        $lastOrder = $orders->sortByDesc('created_at')->first();
+        $lastOrderDate = $lastOrder ? $lastOrder->created_at->format('M d, Y') : 'Never';
         
         return response()->json([
             'success' => true,
@@ -98,6 +102,8 @@ class CustomerController extends Controller
                 'country_code' => $customer->country_code,
                 'created_at' => $customer->created_at->toISOString(),
                 'orders_count' => $orders->count(),
+                'total_spent' => $totalSpent,
+                'last_order_date' => $lastOrderDate,
             ]),
         ]);
     }

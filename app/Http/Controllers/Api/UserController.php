@@ -133,4 +133,45 @@ class UserController extends Controller
 
         return response()->json(['success' => true]);
     }
+
+    /**
+     * Get user profile data for autofill.
+     */
+    public function profile(Request $request): JsonResponse
+    {
+        $sessionToken = $request->bearerToken() ?? $request->input('session_token');
+
+        if (empty($sessionToken)) {
+            return response()->json(['error' => 'Authentication required'], 401);
+        }
+
+        $session = Session::where('session_token', $sessionToken)
+            ->where('expires_at', '>', now())
+            ->first();
+
+        if (!$session) {
+            return response()->json(['error' => 'Invalid or expired session'], 401);
+        }
+
+        $user = User::find($session->user_id);
+
+        if (!$user) {
+            return response()->json(['error' => 'User not found'], 404);
+        }
+
+        return response()->json([
+            'success' => true,
+            'user' => [
+                'id' => $user->id,
+                'first_name' => $user->first_name,
+                'middle_name' => $user->middle_name,
+                'last_name' => $user->last_name,
+                'email' => $user->email,
+                'address1' => $user->address1,
+                'address2' => $user->address2,
+                'country_code' => $user->country_code,
+                'phone' => $user->phone,
+            ],
+        ]);
+    }
 }

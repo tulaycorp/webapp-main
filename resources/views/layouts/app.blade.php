@@ -27,6 +27,28 @@
                 document.cookie = "header_visited=true; path=/; max-age=31536000"; // 1 year
             }
         })();
+
+        // Route Protection Logic (Client-side)
+        (function() {
+            const protectedRoutes = ['/checkout', '/orders'];
+            const currentPath = window.location.pathname;
+            
+            // Check if current path matches any protected route
+            if (protectedRoutes.some(route => currentPath.startsWith(route))) {
+                try {
+                    const user = localStorage.getItem('eshop_user');
+                    if (!user || !JSON.parse(user).session_token) {
+                        // User not logged in, redirect to home
+                        window.location.href = '/';
+                    }
+                } catch (e) {
+                    // Start fresh if storage is corrupted
+                    localStorage.removeItem('eshop_user');
+                    window.location.href = '/';
+                }
+            }
+        })();
+
     </script>
     @stack('head')
 </head>
@@ -38,7 +60,10 @@
         @yield('content')
     </div>
 
-    @include('components.footer')
+    @if(!request()->routeIs('checkout'))
+        @include('components.footer')
+    @endif
+
 
     <script>
         // Initialize Lucide icons

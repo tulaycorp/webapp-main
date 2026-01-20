@@ -30,6 +30,7 @@ DROP TABLE IF EXISTS `product_images`;
 DROP TABLE IF EXISTS `products`;
 DROP TABLE IF EXISTS `categories`;
 DROP TABLE IF EXISTS `orders`;
+DROP TABLE IF EXISTS `order_items`;
 DROP TABLE IF EXISTS `admin_sessions`;
 DROP TABLE IF EXISTS `personal_access_tokens`;
 DROP TABLE IF EXISTS `users`;
@@ -224,17 +225,36 @@ CREATE TABLE `orders` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- =============================================================================
+-- Order Items Table
+-- =============================================================================
+CREATE TABLE `order_items` (
+    `id` BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
+    `order_id` BIGINT UNSIGNED NOT NULL,
+    `product_id` VARCHAR(255) NULL DEFAULT NULL,
+    `product_name` VARCHAR(255) NOT NULL,
+    `product_price` DECIMAL(10, 2) NOT NULL,
+    `quantity` INT NOT NULL,
+    `total` DECIMAL(10, 2) NOT NULL,
+    `created_at` TIMESTAMP NULL DEFAULT NULL,
+    `updated_at` TIMESTAMP NULL DEFAULT NULL,
+    PRIMARY KEY (`id`),
+    KEY `order_items_order_id_index` (`order_id`),
+    KEY `order_items_product_id_index` (`product_id`),
+    CONSTRAINT `order_items_order_id_foreign` FOREIGN KEY (`order_id`) REFERENCES `orders` (`id`) ON DELETE CASCADE,
+    CONSTRAINT `order_items_product_id_foreign` FOREIGN KEY (`product_id`) REFERENCES `products` (`id`) ON DELETE SET NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- =============================================================================
 -- Shopping Carts Table
 -- =============================================================================
 CREATE TABLE `carts` (
     `id` BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
     `user_id` BIGINT UNSIGNED NULL DEFAULT NULL,
-    `session_id` VARCHAR(255) NULL DEFAULT NULL,
+    `session_id` TEXT NULL DEFAULT NULL,
     `created_at` TIMESTAMP NULL DEFAULT NULL,
     `updated_at` TIMESTAMP NULL DEFAULT NULL,
     PRIMARY KEY (`id`),
     UNIQUE KEY `carts_user_id_unique` (`user_id`),
-    UNIQUE KEY `carts_session_id_unique` (`session_id`),
     KEY `carts_user_id_index` (`user_id`),
     KEY `carts_session_id_index` (`session_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;

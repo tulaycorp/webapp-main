@@ -56,6 +56,14 @@ class User extends Authenticatable
     }
 
     /**
+     * Get the user's orders.
+     */
+    public function orders(): HasMany
+    {
+        return $this->hasMany(Order::class);
+    }
+
+    /**
      * Get the user's full name.
      */
     public function getFullNameAttribute(): string

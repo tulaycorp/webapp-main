@@ -399,8 +399,16 @@
             setLoggedIn(response.user);
             setTimeout(function () {
               hideLoginModal();
-              // Reload page to fetch fresh merged cart from server
-              window.location.reload();
+              // Check if there was a checkout intent
+              var intent = null;
+              try { intent = localStorage.getItem('eshop_intent'); } catch (e) { }
+              if (intent === 'checkout') {
+                try { localStorage.removeItem('eshop_intent'); } catch (e) { }
+                window.location.href = '/checkout';
+              } else {
+                // Reload page to fetch fresh merged cart from server
+                window.location.reload();
+              }
             }, 800);
           } else {
             $('#login-feedback').text(response.error || 'Invalid email or password. Please try again.').removeClass('text-info').addClass('text-danger').show();
@@ -593,7 +601,39 @@
     showLoginModal: showLoginModal,
     hideLoginModal: hideLoginModal,
     showSignupModal: showSignupModal,
-    hideSignupModal: hideSignupModal
+    hideSignupModal: hideSignupModal,
+    showSignoutModal: function () {
+      // Re-use existing logic logic from openBtn click handler
+      var sessionToken = null;
+      try {
+        var user = JSON.parse(localStorage.getItem('eshop_user') || 'null');
+        sessionToken = user?.session_token;
+      } catch (e) { }
+
+      if (sessionToken) {
+        var userEmail = '';
+        try {
+          var user = JSON.parse(localStorage.getItem('eshop_user') || 'null');
+          userEmail = user?.email || 'User';
+        } catch (e) { }
+
+        $('#signout-identity').text(userEmail);
+        var $m = $('#signout-modal');
+        if ($m.length) {
+          $m.removeClass('d-none').addClass('show').css('display', 'block').attr('aria-hidden', 'false');
+          if ($('.modal-backdrop.show').length === 0) {
+            $('<div class="modal-backdrop fade show"></div>').appendTo(document.body);
+          }
+          $('body').addClass('modal-open');
+        } else {
+          // Fallback if modal doesn't exist
+          if (confirm('Sign out ' + userEmail + '?')) { setLoggedOut(); }
+        }
+      } else {
+        // Not logged in, so just show login modal
+        showLoginModal();
+      }
+    }
   };
 
   // Only auto-initialize if modals already exist (fallback for pages that don't use components)

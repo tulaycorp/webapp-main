@@ -354,6 +354,32 @@ document.addEventListener('DOMContentLoaded', function() {
     if (el) el.addEventListener('click', (e) => { e.preventDefault(); fn(); });
   });
   
+  // Expose global modal helpers
+  window.EshopModals = {
+    show: showModal,
+    hide: hideModal,
+    showSignout: function() {
+      // Check if user is logged in
+      let user = null;
+      try { user = localStorage.getItem('eshop_user'); } catch {}
+      
+      if (user) {
+        // User is logged in - show signout modal
+        try {
+          const userData = JSON.parse(user);
+          const identityEl = document.getElementById('signout-identity');
+          if (identityEl) {
+            identityEl.textContent = userData.email || userData.first_name || 'user';
+          }
+        } catch {}
+        showModal('signout-modal');
+      } else {
+        // User is not logged in - show login modal
+        showModal('login-modal');
+      }
+    }
+  };
+
   // Password toggles
   ['login', 'signup', 'signup-confirm'].forEach(prefix => {
     const toggle = document.getElementById(`toggle-${prefix}-password`);
@@ -380,31 +406,8 @@ document.addEventListener('DOMContentLoaded', function() {
     }
   });
   
-  // User button click handler - show login or signout modal
-  const userBtn = document.getElementById('user-btn');
-  if (userBtn) {
-    userBtn.addEventListener('click', (e) => {
-      e.preventDefault();
-      // Check if user is logged in
-      let user = null;
-      try { user = localStorage.getItem('eshop_user'); } catch {}
-      
-      if (user) {
-        // User is logged in - show signout modal
-        try {
-          const userData = JSON.parse(user);
-          const identityEl = document.getElementById('signout-identity');
-          if (identityEl) {
-            identityEl.textContent = userData.email || userData.first_name || 'user';
-          }
-        } catch {}
-        showModal('signout-modal');
-      } else {
-        // User is not logged in - show login modal
-        showModal('login-modal');
-      }
-    });
-  }
+  // User button listener removed - handled by navbar component to support dropdown
+
   
   // Handle signout confirmation
   const signoutConfirm = document.getElementById('signout-confirm');
@@ -448,7 +451,8 @@ document.addEventListener('DOMContentLoaded', function() {
       } catch {}
       
       hideModal('signout-modal');
-      window.location.reload();
+      window.location.href = '/';
+
     });
   }
   

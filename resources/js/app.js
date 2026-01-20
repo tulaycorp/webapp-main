@@ -739,11 +739,8 @@ import './footer-animations.js';
         return; // stop normal checkout until user signs up/logs in
       }
 
-      // Proceed with demo checkout flow when logged in
-      checkoutMsg.classList.remove('hidden');
-      clearCart();
-      draw();
-      setTimeout(() => checkoutMsg.classList.add('hidden'), 2500);
+      // Navigate to checkout page when logged in
+      window.location.href = '/checkout';
     });
     draw();
   }

@@ -21,6 +21,7 @@ Route::prefix('users')->group(function () {
     Route::post('/signup', [UserController::class, 'signup'])->name('api.users.signup');
     Route::get('/check-email', [UserController::class, 'checkEmail'])->name('api.users.check-email');
     Route::post('/logout', [UserController::class, 'logout'])->name('api.users.logout');
+    Route::get('/profile', [UserController::class, 'profile'])->name('api.users.profile');
 });
 
 // Product endpoints

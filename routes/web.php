@@ -3,6 +3,8 @@
 use App\Http\Controllers\PageController;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\CartController;
+use App\Http\Controllers\CheckoutController;
+use App\Http\Controllers\OrderController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -27,6 +29,15 @@ Route::middleware(['web', \App\Http\Middleware\WebTokenAuthOptional::class])->gr
     Route::get('/cart/data', [CartController::class, 'index']);
     Route::get('/cart', [PageController::class, 'cart'])->name('cart');
     Route::post('/cart/guest/reset', [CartController::class, 'resetGuest']);
+    
+    // Checkout Routes
+    Route::get('/checkout', [CheckoutController::class, 'index'])->name('checkout');
+    Route::post('/checkout/process', [CheckoutController::class, 'process'])->name('checkout.process');
+    Route::post('/checkout/validate-card', [CheckoutController::class, 'validateCard'])->name('checkout.validate-card');
+    
+    // Orders Routes
+    Route::get('/orders', [OrderController::class, 'index'])->name('orders');
+    Route::get('/orders/data', [OrderController::class, 'getOrders'])->name('orders.data');
 });
 
 Route::get('/about', [PageController::class, 'about'])->name('about');

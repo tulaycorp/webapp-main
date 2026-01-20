@@ -5,8 +5,11 @@
 @section('content')
 <div class="pt-32">
   {{-- Contact Hero --}}
-  <section class="py-32 px-6 lg:px-8 bg-white dark:bg-gray-800 min-h-[60vh] flex items-center transition-colors duration-300">
-    <div class="max-w-5xl mx-auto text-center w-full">
+  <section class="py-32 px-6 lg:px-8 bg-background dark:bg-gray-800 min-h-[60vh] flex items-center transition-colors duration-300 relative overflow-hidden">
+    {{-- Subtle Grid Pattern --}}
+    <div class="absolute inset-0 bg-pattern dark:opacity-10"></div>
+    
+    <div class="max-w-5xl mx-auto text-center w-full relative">
       {{-- Icon --}}
       <div data-animate="scale-in" data-delay="0"
            class="inline-flex items-center justify-center w-32 h-32 border-2 border-primary dark:border-white text-primary dark:text-white shadow-2xl mb-12 transition-all hover:bg-primary dark:hover:bg-white hover:text-white dark:hover:text-gray-900">

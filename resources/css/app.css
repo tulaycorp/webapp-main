@@ -343,10 +343,10 @@ body {
 
 /* Background Pattern */
 .bg-pattern {
-  background-image: linear-gradient(#111827 1px, transparent 1px),
-    linear-gradient(90deg, #111827 1px, transparent 1px);
+  background-image: linear-gradient(#f1f3f5 1px, transparent 1px),
+    linear-gradient(90deg, #f1f3f5 1px, transparent 1px);
   background-size: 60px 60px;
-  opacity: 0.03;
+  opacity: 0.65;
 }
 
 /* Loading Spinner */
@@ -400,6 +400,7 @@ html {
     opacity: 0;
     transform: translateY(30px);
   }
+
   to {
     opacity: 1;
     transform: translateY(0);
@@ -411,6 +412,7 @@ html {
     opacity: 0;
     transform: translateX(-20px);
   }
+
   to {
     opacity: 1;
     transform: translateX(0);
@@ -418,10 +420,13 @@ html {
 }
 
 @keyframes footerPulse {
-  0%, 100% {
+
+  0%,
+  100% {
     opacity: 0.3;
     transform: scale(1);
   }
+
   50% {
     opacity: 0.6;
     transform: scale(1.1);
@@ -429,10 +434,13 @@ html {
 }
 
 @keyframes footerGlow {
-  0%, 100% {
+
+  0%,
+  100% {
     opacity: 0.2;
     transform: scale(1);
   }
+
   50% {
     opacity: 0.5;
     transform: scale(1.2);
@@ -443,6 +451,7 @@ html {
   0% {
     transform: scaleX(0);
   }
+
   100% {
     transform: scaleX(1);
   }

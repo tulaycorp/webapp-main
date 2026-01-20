@@ -5,8 +5,11 @@
 @section('content')
 <div class="pt-32">
   {{-- Cart Hero --}}
-  <section class="py-32 px-6 lg:px-8 bg-white dark:bg-gray-800 min-h-[50vh] flex items-center transition-colors duration-300">
-    <div class="max-w-7xl mx-auto w-full">
+  <section class="py-32 px-6 lg:px-8 bg-background dark:bg-gray-800 min-h-[50vh] flex items-center transition-colors duration-300 relative overflow-hidden">
+    {{-- Subtle Grid Pattern --}}
+    <div class="absolute inset-0 bg-pattern dark:opacity-10"></div>
+    
+    <div class="max-w-7xl mx-auto w-full relative">
       <div class="flex flex-col lg:flex-row lg:items-end lg:justify-between mb-12 gap-8">
         <div>
           <p data-animate="slide-left" data-delay="100" 

@@ -97,11 +97,40 @@
         <h2 class="heading-lg dark:text-white mb-4">Featured Products</h2>
         <p class="text-secondary dark:text-gray-400 text-lg uppercase tracking-wider">Handpicked items from our premium collection</p>
       </div>
-      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8" id="featured-products">
-        <div class="col-span-full text-center">
-          <div class="loading-spinner mx-auto"></div>
+      
+      {{-- Carousel Container --}}
+      <div class="relative" id="featured-carousel-wrapper">
+        {{-- Previous Button --}}
+        <button type="button" id="carousel-prev" 
+                class="absolute left-0 top-1/2 -translate-y-1/2 -translate-x-4 z-10 w-10 h-10 rounded-full bg-white dark:bg-gray-700 border border-gray-200 dark:border-gray-600 shadow-lg flex items-center justify-center hover:bg-gray-50 dark:hover:bg-gray-600 transition-colors disabled:opacity-50 disabled:cursor-not-allowed">
+          <svg class="w-5 h-5 text-gray-700 dark:text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
+          </svg>
+          <span class="sr-only">Previous slide</span>
+        </button>
+        
+        {{-- Carousel Track --}}
+        <div class="overflow-hidden py-8" id="carousel-viewport">
+          <div class="flex transition-transform duration-500 ease-out gap-8" id="featured-products">
+            <div class="flex items-center justify-center w-full">
+              <div class="loading-spinner mx-auto"></div>
+            </div>
+          </div>
         </div>
+        
+        {{-- Next Button --}}
+        <button type="button" id="carousel-next"
+                class="absolute right-0 top-1/2 -translate-y-1/2 translate-x-4 z-10 w-10 h-10 rounded-full bg-white dark:bg-gray-700 border border-gray-200 dark:border-gray-600 shadow-lg flex items-center justify-center hover:bg-gray-50 dark:hover:bg-gray-600 transition-colors disabled:opacity-50 disabled:cursor-not-allowed">
+          <svg class="w-5 h-5 text-gray-700 dark:text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+          </svg>
+          <span class="sr-only">Next slide</span>
+        </button>
+        
+        {{-- Carousel Indicators --}}
+        <div class="flex justify-center gap-2 mt-6" id="carousel-indicators"></div>
       </div>
+      
       <div class="text-center mt-12">
         <a href="{{ route('products') }}" class="btn-secondary dark:border-white dark:text-white dark:hover:bg-white dark:hover:text-gray-900 flex items-center justify-center gap-2 inline-flex">
           <span>View All Products</span>

@@ -5,8 +5,11 @@
 @section('content')
 <div class="pt-32">
   {{-- Products Hero --}}
-  <section class="py-32 px-6 lg:px-8 bg-white dark:bg-gray-800 min-h-screen transition-colors duration-300">
-    <div class="max-w-7xl mx-auto">
+  <section class="py-32 px-6 lg:px-8 bg-background dark:bg-gray-800 min-h-screen transition-colors duration-300 relative overflow-hidden">
+    {{-- Subtle Grid Pattern --}}
+    <div class="absolute inset-0 bg-pattern dark:opacity-10"></div>
+
+    <div class="max-w-7xl mx-auto relative">
       {{-- Section Header --}}
       <div data-animate="fade-in" data-delay="0" class="mb-32">
         <div class="flex flex-col lg:flex-row lg:items-end lg:justify-between mb-16 gap-8">
@@ -25,22 +28,28 @@
             </p>
           </div>
 
-        </div>
-        
-        {{-- Filter Tags with Interactive Animations --}}
-        <div class="mb-16">
-          <h3 data-animate="fade-in" data-delay="400"
-              class="text-2xl text-primary dark:text-white uppercase tracking-wide font-impact mb-8">
-            Filter by Category
-          </h3>
-          <div class="flex flex-wrap gap-4" id="filter-container">
-            <button data-animate="fade-in" data-delay="450" data-hover="lift"
-                    class="filter-tag active px-8 py-4 uppercase text-base tracking-wider transition-all shadow-lg hover:shadow-xl bg-primary dark:bg-white text-white dark:text-gray-900 font-medium"
-                    data-filter="All">
-              All Products
-            </button>
-            {{-- Categories will be dynamically loaded via JavaScript --}}
           </div>
+
+        </div>
+    </div>
+  </section>
+
+  {{-- Filter and Product Grid Section with White Background --}}
+  <section class="pt-[150px] pb-20 px-6 lg:px-8 bg-white dark:bg-gray-800 transition-colors duration-300">
+    <div class="max-w-7xl mx-auto">
+      {{-- Filter Tags with Interactive Animations --}}
+      <div class="mb-12">
+        <h3 data-animate="fade-in" data-delay="400"
+            class="text-2xl text-primary dark:text-white uppercase tracking-wide font-impact mb-8">
+          Filter by Category
+        </h3>
+        <div class="flex flex-wrap gap-4" id="filter-container">
+          <button data-animate="fade-in" data-delay="450" data-hover="lift"
+                  class="filter-tag active px-8 py-4 uppercase text-base tracking-wider transition-all shadow-lg hover:shadow-xl bg-primary dark:bg-white text-white dark:text-gray-900 font-medium"
+                  data-filter="All">
+            All Products
+          </button>
+          {{-- Categories will be dynamically loaded via JavaScript --}}
         </div>
       </div>
 

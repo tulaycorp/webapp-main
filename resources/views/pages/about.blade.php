@@ -5,7 +5,10 @@
 @section('content')
 <div class="pt-32">
   {{-- About Hero Section --}}
-  <section class="py-32 px-6 lg:px-8 bg-white dark:bg-gray-800 relative overflow-hidden transition-colors duration-300">
+  <section class="py-32 px-6 lg:px-8 bg-background dark:bg-gray-800 relative overflow-hidden transition-colors duration-300">
+    {{-- Subtle Grid Pattern --}}
+    <div class="absolute inset-0 bg-pattern dark:opacity-10"></div>
+    
     {{-- Decorative Element --}}
     <div class="absolute top-1/4 right-0 w-64 h-64 bg-background dark:bg-gray-700 rounded-full filter blur-3xl opacity-50"></div>
 

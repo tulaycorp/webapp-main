@@ -21,22 +21,8 @@ class CategoryController extends Controller
             $query->active();
         }
 
-        // Filter by parent (root categories only)
-        if ($request->has('root_only')) {
-            $query->root();
-        }
-
-        // Search
-        if ($search = $request->query('search')) {
-            $query->where('name', 'like', "%{$search}%");
-        }
-
-        // Eager load children and product counts to prevent N+1
-        // We load children's product count too for the recursive calculation
-        $categories = $query->with(['children' => function($q) {
-            $q->withCount('products');
-        }])
-        ->withCount('products')
+        // Eager load product counts
+        $categories = $query->withCount('products')
         ->orderBy('sort_order')
         ->orderBy('name')
         ->get();
@@ -52,7 +38,7 @@ class CategoryController extends Controller
      */
     public function show(int $id): JsonResponse
     {
-        $category = Category::with('children', 'parent')->find($id);
+        $category = Category::find($id);
 
         if (!$category) {
             return response()->json(['error' => 'Category not found'], 404);
@@ -61,7 +47,6 @@ class CategoryController extends Controller
         return response()->json([
             'success' => true,
             'category' => $category->toApiArray(),
-            'children' => $category->children->map(fn($c) => $c->toApiArray()),
         ]);
     }
 
@@ -72,10 +57,10 @@ class CategoryController extends Controller
     {
         $validated = $request->validate([
             'name' => 'required|string|max:255',
-            'slug' => 'nullable|string|max:255|unique:categories,slug',
+
             'description' => 'nullable|string',
-            'image_url' => 'nullable|url|max:2048',
-            'parent_id' => 'nullable|exists:categories,id',
+
+
             'sort_order' => 'nullable|integer',
             'is_active' => 'nullable|boolean',
         ]);
@@ -102,18 +87,16 @@ class CategoryController extends Controller
 
         $validated = $request->validate([
             'name' => 'sometimes|required|string|max:255',
-            'slug' => 'sometimes|string|max:255|unique:categories,slug,' . $id,
+
             'description' => 'nullable|string',
-            'image_url' => 'nullable|url|max:2048',
-            'parent_id' => 'nullable|exists:categories,id',
+
+
             'sort_order' => 'nullable|integer',
             'is_active' => 'nullable|boolean',
         ]);
 
         // Prevent category from being its own parent
-        if (isset($validated['parent_id']) && $validated['parent_id'] == $id) {
-            return response()->json(['error' => 'Category cannot be its own parent'], 422);
-        }
+
 
         $category->update($validated);
 
@@ -143,8 +126,7 @@ class CategoryController extends Controller
             ], 422);
         }
 
-        // Move child categories to parent
-        Category::where('parent_id', $id)->update(['parent_id' => $category->parent_id]);
+
 
         $category->delete();
 

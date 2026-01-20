@@ -114,16 +114,14 @@ CREATE TABLE `categories` (
     `name` VARCHAR(255) NOT NULL,
     `slug` VARCHAR(255) NOT NULL,
     `description` TEXT NULL DEFAULT NULL,
-    `image_url` VARCHAR(255) NULL DEFAULT NULL,
-    `parent_id` BIGINT UNSIGNED NULL DEFAULT NULL,
+
+  
     `sort_order` INT NOT NULL DEFAULT 0,
     `is_active` TINYINT(1) NOT NULL DEFAULT 1,
     `created_at` TIMESTAMP NULL DEFAULT NULL,
     `updated_at` TIMESTAMP NULL DEFAULT NULL,
     PRIMARY KEY (`id`),
-    UNIQUE KEY `categories_slug_unique` (`slug`),
-    KEY `categories_parent_id_index` (`parent_id`),
-    CONSTRAINT `categories_parent_id_foreign` FOREIGN KEY (`parent_id`) REFERENCES `categories` (`id`) ON DELETE SET NULL
+    UNIQUE KEY `categories_slug_unique` (`slug`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- =============================================================================
@@ -302,12 +300,12 @@ INSERT INTO `users` (`first_name`, `last_name`, `email`, `password_hash`, `role`
 -- =============================================================================
 -- Sample Categories
 -- =============================================================================
-INSERT INTO `categories` (`id`, `name`, `slug`, `description`, `image_url`, `sort_order`, `is_active`, `created_at`, `updated_at`) VALUES
-    (1, 'Hoodies', 'hoodies', 'Premium heavyweight hoodies for the streets', 'https://images.unsplash.com/photo-1556821840-3a63f95609a7?w=800&q=80', 1, 1, NOW(), NOW()),
-    (2, 'T-Shirts', 't-shirts', 'Essential streetwear tees with bold graphics', 'https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?w=800&q=80', 2, 1, NOW(), NOW()),
-    (3, 'Bottoms', 'bottoms', 'Joggers, cargo pants, and streetwear bottoms', 'https://images.unsplash.com/photo-1624378439575-d8705ad7ae80?w=800&q=80', 3, 1, NOW(), NOW()),
-    (4, 'Outerwear', 'outerwear', 'Jackets, bombers, and layering pieces', 'https://images.unsplash.com/photo-1591047139829-d91aecb6caea?w=800&q=80', 4, 1, NOW(), NOW()),
-    (5, 'Accessories', 'accessories', 'Caps, bags, and finishing touches', 'https://images.unsplash.com/photo-1588850561407-ed78c282e89b?w=800&q=80', 5, 1, NOW(), NOW());
+INSERT INTO `categories` (`id`, `name`, `slug`, `description`, `sort_order`, `is_active`, `created_at`, `updated_at`) VALUES
+    (1, 'Hoodies', 'hoodies', 'Premium heavy weight cotton hoodies.', 0, 1, '2023-10-01 12:00:00', '2023-10-01 12:00:00'),
+(2, 'T-Shirts', 't-shirts', 'Boxy fit oversized tees.', 1, 1, '2023-10-01 12:00:00', '2023-10-01 12:00:00'),
+(3, 'Accessories', 'accessories', 'Hats, bags, and more.', 2, 1, '2023-10-01 12:00:00', '2023-10-01 12:00:00'),
+(4, 'Pants', 'pants', 'Cargo and sweatpants.', 3, 1, '2023-10-01 12:00:00', '2023-10-01 12:00:00'),
+(5, 'Outerwear', 'outerwear', 'Jackets and coats.', 4, 1, '2023-10-01 12:00:00', '2023-10-01 12:00:00');
 
 -- =============================================================================
 -- Sample Products (String IDs)

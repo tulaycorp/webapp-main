@@ -14,8 +14,7 @@ class Category extends Model
         'name',
         'slug',
         'description',
-        'image_url',
-        'parent_id',
+
         'sort_order',
         'is_active',
     ];
@@ -48,21 +47,9 @@ class Category extends Model
         });
     }
 
-    /**
-     * Parent category relationship.
-     */
-    public function parent(): BelongsTo
-    {
-        return $this->belongsTo(Category::class, 'parent_id');
-    }
 
-    /**
-     * Child categories relationship.
-     */
-    public function children(): HasMany
-    {
-        return $this->hasMany(Category::class, 'parent_id')->orderBy('sort_order');
-    }
+
+
 
     /**
      * Products in this category.
@@ -80,13 +67,7 @@ class Category extends Model
         return $query->where('is_active', true);
     }
 
-    /**
-     * Scope for root categories (no parent).
-     */
-    public function scopeRoot(Builder $query): Builder
-    {
-        return $query->whereNull('parent_id');
-    }
+
 
     /**
      * Get product count including children.
@@ -94,12 +75,7 @@ class Category extends Model
     public function getProductCountAttribute(): int
     {
         // Use eager loaded count if available to avoid query
-        $count = $this->products_count ?? $this->products()->count();
-        
-        foreach ($this->children as $child) {
-            $count += $child->product_count;
-        }
-        return $count;
+        return $this->products_count ?? $this->products()->count();
     }
 
     /**
@@ -112,9 +88,7 @@ class Category extends Model
             'name' => $this->name,
             'slug' => $this->slug,
             'description' => $this->description,
-            'image_url' => $this->image_url,
-            'parent_id' => $this->parent_id,
-            'parent' => $this->parent ? $this->parent->name : null,
+
             'sort_order' => $this->sort_order,
             'is_active' => $this->is_active,
             'product_count' => $this->products()->count(),

@@ -413,6 +413,11 @@ document.addEventListener('DOMContentLoaded', function() {
   const signoutConfirm = document.getElementById('signout-confirm');
   if (signoutConfirm) {
     signoutConfirm.addEventListener('click', async () => {
+      // Visual feedback - show loading state
+      const originalText = signoutConfirm.textContent;
+      signoutConfirm.innerHTML = '<span class="inline-flex items-center justify-center gap-2"><span class="loading-spinner" style="width: 16px; height: 16px;"></span><span>Signing Out...</span></span>';
+      signoutConfirm.disabled = true;
+      
       // Get user data BEFORE clearing
       let sessionToken = null;
       try {
@@ -464,6 +469,12 @@ document.addEventListener('DOMContentLoaded', function() {
       const email = document.getElementById('login-email').value;
       const password = document.getElementById('login-password').value;
       const feedback = document.getElementById('login-feedback');
+      const submitBtn = loginForm.querySelector('button[type="submit"]');
+      
+      // Visual feedback - show loading state
+      const originalBtnText = submitBtn.textContent;
+      submitBtn.innerHTML = '<span class="inline-flex items-center justify-center gap-2"><span class="loading-spinner" style="width: 16px; height: 16px;"></span><span>Signing In...</span></span>';
+      submitBtn.disabled = true;
       
       // Get guest session ID from cookie for cart merge
       function getGuestSessionId() {
@@ -499,11 +510,17 @@ document.addEventListener('DOMContentLoaded', function() {
           feedback.className = 'p-4 border-l-4 border-red-500 bg-red-50 text-red-700';
           feedback.textContent = data.error || 'Login failed';
           feedback.classList.remove('hidden');
+          // Reset button
+          submitBtn.textContent = originalBtnText;
+          submitBtn.disabled = false;
         }
       } catch (err) {
         feedback.className = 'p-4 border-l-4 border-red-500 bg-red-50 text-red-700';
         feedback.textContent = 'Network error. Please try again.';
         feedback.classList.remove('hidden');
+        // Reset button
+        submitBtn.textContent = originalBtnText;
+        submitBtn.disabled = false;
       }
     });
   }
@@ -514,6 +531,7 @@ document.addEventListener('DOMContentLoaded', function() {
     signupForm.addEventListener('submit', async (e) => {
       e.preventDefault();
       const feedback = document.getElementById('signup-feedback');
+      const submitBtn = signupForm.querySelector('button[type="submit"]');
       
       const password = document.getElementById('signup-password').value;
       const confirmPassword = document.getElementById('signup-password-confirm').value;
@@ -522,6 +540,11 @@ document.addEventListener('DOMContentLoaded', function() {
         document.getElementById('signup-confirm-error').classList.remove('hidden');
         return;
       }
+      
+      // Visual feedback - show loading state
+      const originalBtnText = submitBtn.textContent;
+      submitBtn.innerHTML = '<span class="inline-flex items-center justify-center gap-2"><span class="loading-spinner" style="width: 16px; height: 16px;"></span><span>Creating Account...</span></span>';
+      submitBtn.disabled = true;
       
       const formData = {
         first_name: document.getElementById('signup-first-name').value,
@@ -555,11 +578,17 @@ document.addEventListener('DOMContentLoaded', function() {
           feedback.className = 'p-4 border-l-4 border-red-500 bg-red-50 text-red-700';
           feedback.textContent = data.error || 'Signup failed';
           feedback.classList.remove('hidden');
+          // Reset button
+          submitBtn.textContent = originalBtnText;
+          submitBtn.disabled = false;
         }
       } catch (err) {
         feedback.className = 'p-4 border-l-4 border-red-500 bg-red-50 text-red-700';
         feedback.textContent = 'Network error. Please try again.';
         feedback.classList.remove('hidden');
+        // Reset button
+        submitBtn.textContent = originalBtnText;
+        submitBtn.disabled = false;
       }
     });
   }

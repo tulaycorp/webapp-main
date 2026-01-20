@@ -727,7 +727,18 @@ import './footer-animations.js';
       const btn = e.target.closest('[data-remove]');
       if (btn) { removeFromCart(btn.getAttribute('data-remove')); draw(); }
     });
-    clearBtn.addEventListener('click', () => { clearCart(); draw(); });
+    clearBtn.addEventListener('click', () => {
+      // Visual feedback for clearing cart
+      const originalText = clearBtn.textContent.trim();
+      clearBtn.textContent = 'Cleared!';
+      clearBtn.disabled = true;
+      setTimeout(() => {
+        clearCart();
+        draw();
+        clearBtn.textContent = originalText;
+        clearBtn.disabled = false;
+      }, 500);
+    });
     checkoutBtn.addEventListener('click', () => {
       // Require account for checkout: if not logged in, open login modal
       let user = null;
@@ -747,6 +758,10 @@ import './footer-animations.js';
         }
         return; // stop normal checkout until user signs up/logs in
       }
+
+      // Visual feedback for checkout navigation
+      checkoutBtn.disabled = true;
+      checkoutBtn.innerHTML = '<span class="inline-flex items-center justify-center gap-2"><span class="loading-spinner" style="width: 20px; height: 20px;"></span><span>Redirecting...</span></span>';
 
       // Navigate to checkout page when logged in
       window.location.href = '/checkout';

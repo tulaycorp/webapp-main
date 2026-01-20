@@ -247,7 +247,18 @@
                     @endif
                     
                     {{-- Share Button --}}
-                    <button onclick="navigator.clipboard.writeText(window.location.href); alert('Link copied!');"
+                    <button id="share-btn"
+                            onclick="(function(btn) {
+                                navigator.clipboard.writeText(window.location.href);
+                                const originalHTML = btn.innerHTML;
+                                btn.innerHTML = 'Copied! <svg class=\'inline-block w-4 h-4 ml-2\' fill=\'none\' stroke=\'currentColor\' viewBox=\'0 0 24 24\'><path stroke-linecap=\'round\' stroke-linejoin=\'round\' stroke-width=\'2\' d=\'M5 13l4 4L19 7\'></path></svg>';
+                                btn.disabled = true;
+                                setTimeout(function() {
+                                    btn.innerHTML = originalHTML;
+                                    btn.disabled = false;
+                                    if (window.lucide) window.lucide.createIcons();
+                                }, 2000);
+                            })(this)"
                             class="px-8 py-4 border-2 border-primary dark:border-white text-primary dark:text-white text-base uppercase tracking-wider font-medium hover:bg-primary dark:hover:bg-white hover:text-white dark:hover:text-gray-900 transition-colors">
                         Share <i data-lucide="share-2" class="inline-block w-4 h-4 ml-2"></i>
                     </button>

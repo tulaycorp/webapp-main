@@ -390,7 +390,7 @@ import './footer-animations.js';
 
     // Render all featured products in carousel format
     wrap.innerHTML = featured.map(product => {
-      return `<div class="flex-shrink-0 w-full md:w-1/2 lg:w-1/3 px-4">${productCard(product)}</div>`;
+      return `<div class="flex-shrink-0 w-full md:w-1/2 lg:w-1/3 px-2">${productCard(product)}</div>`;
     }).join('');
 
     bindAddButtons(wrap);

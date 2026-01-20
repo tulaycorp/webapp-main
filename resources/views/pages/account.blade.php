@@ -102,8 +102,8 @@
               
               <div class="space-y-4">
                 <div>
-                  <label class="block text-xs uppercase tracking-wider text-secondary dark:text-gray-400 font-medium mb-2">Address Line 1</label>
-                  <input type="text" id="address1" name="address1" 
+                  <label class="block text-xs uppercase tracking-wider text-secondary dark:text-gray-400 font-medium mb-2">Address Line 1 <span class="text-red-500">*</span></label>
+                  <input type="text" id="address1" name="address1" required 
                          class="w-full px-4 py-3 border border-border dark:border-gray-600 bg-gray-50 dark:bg-gray-800 text-primary dark:text-white focus:outline-none focus:ring-2 focus:ring-primary dark:focus:ring-white transition-shadow"
                          placeholder="Street address">
                 </div>

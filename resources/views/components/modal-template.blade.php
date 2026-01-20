@@ -133,7 +133,7 @@
           </div>
           
           <div>
-            <label for="signup-address1" class="text-label block mb-3">ADDRESS LINE 1 *</label>
+            <label for="signup-address1" class="text-label block mb-3">ADDRESS LINE 1 <span class="text-red-500">*</span></label>
             <input id="signup-address1" name="address1" type="text" 
                    class="form-input text-base" 
                    required 

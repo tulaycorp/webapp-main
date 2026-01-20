@@ -204,7 +204,7 @@ class UserController extends Controller
             'first_name' => 'sometimes|string|max:50',
             'middle_name' => 'sometimes|nullable|string|max:50',
             'last_name' => 'sometimes|string|max:50',
-            'address1' => 'sometimes|nullable|string|max:100',
+            'address1' => 'sometimes|required|string|max:100',
             'address2' => 'sometimes|nullable|string|max:100',
             'country_code' => 'sometimes|nullable|string|max:10',
             'phone' => 'sometimes|nullable|string|max:15',

@@ -3,6 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\Models\Cart;
+use App\Models\Coupon;
+use App\Models\CouponUsage;
 use App\Models\Order;
 use App\Models\OrderItem;
 use App\Models\Product;
@@ -133,6 +135,8 @@ class CheckoutController extends Controller
             'card_expiry' => 'required|string|regex:/^\d{2}\/\d{2}$/',
             'card_cvc' => 'required|string|min:3|max:4',
             'card_name' => 'required|string|max:100',
+            // Coupon (optional)
+            'coupon_code' => 'nullable|string|max:50',
         ]);
 
         if ($validator->fails()) {
@@ -204,10 +208,38 @@ class CheckoutController extends Controller
             ], 400);
         }
 
+        // Validate and apply coupon if provided
+        $discountAmount = 0;
+        $couponCode = $request->input('coupon_code');
+        $coupon = null;
+
+        if ($couponCode) {
+            $coupon = Coupon::where('code', strtoupper($couponCode))->first();
+            
+            if (!$coupon) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Invalid coupon code.',
+                    'errors' => ['coupon_code' => ['Invalid coupon code.']],
+                ], 400);
+            }
+
+            $validation = $coupon->isValid($subtotal);
+            if (!$validation['valid']) {
+                return response()->json([
+                    'success' => false,
+                    'message' => $validation['message'],
+                    'errors' => ['coupon_code' => [$validation['message']]],
+                ], 400);
+            }
+
+            $discountAmount = $coupon->calculateDiscount($subtotal);
+        }
+
         // Calculate shipping and tax
         $shipping = $subtotal >= 150 ? 0 : 10;
         $tax = $subtotal * 0.08;
-        $total = $subtotal + $shipping + $tax;
+        $total = $subtotal + $shipping + $tax - $discountAmount;
 
         // Create order in a transaction
         try {
@@ -222,6 +254,8 @@ class CheckoutController extends Controller
                 'tax' => $tax,
                 'shipping' => $shipping,
                 'total' => $total,
+                'coupon_code' => $couponCode,
+                'discount_amount' => $discountAmount,
                 'shipping_first_name' => $request->input('shipping_first_name'),
                 'shipping_last_name' => $request->input('shipping_last_name'),
                 'shipping_email' => $request->input('shipping_email'),
@@ -243,6 +277,19 @@ class CheckoutController extends Controller
                 if ($product && $product->track_inventory) {
                     $product->decrement('stock_quantity', $itemData['quantity']);
                 }
+            }
+
+            // Record coupon usage if applicable
+            if ($coupon) {
+                CouponUsage::create([
+                    'coupon_id' => $coupon->id,
+                    'order_id' => $order->id,
+                    'user_id' => $request->attributes->get('auth_user_id'),
+                    'discount_amount' => $discountAmount,
+                    'created_at' => now(),
+                ]);
+
+                $coupon->incrementUsage();
             }
 
             // Clear the cart

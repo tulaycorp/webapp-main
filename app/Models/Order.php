@@ -21,6 +21,8 @@ class Order extends Model
         'tax',
         'shipping',
         'total',
+        'coupon_code',
+        'discount_amount',
         'shipping_first_name',
         'shipping_last_name',
         'shipping_email',
@@ -46,6 +48,7 @@ class Order extends Model
             'tax' => 'float',
             'shipping' => 'float',
             'total' => 'float',
+            'discount_amount' => 'float',
         ];
     }
 

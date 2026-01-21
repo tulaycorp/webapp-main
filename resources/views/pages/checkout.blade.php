@@ -127,16 +127,7 @@
               Payment Information
             </h2>
             
-            {{-- Mock Payment Notice --}}
-            <div class="bg-blue-50 dark:bg-blue-900/30 border-l-4 border-blue-500 p-4 mb-8">
-              <div class="flex items-start gap-3">
-                <i data-lucide="info" class="w-5 h-5 text-blue-500 flex-shrink-0 mt-0.5"></i>
-                <div>
-                  <p class="text-blue-700 dark:text-blue-300 font-medium">Demo Mode</p>
-                  <p class="text-blue-600 dark:text-blue-400 text-sm">This is a mock checkout. Use test card: 4242 4242 4242 4242</p>
-                </div>
-              </div>
-            </div>
+
             
             <div class="space-y-6">
               <div>
@@ -195,6 +186,29 @@
               <a href="{{ route('products') }}" class="text-primary dark:text-white underline mt-2 inline-block">Shop Now</a>
             </div>
             
+            {{-- Discount Code Input --}}
+            <div class="border-t-2 border-border dark:border-gray-700 pt-6 mb-6">
+              <label class="block text-xs uppercase tracking-wider text-secondary dark:text-gray-400 font-semibold mb-2">Discount Code</label>
+              <div class="flex gap-2">
+                <input type="text" id="coupon-code-input" 
+                       class="form-input dark:bg-gray-700 dark:border-gray-600 dark:text-white flex-1"
+                       placeholder="Enter code"
+                       style="text-transform: uppercase;">
+                <button type="button" id="apply-coupon-btn" data-hover="scale"
+                        class="btn-secondary px-6 whitespace-nowrap">
+                  Apply
+                </button>
+              </div>
+              <input type="hidden" name="coupon_code" id="validated-coupon-code">
+              {{-- Coupon Messages --}}
+              <div id="coupon-success" class="bg-green-500/10 border-l-4 border-green-500 p-3 mt-3 hidden">
+                <p class="text-green-600 dark:text-green-400 text-sm" id="coupon-success-msg"></p>
+              </div>
+              <div id="coupon-error" class="bg-red-500/10 border-l-4 border-red-500 p-3 mt-3 hidden">
+                <p class="text-red-600 dark:text-red-400 text-sm" id="coupon-error-msg"></p>
+              </div>
+            </div>
+            
             {{-- Totals --}}
             <div class="space-y-4 border-t-2 border-border dark:border-gray-700 pt-6 mb-8">
               <div class="flex justify-between items-center">
@@ -208,6 +222,16 @@
               <div class="flex justify-between items-center">
                 <span class="text-secondary dark:text-gray-400 uppercase text-sm tracking-wider font-medium">Tax (8%)</span>
                 <strong class="text-primary dark:text-white text-lg font-impact" id="checkout-tax">$0.00</strong>
+              </div>
+              {{-- Discount Row (Hidden by default) --}}
+              <div class="flex justify-between items-center hidden" id="checkout-discount-row">
+                <span class="text-green-600 dark:text-green-400 uppercase text-sm tracking-wider font-medium">
+                  Discount (<span id="applied-coupon-code"></span>)
+                  <button type="button" id="remove-coupon-btn" class="ml-2 text-red-500 hover:text-red-700">
+                    <i data-lucide="x" class="w-4 h-4 inline"></i>
+                  </button>
+                </span>
+                <strong class="text-green-600 dark:text-green-400 text-lg font-impact" id="checkout-discount">-$0.00</strong>
               </div>
               <div class="flex justify-between items-center pt-4 border-t-2 border-border dark:border-gray-700">
                 <span class="text-primary dark:text-white text-lg uppercase tracking-wider font-semibold">Total</span>

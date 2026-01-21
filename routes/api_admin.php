@@ -78,6 +78,15 @@ Route::prefix('admin')->middleware('admin.api')->group(function () {
         'destroy' => 'admin.api.customers.destroy',
     ]);
 
+    // Coupons
+    Route::get('/coupons/{id}/usages', [\App\Http\Controllers\Admin\Api\CouponController::class, 'usages'])->name('admin.api.coupons.usages');
+    Route::apiResource('coupons', \App\Http\Controllers\Admin\Api\CouponController::class)->names([
+        'index' => 'admin.api.coupons.index',
+        'store' => 'admin.api.coupons.store',
+        'show' => 'admin.api.coupons.show',
+        'update' => 'admin.api.coupons.update',
+        'destroy' => 'admin.api.coupons.destroy',
+    ]);
     
     // Settings
     Route::post('/settings', [SettingController::class, 'update'])->name('admin.api.settings.update');

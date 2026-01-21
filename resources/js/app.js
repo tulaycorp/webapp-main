@@ -798,6 +798,8 @@ import './footer-animations.js';
 
   // Page initializers
   window.Eshop = {
+    CATALOG: CATALOG,
+    getProduct: getProduct,
     pages: {
       home() {
         loadCatalog().then(function () {

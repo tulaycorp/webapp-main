@@ -34,5 +34,23 @@ class AppServiceProvider extends ServiceProvider
                 mkdir($directory, 0755, true);
             }
         }
+
+        // Share settings with all views (or specifically navbar)
+        try {
+            // Check if table exists first to avoid migration issues during setup
+            if (\Illuminate\Support\Facades\Schema::hasTable('settings')) {
+                $settings = \App\Models\Setting::all()->pluck('value', 'key');
+                
+                view()->share('announcement_enabled', filter_var($settings['announcement_enabled'] ?? 'false', FILTER_VALIDATE_BOOLEAN));
+                view()->share('announcement_message', $settings['announcement_message'] ?? '');
+            } else {
+                view()->share('announcement_enabled', false);
+                view()->share('announcement_message', '');
+            }
+        } catch (\Exception $e) {
+            // Fallback if DB connection fails
+            view()->share('announcement_enabled', false);
+            view()->share('announcement_message', '');
+        }
     }
 }

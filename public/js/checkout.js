@@ -153,6 +153,10 @@
 
         let catalog = [];
 
+        // Coupon state
+        let appliedCoupon = null;
+        let discountAmount = 0;
+
         // Load product catalog
         function loadCatalog() {
             return fetch('/api/products.php?action=list')
@@ -220,9 +224,14 @@
                 return sum + (product ? product.price * item.qty : 0);
             }, 0);
 
+            // Auto-remove coupon if cart becomes empty
+            if (subtotal === 0 && appliedCoupon) {
+                removeCoupon();
+            }
+
             const shipping = subtotal === 0 ? 0 : (subtotal >= 150 ? 0 : 10);
             const tax = subtotal * 0.08;
-            const total = subtotal + shipping + tax;
+            const total = subtotal + shipping + tax - discountAmount;
 
             subtotalEl.textContent = formatMoney(subtotal);
 
@@ -309,6 +318,176 @@
             input.addEventListener('change', updateSubmitButton);
             input.addEventListener('input', updateSubmitButton);
         });
+
+        // Validate and apply coupon
+        async function validateAndApplyCoupon(code, silent = false) {
+            const cart = loadCart();
+            const subtotal = cart.reduce((sum, item) => {
+                const product = getProduct(item.id);
+                return sum + (product ? product.price * item.qty : 0);
+            }, 0);
+
+            if (subtotal === 0) {
+                if (!silent) showCouponError('Cart is empty');
+                return;
+            }
+
+            // Show loading state
+            if (!silent) {
+                applyCouponBtn.disabled = true;
+                applyCouponBtn.innerHTML = '<span class="inline-flex items-center gap-2"><span class="loading-spinner"></span>Applying...</span>';
+            }
+
+            try {
+                const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');
+                const response = await fetch('/api/coupons/verify', {
+                    method: 'POST',
+                    credentials: 'same-origin',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Accept': 'application/json',
+                        'X-CSRF-TOKEN': csrfToken
+                    },
+                    body: JSON.stringify({ code: code, subtotal: subtotal })
+                });
+
+                const result = await response.json();
+
+                if (result.success) {
+                    appliedCoupon = result.coupon;
+                    discountAmount = result.coupon.discount_amount;
+
+                    // Update hidden input
+                    document.getElementById('validated-coupon-code').value = code;
+
+                    // Show discount row
+                    document.getElementById('checkout-discount-row').classList.remove('hidden');
+                    document.getElementById('applied-coupon-code').textContent = code;
+                    document.getElementById('checkout-discount').textContent = `-${formatMoney(discountAmount)}`;
+
+                    // Show success message
+                    if (!silent) {
+                        const desc = appliedCoupon.description ||
+                            (appliedCoupon.discount_type === 'percentage'
+                                ? `${appliedCoupon.discount_value}% off`
+                                : `$${appliedCoupon.discount_value} off`);
+                        showCouponSuccess(`Coupon applied! ${desc}`);
+                    }
+
+                    // Disable input and change button to 'Applied'
+                    if (!silent) {
+                        couponCodeInput.disabled = true;
+                        applyCouponBtn.textContent = 'Applied';
+                        applyCouponBtn.disabled = false;
+                        applyCouponBtn.classList.add('opacity-50', 'cursor-not-allowed');
+                    }
+
+                    // Update totals
+                    renderOrderSummary();
+                } else {
+                    if (!silent) {
+                        showCouponError(result.message || 'Invalid coupon code');
+                        resetApplyButton();
+                        // Remove coupon but keep the error message we just showed
+                        removeCoupon(true);
+                    } else {
+                        removeCoupon();
+                    }
+                }
+            } catch (error) {
+                console.error('Coupon validation error:', error);
+                if (!silent) {
+                    showCouponError('Failed to validate coupon');
+                    resetApplyButton();
+                    removeCoupon(true);
+                } else {
+                    removeCoupon();
+                }
+            }
+        }
+
+        // Reset apply button to default state
+        function resetApplyButton() {
+            applyCouponBtn.disabled = false;
+            applyCouponBtn.textContent = 'Apply';
+            applyCouponBtn.classList.remove('opacity-50', 'cursor-not-allowed');
+        }
+
+        // Remove applied coupon
+        function removeCoupon(keepMessages = false) {
+            appliedCoupon = null;
+            discountAmount = 0;
+            document.getElementById('validated-coupon-code').value = '';
+            document.getElementById('checkout-discount-row').classList.add('hidden');
+            document.getElementById('coupon-code-input').value = '';
+            couponCodeInput.disabled = false;
+
+            if (!keepMessages) {
+                hideCouponMessages();
+            }
+
+            resetApplyButton();
+            renderOrderSummary();
+        }
+
+        // Show coupon success message
+        function showCouponSuccess(message) {
+            const successDiv = document.getElementById('coupon-success');
+            const successMsg = document.getElementById('coupon-success-msg');
+            const errorDiv = document.getElementById('coupon-error');
+
+            errorDiv.classList.add('hidden');
+            successMsg.textContent = message;
+            successDiv.classList.remove('hidden');
+        }
+
+        // Show coupon error message
+        function showCouponError(message) {
+            const errorDiv = document.getElementById('coupon-error');
+            const errorMsg = document.getElementById('coupon-error-msg');
+            const successDiv = document.getElementById('coupon-success');
+
+            successDiv.classList.add('hidden');
+            errorMsg.textContent = message;
+            errorDiv.classList.remove('hidden');
+        }
+
+        // Hide coupon messages
+        function hideCouponMessages() {
+            document.getElementById('coupon-success').classList.add('hidden');
+            document.getElementById('coupon-error').classList.add('hidden');
+        }
+
+        // Apply coupon button handler
+        const applyCouponBtn = document.getElementById('apply-coupon-btn');
+        const couponCodeInput = document.getElementById('coupon-code-input');
+
+        applyCouponBtn.addEventListener('click', function () {
+            const code = couponCodeInput.value.trim().toUpperCase();
+            if (!code) {
+                showCouponError('Please enter a valid coupon code');
+                return;
+            }
+            validateAndApplyCoupon(code);
+        });
+
+        // Allow Enter key on coupon input
+        couponCodeInput.addEventListener('keypress', function (e) {
+            if (e.key === 'Enter') {
+                e.preventDefault();
+                applyCouponBtn.click();
+            }
+        });
+
+        // Remove coupon button handler
+        const removeCouponBtn = document.getElementById('remove-coupon-btn');
+        if (removeCouponBtn) {
+            removeCouponBtn.addEventListener('click', function (e) {
+                e.preventDefault(); // Prevent any default action
+                e.stopPropagation(); // Stop propagation just in case
+                removeCoupon();
+            });
+        }
 
         // Form submission
         form.addEventListener('submit', async function (e) {

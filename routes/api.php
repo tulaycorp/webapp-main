@@ -34,6 +34,11 @@ Route::prefix('products')->group(function () {
     Route::get('/{id}', [ProductController::class, 'get'])->name('api.products.get');
 });
 
+// Coupon endpoints
+Route::prefix('coupons')->group(function () {
+    Route::post('/verify', [\App\Http\Controllers\Api\CouponController::class, 'verify'])->name('api.coupons.verify');
+});
+
 // Legacy action-based API support (for compatibility with existing frontend)
 Route::get('/users.php', function (\Illuminate\Http\Request $request) {
     $action = $request->query('action');

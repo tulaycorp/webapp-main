@@ -391,8 +391,10 @@ import './footer-animations.js';
     }
 
     // Render all featured products in carousel format
+    // Using calc to account for gap-8 (2rem = 32px) between items
+    // For 3 items: (100% - 2*32px) / 3 per item
     wrap.innerHTML = featured.map(product => {
-      return `<div class="flex-shrink-0 w-full md:w-1/2 lg:w-1/3 px-2">${productCard(product)}</div>`;
+      return `<div class="flex-shrink-0" style="flex-basis: calc((100% - 4rem) / 3); width: calc((100% - 4rem) / 3);">${productCard(product)}</div>`;
     }).join('');
 
     bindAddButtons(wrap);
@@ -593,9 +595,16 @@ import './footer-animations.js';
     track.addEventListener('touchend', dragEnd);
     track.addEventListener('touchmove', dragMove);
 
-    // Wheel scroll support (convert vertical scroll to horizontal)
+    // Wheel scroll support (trackpad horizontal swipe only)
     let wheelTimeout = null;
     track.parentElement.addEventListener('wheel', (e) => {
+      // Only respond to horizontal scrolling (trackpad swipe)
+      // Ignore vertical scrolling (mouse wheel)
+      if (Math.abs(e.deltaX) < 10) {
+        // Not a significant horizontal swipe, ignore it
+        return;
+      }
+
       // Prevent default scrolling behavior
       e.preventDefault();
 
@@ -607,13 +616,8 @@ import './footer-animations.js';
         clearTimeout(wheelTimeout);
       }
 
-      // Determine scroll direction and amount
-      // deltaY is vertical scroll (mouse wheel)
-      // deltaX is horizontal scroll (trackpad swipe)
-      const delta = Math.abs(e.deltaX) > Math.abs(e.deltaY) ? e.deltaX : e.deltaY;
-
-      // Apply scroll with acceleration factor
-      const scrollAmount = delta * 1.5; // Adjust multiplier for sensitivity
+      // Use horizontal delta only (trackpad swipe)
+      const scrollAmount = e.deltaX * 1.5; // Adjust multiplier for sensitivity
       scrollBy(scrollAmount);
 
       // Resume auto-scroll after user stops scrolling (500ms delay)

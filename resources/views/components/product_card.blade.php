@@ -15,10 +15,17 @@
       </a>
       <div class="flex items-center justify-between">
         <span class="text-xl font-bold text-primary dark:text-white">${{ number_format($product->price, 2) }}</span>
+        @if($product->in_stock)
         <button data-add="{{ $product->id }}" 
                 class="px-4 py-2 bg-primary dark:bg-white text-white dark:text-gray-900 text-sm uppercase tracking-wider font-medium hover:opacity-90 transition-opacity">
           Add
         </button>
+        @else
+        <button disabled 
+                class="px-4 py-2 bg-gray-300 dark:bg-gray-700 text-gray-500 dark:text-gray-400 text-sm uppercase tracking-wider font-medium cursor-not-allowed">
+          Sold Out
+        </button>
+        @endif
       </div>
     </div>
   </div>

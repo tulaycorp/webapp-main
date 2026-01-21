@@ -234,7 +234,7 @@
 
                 {{-- Action Buttons --}}
                 <div class="flex flex-col sm:flex-row gap-4">
-                    @if($product->in_stock || $product->continue_selling_when_out_of_stock)
+                    @if($product->in_stock)
                     <button data-add="{{ $product->id }}" 
                             class="flex-1 px-8 py-4 bg-primary dark:bg-white text-white dark:text-gray-900 text-base uppercase tracking-wider font-medium hover:opacity-90 transition-opacity text-center">
                         Add to Cart

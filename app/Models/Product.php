@@ -139,6 +139,20 @@ class Product extends Model
     }
 
     /**
+     * Scope a query to include only products visible in the store.
+     * Checks status and inventory/visibility settings.
+     */
+    public function scopeVisibleInStore(Builder $query): Builder
+    {
+        return $query->where('status', 'active')
+            ->where(function ($q) {
+                $q->where('track_inventory', false)
+                  ->orWhere('stock_quantity', '>', 0)
+                  ->orWhere('continue_selling_when_out_of_stock', true);
+            });
+    }
+
+    /**
      * Check if product is on sale.
      */
     public function getOnSaleAttribute(): bool
@@ -161,7 +175,8 @@ class Product extends Model
     public function getInStockAttribute(): bool
     {
         if (!$this->track_inventory) return true;
-        if ($this->continue_selling_when_out_of_stock) return true;
+        // Old logic: if ($this->continue_selling_when_out_of_stock) return true;
+        // New logic: Only true if actually in stock. The flag now controls visibility, not stock status.
         return $this->stock_quantity > 0;
     }
 
@@ -210,6 +225,7 @@ class Product extends Model
             'stock_quantity' => $this->stock_quantity,
             'track_inventory' => $this->track_inventory,
             'continue_selling_when_out_of_stock' => $this->continue_selling_when_out_of_stock,
+            'show_when_out_of_stock' => $this->continue_selling_when_out_of_stock, // Alias
             'in_stock' => $this->in_stock,
             'image_url' => $this->image_url,
             'images' => $this->images ?? [],

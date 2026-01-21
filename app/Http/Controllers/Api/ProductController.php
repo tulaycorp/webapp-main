@@ -20,7 +20,7 @@ class ProductController extends Controller
         $category = $request->query('category', '');
         $categoryId = $request->query('category_id');
 
-        $query = Product::query()->active()->with('categoryRelation');
+        $query = Product::query()->visibleInStore()->with('categoryRelation');
 
         if (!empty($categoryId)) {
             // Filter by category_id (new system - linked to Category model)
@@ -58,7 +58,7 @@ class ProductController extends Controller
      */
     public function get(string $id): JsonResponse
     {
-        $product = Product::find($id);
+        $product = Product::visibleInStore()->find($id);
 
         if (!$product) {
             return response()->json(['error' => 'Product not found'], 404);
@@ -77,7 +77,7 @@ class ProductController extends Controller
     {
         $limit = (int) $request->query('limit', 3);
 
-        $products = Product::featured()
+        $products = Product::visibleInStore()->featured()
             ->orderBy('name')
             ->limit($limit)
             ->get()

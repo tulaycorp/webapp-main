@@ -18,7 +18,7 @@ class ProductController extends Controller
      */
     public function show(string $id, ?string $slug = null): View
     {
-        $product = \App\Models\Product::findOrFail($id);
+        $product = \App\Models\Product::visibleInStore()->findOrFail($id);
         
         // Suggested products: Same category, excluding current
         $suggested = \App\Models\Product::where('category', $product->category)

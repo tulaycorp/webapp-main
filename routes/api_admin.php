@@ -6,6 +6,8 @@ use App\Http\Controllers\Admin\Api\CustomerController;
 use App\Http\Controllers\Admin\Api\DashboardController;
 use App\Http\Controllers\Admin\Api\OrderController;
 use App\Http\Controllers\Admin\Api\ProductController;
+
+use App\Http\Controllers\Admin\Api\SettingController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -21,6 +23,7 @@ use Illuminate\Support\Facades\Route;
 // Public admin routes (no auth required)
 Route::prefix('admin')->group(function () {
     Route::post('/login', [AuthController::class, 'login'])->name('admin.api.login');
+    Route::get('/settings', [SettingController::class, 'index'])->name('admin.api.settings.index');
 });
 
 // Protected admin routes
@@ -74,4 +77,8 @@ Route::prefix('admin')->middleware('admin.api')->group(function () {
         'update' => 'admin.api.customers.update',
         'destroy' => 'admin.api.customers.destroy',
     ]);
+
+    
+    // Settings
+    Route::post('/settings', [SettingController::class, 'update'])->name('admin.api.settings.update');
 });

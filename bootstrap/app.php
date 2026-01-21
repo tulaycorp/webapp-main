@@ -15,7 +15,10 @@ return Application::configure(basePath: dirname(__DIR__))
         $middleware->alias([
             'admin.api' => \App\Http\Middleware\AdminApiAuth::class,
             'web.token.optional' => \App\Http\Middleware\WebTokenAuthOptional::class,
+            'maintenance' => \App\Http\Middleware\CheckMaintenanceMode::class,
         ]);
+        
+        $middleware->append(\App\Http\Middleware\CheckMaintenanceMode::class);
         
         // Exclude eshop_session_id from cookie encryption so JavaScript can read it
         $middleware->encryptCookies(except: ['eshop_session_id']);

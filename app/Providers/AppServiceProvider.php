@@ -23,6 +23,7 @@ class AppServiceProvider extends ServiceProvider
         $directories = [
             storage_path('app'),
             storage_path('framework/cache'),
+            storage_path('framework/cache/data'),
             storage_path('framework/sessions'),
             storage_path('framework/views'),
             storage_path('logs'),
@@ -31,7 +32,14 @@ class AppServiceProvider extends ServiceProvider
 
         foreach ($directories as $directory) {
             if (!is_dir($directory)) {
-                mkdir($directory, 0755, true);
+                try {
+                    @mkdir($directory, 0755, true);
+                    if (!is_dir($directory)) {
+                        error_log("Failed to create directory: {$directory}");
+                    }
+                } catch (\Exception $e) {
+                    error_log("Error creating directory {$directory}: " . $e->getMessage());
+                }
             }
         }
 

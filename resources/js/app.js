@@ -322,16 +322,18 @@ import './footer-animations.js';
 
     return `<div class="group" data-animate="fade-in" data-delay="${animationDelay}" data-hover="lift">
       <div class="modern-card dark:bg-gray-800 dark:border-gray-700 overflow-hidden transition-all duration-300 hover:shadow-xl">
-        <a href="/products/${product.id}" class="block relative aspect-square overflow-hidden bg-gray-100 dark:bg-gray-700">
+        <a href="/products/${product.id}" draggable="false" class="block relative aspect-square overflow-hidden bg-gray-100 dark:bg-gray-700">
           <img src="${product.img || product.image_url || 'https://via.placeholder.com/400'}" 
                alt="${product.name}" 
+               draggable="false"
+               style="user-select: none; -webkit-user-drag: none;"
                class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105">
           ${product.featured ? '<span class="absolute top-4 left-4 px-3 py-1 bg-primary dark:bg-white text-white dark:text-gray-900 text-xs uppercase tracking-wider font-medium">Featured</span>' : ''}
           ${isOnSale ? '<span class="absolute top-4 right-4 px-3 py-1 bg-red-600 text-white text-xs uppercase tracking-wider font-medium shadow-md">Sale</span>' : ''}
         </a>
         <div class="p-6">
           <p class="text-xs text-secondary dark:text-gray-400 uppercase tracking-wider mb-2">${categoryDisplay}</p>
-          <a href="/products/${product.id}" class="block">
+          <a href="/products/${product.id}" draggable="false" class="block">
             <h3 class="text-lg font-semibold text-primary dark:text-white mb-2 truncate group-hover:text-secondary transition-colors">${product.name}</h3>
           </a>
           <div class="flex items-center justify-between">
@@ -342,15 +344,10 @@ import './footer-animations.js';
         : `<span class="text-xl font-bold text-primary dark:text-white">${formatMoney(product.price)}</span>`
       }
             </div>
-            ${product.in_stock
-        ? `<button data-add="${product.id}" 
-                      class="px-4 py-2 bg-primary dark:bg-white text-white dark:text-gray-900 text-sm uppercase tracking-wider font-medium hover:opacity-90 transition-opacity">
-                Add
-              </button>`
-        : `<button disabled class="px-4 py-2 bg-gray-300 dark:bg-gray-700 text-gray-500 dark:text-gray-400 text-sm uppercase tracking-wider font-medium cursor-not-allowed">
-                Sold Out
-              </button>`
-      }
+            <button data-add="${product.id}" 
+                    class="px-4 py-2 bg-primary dark:bg-white text-white dark:text-gray-900 text-sm uppercase tracking-wider font-medium hover:opacity-90 transition-opacity">
+              Add
+            </button>
           </div>
         </div>
       </div>
@@ -394,12 +391,38 @@ import './footer-animations.js';
     }
 
     // Render all featured products in carousel format
-    wrap.innerHTML = featured.map(product => {
-      return `<div class="flex-shrink-0 w-full md:w-1/2 lg:w-1/3 px-2">${productCard(product)}</div>`;
-    }).join('');
+    // Using calc to account for gap-8 (2rem = 32px) between items
+    // For 3 items: (100% - 2*32px) / 3 per item
+    const productCards = featured.map(product => {
+      return `<div class="flex-shrink-0" style="flex-basis: calc((100% - 4rem) / 3); width: calc((100% - 4rem) / 3);">${productCard(product)}</div>`;
+    });
+
+    // Add "View More" card at the end
+    const viewMoreCard = `
+      <div class="flex-shrink-0" style="flex-basis: calc((100% - 4rem) / 3); width: calc((100% - 4rem) / 3);">
+        <div class="group h-full flex" data-animate="fade-in" data-delay="0" data-hover="lift">
+          <a href="/products" draggable="false" class="flex-1 modern-card dark:bg-gray-800 dark:border-gray-700 overflow-hidden transition-all duration-300 hover:shadow-xl flex items-center justify-center">
+            <div class="flex flex-col items-center justify-center p-8 bg-gradient-to-br from-primary/10 to-secondary/10 dark:from-primary/20 dark:to-secondary/20 w-full h-full">
+              <div class="text-center">
+                <svg class="w-16 h-16 mx-auto mb-4 text-primary dark:text-white opacity-80 transition-transform duration-300 group-hover:scale-110" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"></path>
+                </svg>
+                <h3 class="text-2xl font-bold text-primary dark:text-white mb-2 uppercase tracking-wider">View More</h3>
+                <p class="text-sm text-secondary dark:text-gray-400 uppercase tracking-wider mb-4">Explore Our Full Collection</p>
+                <span class="inline-block px-6 py-3 bg-primary dark:bg-white text-white dark:text-gray-900 text-sm uppercase tracking-wider font-medium hover:opacity-90 transition-opacity">
+                  Shop Now
+                </span>
+              </div>
+            </div>
+          </a>
+        </div>
+      </div>
+    `;
+
+    wrap.innerHTML = productCards.join('') + viewMoreCard;
 
     bindAddButtons(wrap);
-    initCarousel(featured.length);
+    initCarousel(featured.length + 1); // +1 for the View More card
   }
 
   function initCarousel(totalItems) {
@@ -410,91 +433,97 @@ import './footer-animations.js';
 
     if (!track || !prevBtn || !nextBtn || !indicatorsContainer) return;
 
-    // Determine items to show based on screen size
-    function getItemsToShow() {
-      if (window.innerWidth >= 1024) return 3; // lg
-      if (window.innerWidth >= 768) return 2; // md
-      return 1; // mobile
+    // Hide indicators for free-scroll carousel
+    indicatorsContainer.style.display = 'none';
+
+    // Free scroll state
+    let scrollPosition = 0;
+    let maxScroll = 0;
+    let isDragging = false;
+    let startPos = 0;
+    let startScrollPos = 0;
+    let didDragRecently = false;
+    let autoScrollInterval = null;
+    let currentItemIndex = 0;
+
+    function calculateMaxScroll() {
+      // Max scroll is total width minus viewport width
+      const trackWidth = track.scrollWidth;
+      const viewportWidth = track.parentElement.offsetWidth;
+      maxScroll = Math.max(0, trackWidth - viewportWidth);
     }
 
-    carouselState.itemsToShow = getItemsToShow();
-    const totalSlides = Math.ceil(totalItems / carouselState.itemsToShow);
-
-    // Create indicators
-    indicatorsContainer.innerHTML = Array.from({ length: totalSlides }, (_, i) =>
-      `<button type="button" class="w-2 h-2 rounded-full transition-all ${i === 0 ? 'bg-primary dark:bg-white w-8' : 'bg-gray-300 dark:bg-gray-600'}" data-slide="${i}"></button>`
-    ).join('');
-
-    // Update carousel position
-    function updateCarousel(smooth = true) {
-      const slideWidth = 100 / carouselState.itemsToShow;
-      const offset = -carouselState.currentIndex * slideWidth * carouselState.itemsToShow;
+    function updateScrollPosition(newPosition, smooth = true) {
+      // Clamp position to valid range
+      scrollPosition = Math.max(0, Math.min(newPosition, maxScroll));
 
       if (smooth) {
-        track.style.transition = 'transform 500ms ease-out';
+        track.style.transition = 'transform 300ms ease-out';
       } else {
         track.style.transition = 'none';
       }
 
-      track.style.transform = `translateX(${offset}%)`;
+      track.style.transform = `translateX(-${scrollPosition}px)`;
 
       // Update button states
-      prevBtn.disabled = false;
-      nextBtn.disabled = false;
-
-      // Update indicators
-      const indicators = indicatorsContainer.querySelectorAll('button');
-      indicators.forEach((indicator, i) => {
-        if (i === carouselState.currentIndex) {
-          indicator.classList.add('bg-primary', 'dark:bg-white', 'w-8');
-          indicator.classList.remove('bg-gray-300', 'dark:bg-gray-600');
-        } else {
-          indicator.classList.remove('bg-primary', 'dark:bg-white', 'w-8');
-          indicator.classList.add('bg-gray-300', 'dark:bg-gray-600');
-        }
-      });
+      prevBtn.disabled = scrollPosition <= 0;
+      nextBtn.disabled = scrollPosition >= maxScroll;
     }
 
-    // Navigation handlers
-    function goToSlide(index) {
-      const totalSlides = Math.ceil(totalItems / carouselState.itemsToShow);
-      carouselState.currentIndex = (index + totalSlides) % totalSlides;
-      updateCarousel();
+    function scrollBy(amount) {
+      updateScrollPosition(scrollPosition + amount, true);
+    }
+
+    function getItemWidth() {
+      // Get the width of a single item including padding
+      const items = track.querySelectorAll('.flex-shrink-0');
+      if (items.length > 0) {
+        return items[0].offsetWidth;
+      }
+      // Fallback to viewport width / 3 (for responsive columns)
+      return track.parentElement.offsetWidth / 3;
+    }
+
+    // Scroll one item width at a time with buttons
+    function scrollPrev() {
+      const itemWidth = getItemWidth();
+      scrollBy(-itemWidth);
+      currentItemIndex = Math.max(0, currentItemIndex - 1);
       resetAutoScroll();
     }
 
-    function nextSlide() {
-      goToSlide(carouselState.currentIndex + 1);
-    }
+    function scrollNext() {
+      const itemWidth = getItemWidth();
+      const newPosition = scrollPosition + itemWidth;
 
-    function prevSlide() {
-      goToSlide(carouselState.currentIndex - 1);
-    }
-
-    // Bind navigation buttons
-    prevBtn.addEventListener('click', prevSlide);
-    nextBtn.addEventListener('click', nextSlide);
-
-    // Bind indicator clicks
-    indicatorsContainer.addEventListener('click', (e) => {
-      const slideBtn = e.target.closest('[data-slide]');
-      if (slideBtn) {
-        const slideIndex = parseInt(slideBtn.dataset.slide);
-        goToSlide(slideIndex);
+      // If we're at the end, loop back to the beginning
+      if (scrollPosition >= maxScroll - 10) {
+        currentItemIndex = 0;
+        updateScrollPosition(0, true);
+      } else {
+        scrollBy(itemWidth);
+        currentItemIndex++;
       }
-    });
+      resetAutoScroll();
+    }
 
     // Auto-scroll functionality
     function startAutoScroll() {
-      carouselState.autoScrollInterval = setInterval(() => {
-        nextSlide();
-      }, 4000); // 4 seconds
+      // Clear any existing interval
+      if (autoScrollInterval) {
+        clearInterval(autoScrollInterval);
+      }
+
+      // Start auto-scrolling every 3 seconds
+      autoScrollInterval = setInterval(() => {
+        scrollNext();
+      }, 3000);
     }
 
     function stopAutoScroll() {
-      if (carouselState.autoScrollInterval) {
-        clearInterval(carouselState.autoScrollInterval);
-        carouselState.autoScrollInterval = null;
+      if (autoScrollInterval) {
+        clearInterval(autoScrollInterval);
+        autoScrollInterval = null;
       }
     }
 
@@ -503,44 +532,150 @@ import './footer-animations.js';
       startAutoScroll();
     }
 
-    // Pause auto-scroll when hovering any product card
-    function bindHoverListeners() {
-      const productCards = track.querySelectorAll('.group');
-      productCards.forEach(card => {
-        card.addEventListener('mouseenter', stopAutoScroll);
-        card.addEventListener('mouseleave', startAutoScroll);
-      });
+    // Bind navigation buttons
+    prevBtn.addEventListener('click', scrollPrev);
+    nextBtn.addEventListener('click', scrollNext);
+
+    // Prevent default image drag but allow touch/mouse events for carousel dragging
+    track.querySelectorAll('img').forEach(img => {
+      img.addEventListener('dragstart', (e) => e.preventDefault());
+      img.setAttribute('draggable', 'false');
+      img.style.userSelect = 'none';
+      img.style.webkitUserDrag = 'none';
+    });
+
+    // Prevent anchor tag dragging (prevent browser's default link drag)
+    track.querySelectorAll('a').forEach(link => {
+      link.addEventListener('dragstart', (e) => e.preventDefault());
+      link.setAttribute('draggable', 'false');
+    });
+
+    // Prevent click events if dragged
+    track.addEventListener('click', (e) => {
+      if (didDragRecently) {
+        e.preventDefault();
+        e.stopPropagation();
+      }
+    }, true);
+
+    function getPositionX(event) {
+      return event.type.includes('mouse') ? event.pageX : event.touches[0].clientX;
     }
 
-    // Initial bind
-    bindHoverListeners();
+    function dragStart(event) {
+      isDragging = true;
+      startPos = getPositionX(event);
+      startScrollPos = scrollPosition;
+
+      track.style.transition = 'none';
+      track.style.cursor = 'grabbing';
+
+      // Pause auto-scroll while dragging
+      stopAutoScroll();
+    }
+
+    function dragEnd() {
+      if (!isDragging) return;
+
+      isDragging = false;
+      track.style.cursor = 'grab';
+
+      const movedBy = scrollPosition - startScrollPos;
+
+      // Check if it was a drag or just a click
+      if (Math.abs(movedBy) > 5) {
+        didDragRecently = true;
+        setTimeout(() => didDragRecently = false, 200);
+      }
+
+      // No snapping - just ensure we're within bounds
+      updateScrollPosition(scrollPosition, true);
+
+      // Resume auto-scroll after dragging
+      resetAutoScroll();
+    }
+
+    function dragMove(event) {
+      if (!isDragging) return;
+
+      const currentPosition = getPositionX(event);
+      const diff = startPos - currentPosition; // Negative diff = drag right, positive = drag left
+
+      // Only start moving if user has dragged more than 5px
+      if (Math.abs(diff) > 5) {
+        const newPosition = startScrollPos + diff;
+        updateScrollPosition(newPosition, false);
+      }
+    }
+
+    // Mouse Events
+    track.addEventListener('mousedown', dragStart);
+    track.addEventListener('mouseup', dragEnd);
+    track.addEventListener('mouseleave', () => { if (isDragging) dragEnd(); });
+    track.addEventListener('mousemove', dragMove);
+
+    // Touch Events
+    track.addEventListener('touchstart', dragStart);
+    track.addEventListener('touchend', dragEnd);
+    track.addEventListener('touchmove', dragMove);
+
+    // Wheel scroll support (trackpad horizontal swipe only)
+    let wheelTimeout = null;
+    track.parentElement.addEventListener('wheel', (e) => {
+      // Only respond to horizontal scrolling (trackpad swipe)
+      // Ignore vertical scrolling (mouse wheel)
+      if (Math.abs(e.deltaX) < 10) {
+        // Not a significant horizontal swipe, ignore it
+        return;
+      }
+
+      // Prevent default scrolling behavior
+      e.preventDefault();
+
+      // Stop auto-scroll during wheel interaction
+      stopAutoScroll();
+
+      // Clear existing timeout
+      if (wheelTimeout) {
+        clearTimeout(wheelTimeout);
+      }
+
+      // Use horizontal delta only (trackpad swipe)
+      const scrollAmount = e.deltaX * 1.5; // Adjust multiplier for sensitivity
+      scrollBy(scrollAmount);
+
+      // Resume auto-scroll after user stops scrolling (500ms delay)
+      wheelTimeout = setTimeout(() => {
+        startAutoScroll();
+      }, 500);
+    }, { passive: false });
+
+    // Pause auto-scroll on hover
+    track.addEventListener('mouseenter', stopAutoScroll);
+    track.addEventListener('mouseleave', startAutoScroll);
+
+    // Cursor style
+    track.style.cursor = 'grab';
+    track.style.touchAction = 'pan-y';
+    track.style.userSelect = 'none';
+    track.style.webkitUserSelect = 'none';
 
     // Handle window resize
     let resizeTimeout;
     window.addEventListener('resize', () => {
       clearTimeout(resizeTimeout);
       resizeTimeout = setTimeout(() => {
-        const newItemsToShow = getItemsToShow();
-        if (newItemsToShow !== carouselState.itemsToShow) {
-          carouselState.itemsToShow = newItemsToShow;
-          carouselState.currentIndex = 0;
-
-          // Recreate indicators
-          const totalSlides = Math.ceil(totalItems / carouselState.itemsToShow);
-          indicatorsContainer.innerHTML = Array.from({ length: totalSlides }, (_, i) =>
-            `<button type="button" class="w-2 h-2 rounded-full transition-all ${i === 0 ? 'bg-primary dark:bg-white w-8' : 'bg-gray-300 dark:bg-gray-600'}" data-slide="${i}"></button>`
-          ).join('');
-
-          updateCarousel(false);
-        }
+        calculateMaxScroll();
+        updateScrollPosition(scrollPosition, false);
       }, 250);
     });
 
-    // Start auto-scroll
-    startAutoScroll();
+    // Initial setup
+    calculateMaxScroll();
+    updateScrollPosition(0, false);
 
-    // Initial update
-    updateCarousel(false);
+    // Start auto-scrolling
+    startAutoScroll();
   }
 
   function renderCatalog() {

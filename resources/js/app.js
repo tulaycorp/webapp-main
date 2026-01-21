@@ -393,12 +393,36 @@ import './footer-animations.js';
     // Render all featured products in carousel format
     // Using calc to account for gap-8 (2rem = 32px) between items
     // For 3 items: (100% - 2*32px) / 3 per item
-    wrap.innerHTML = featured.map(product => {
+    const productCards = featured.map(product => {
       return `<div class="flex-shrink-0" style="flex-basis: calc((100% - 4rem) / 3); width: calc((100% - 4rem) / 3);">${productCard(product)}</div>`;
-    }).join('');
+    });
+
+    // Add "View More" card at the end
+    const viewMoreCard = `
+      <div class="flex-shrink-0" style="flex-basis: calc((100% - 4rem) / 3); width: calc((100% - 4rem) / 3);">
+        <div class="group h-full flex" data-animate="fade-in" data-delay="0" data-hover="lift">
+          <a href="/products" draggable="false" class="flex-1 modern-card dark:bg-gray-800 dark:border-gray-700 overflow-hidden transition-all duration-300 hover:shadow-xl flex items-center justify-center">
+            <div class="flex flex-col items-center justify-center p-8 bg-gradient-to-br from-primary/10 to-secondary/10 dark:from-primary/20 dark:to-secondary/20 w-full h-full">
+              <div class="text-center">
+                <svg class="w-16 h-16 mx-auto mb-4 text-primary dark:text-white opacity-80 transition-transform duration-300 group-hover:scale-110" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"></path>
+                </svg>
+                <h3 class="text-2xl font-bold text-primary dark:text-white mb-2 uppercase tracking-wider">View More</h3>
+                <p class="text-sm text-secondary dark:text-gray-400 uppercase tracking-wider mb-4">Explore Our Full Collection</p>
+                <span class="inline-block px-6 py-3 bg-primary dark:bg-white text-white dark:text-gray-900 text-sm uppercase tracking-wider font-medium hover:opacity-90 transition-opacity">
+                  Shop Now
+                </span>
+              </div>
+            </div>
+          </a>
+        </div>
+      </div>
+    `;
+
+    wrap.innerHTML = productCards.join('') + viewMoreCard;
 
     bindAddButtons(wrap);
-    initCarousel(featured.length);
+    initCarousel(featured.length + 1); // +1 for the View More card
   }
 
   function initCarousel(totalItems) {

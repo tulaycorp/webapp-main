@@ -72,19 +72,35 @@ CREATE TABLE `users` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- =============================================================================
+-- Admins Table
+-- =============================================================================
+CREATE TABLE `admins` (
+    `id` BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
+    `first_name` VARCHAR(255) NOT NULL,
+    `last_name` VARCHAR(255) NULL DEFAULT NULL,
+    `email` VARCHAR(255) NOT NULL,
+    `password_hash` VARCHAR(255) NOT NULL,
+    `remember_token` VARCHAR(100) NULL DEFAULT NULL,
+    `created_at` TIMESTAMP NULL DEFAULT NULL,
+    `updated_at` TIMESTAMP NULL DEFAULT NULL,
+    PRIMARY KEY (`id`),
+    UNIQUE KEY `admins_email_unique` (`email`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- =============================================================================
 -- Admin Sessions Table
 -- =============================================================================
 CREATE TABLE `admin_sessions` (
     `id` BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
-    `user_id` BIGINT UNSIGNED NOT NULL,
+    `admin_id` BIGINT UNSIGNED NOT NULL,
     `session_token` VARCHAR(255) NOT NULL,
     `expires_at` TIMESTAMP NOT NULL,
     `created_at` TIMESTAMP NULL DEFAULT NULL,
     PRIMARY KEY (`id`),
     UNIQUE KEY `session_token` (`session_token`),
-    KEY `user_id` (`user_id`),
+    KEY `admin_id` (`admin_id`),
     KEY `expires_at` (`expires_at`),
-    CONSTRAINT `admin_sessions_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE
+    CONSTRAINT `admin_sessions_admin_id_foreign` FOREIGN KEY (`admin_id`) REFERENCES `admins` (`id`) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- =============================================================================
@@ -289,13 +305,15 @@ INSERT INTO `migrations` (`migration`, `batch`) VALUES
     ('2026_01_11_160000_add_cart_unique_constraints', 1),
     ('2026_01_19_000001_sync_products_category_to_category_id', 1),
     ('2026_01_19_000002_add_full_product_metadata', 1),
-    ('2026_01_19_131124_add_images_to_products', 1);
+    ('2026_01_19_131124_add_images_to_products', 1),
+    ('2026_01_22_000000_create_admins_table', 1),
+    ('2026_01_22_000001_update_admin_sessions_foreign_key', 1);
 
 -- =============================================================================
 -- Default Admin User (password: 'password')
 -- =============================================================================
-INSERT INTO `users` (`first_name`, `last_name`, `email`, `password_hash`, `role`, `created_at`, `updated_at`) VALUES
-    ('Admin', 'User', 'admin@email.com', '$2y$12$Kq3hG7pJ.kFz8A1xCwE5YOfiSz5nR8J1V0K2m9QxT6L4wN3pY.abc', 'admin', NOW(), NOW());
+INSERT INTO `admins` (`first_name`, `last_name`, `email`, `password_hash`, `created_at`, `updated_at`) VALUES
+    ('Admin', 'User', 'admin@email.com', '$2y$12$Kq3hG7pJ.kFz8A1xCwE5YOfiSz5nR8J1V0K2m9QxT6L4wN3pY.abc', NOW(), NOW());
 
 -- =============================================================================
 -- Sample Categories

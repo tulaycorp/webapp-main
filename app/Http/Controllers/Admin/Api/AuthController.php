@@ -21,9 +21,9 @@ class AuthController extends Controller
             'password' => 'required|string',
         ]);
         
-        $user = User::where('email', $validated['email'])->first();
+        $admin = \App\Models\Admin::where('email', $validated['email'])->first();
         
-        if (!$user || !Hash::check($validated['password'], $user->password_hash)) {
+        if (!$admin || !Hash::check($validated['password'], $admin->password_hash)) {
             return response()->json([
                 'success' => false,
                 'message' => 'Invalid credentials',
@@ -31,13 +31,13 @@ class AuthController extends Controller
         }
         
         // Create session token
-        $session = Session::createForUser($user);
+        $session = Session::createForAdmin($admin);
         
         return response()->json([
             'success' => true,
             'message' => 'Login successful',
             'data' => [
-                'user' => $user->toApiArray(),
+                'user' => $admin->toApiArray(),
                 'token' => $session->session_token,
                 'expires_at' => $session->expires_at->toISOString(),
             ],
@@ -86,9 +86,9 @@ class AuthController extends Controller
             ], 401);
         }
         
-        $user = $session->user;
+        $admin = $session->admin;
         
-        if (!$user || $user->role !== 'admin') {
+        if (!$admin) {
             return response()->json([
                 'success' => false,
                 'message' => 'Access denied',
@@ -97,7 +97,7 @@ class AuthController extends Controller
         
         return response()->json([
             'success' => true,
-            'data' => $user->toApiArray(),
+            'data' => $admin->toApiArray(),
         ]);
     }
 }

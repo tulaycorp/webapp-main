@@ -18,7 +18,7 @@ class Session extends Model
      * @var list<string>
      */
     protected $fillable = [
-        'user_id',
+        'admin_id',
         'session_token',
         'expires_at',
     ];
@@ -43,11 +43,11 @@ class Session extends Model
     public $timestamps = false;
 
     /**
-     * Get the user that owns the session.
+     * Get the admin that owns the session.
      */
-    public function user(): BelongsTo
+    public function admin(): BelongsTo
     {
-        return $this->belongsTo(User::class);
+        return $this->belongsTo(Admin::class);
     }
 
     /**
@@ -67,12 +67,12 @@ class Session extends Model
     }
 
     /**
-     * Create a new session for a user.
+     * Create a new session for an admin.
      */
-    public static function createForUser(User $user, int $daysValid = 30): self
+    public static function createForAdmin(Admin $admin, int $daysValid = 30): self
     {
         return self::create([
-            'user_id' => $user->id,
+            'admin_id' => $admin->id,
             'session_token' => self::generateToken(),
             'expires_at' => now()->addDays($daysValid),
         ]);

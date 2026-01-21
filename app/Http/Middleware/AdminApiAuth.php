@@ -34,17 +34,17 @@ class AdminApiAuth
             ], 401);
         }
         
-        $user = $session->user;
+        $admin = $session->admin;
         
-        if (!$user || $user->role !== 'admin') {
+        if (!$admin) {
             return response()->json([
                 'success' => false,
                 'message' => 'Access denied. Admin privileges required.',
             ], 403);
         }
         
-        // Attach user to request
-        $request->merge(['auth_user' => $user]);
+        // Attach admin to request
+        $request->merge(['auth_user' => $admin]);
         
         return $next($request);
     }

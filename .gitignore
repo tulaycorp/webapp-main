@@ -26,3 +26,5 @@ composer.phar
 env
 nul
 /gemini
+/storage
+/bootstrap

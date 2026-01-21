@@ -18,7 +18,7 @@
 
       {{-- Heading --}}
       <h1 data-animate="fade-in" data-delay="200"
-          class="text-7xl lg:text-9xl text-primary dark:text-white uppercase tracking-tighter font-impact mb-12 leading-[0.85]">
+          class="text-7xl lg:text-9xl text-primary dark:text-white uppercase tracking-[-0.05em] font-impact mb-12 leading-[0.85]">
         Get In<br/>Touch
       </h1>
       
@@ -39,7 +39,7 @@
     <div class="max-w-7xl mx-auto">
       <div class="mb-20">
         <h2 data-animate="fade-in" data-delay="0"
-            class="text-5xl lg:text-7xl text-primary dark:text-white uppercase tracking-tighter font-impact mb-6">
+            class="text-5xl lg:text-7xl text-primary dark:text-white uppercase tracking-[-0.05em] font-impact mb-6">
           Send Us a<br/>Message
         </h2>
         <p data-animate="fade-in" data-delay="200"

@@ -47,7 +47,7 @@
 
           {{-- Heading --}}
           <h1 data-animate="fade-in" data-delay="300"
-              class="text-5xl lg:text-7xl text-primary dark:text-white uppercase tracking-tighter leading-[0.9] font-impact">
+              class="text-5xl lg:text-7xl text-primary dark:text-white uppercase tracking-[-0.05em] leading-[0.9] font-impact">
             Born From<br/>
             <span class="block dark:text-stroke-white" 
                   style="-webkit-text-stroke: 1px currentColor; -webkit-text-fill-color: transparent;">

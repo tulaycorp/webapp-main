@@ -244,9 +244,9 @@
         // Update card type icon
         function updateCardTypeIcon(type) {
             const icons = {
-                visa: '<svg class="w-6 h-6" viewBox="0 0 24 24" fill="currentColor"><path d="M9.5 4H14.5L13 20H8L9.5 4ZM20.5 4L17.5 20H13L16 4H20.5ZM4 4L7 20H3L0 4H4Z"/></svg>',
-                mastercard: '<svg class="w-6 h-6" viewBox="0 0 24 24" fill="currentColor"><circle cx="9" cy="12" r="7" fill="#eb001b"/><circle cx="15" cy="12" r="7" fill="#f79e1b"/></svg>',
-                amex: '<span class="text-xs font-bold text-blue-500">AMEX</span>',
+                visa: '<img src="/images/logos/visa.svg" class="w-10 h-7 object-contain" alt="Visa">',
+                mastercard: '<img src="/images/logos/mastercard.svg" class="w-10 h-7 object-contain" alt="Mastercard">',
+                amex: '<img src="/images/logos/amex.svg" class="w-10 h-7 object-contain" alt="American Express">',
                 discover: '<span class="text-xs font-bold text-orange-500">DISC</span>',
                 default: '<i data-lucide="credit-card" class="w-6 h-6"></i>'
             };

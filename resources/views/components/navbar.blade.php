@@ -5,7 +5,7 @@
       {{-- Logo --}}
       <div class="flex-shrink-0">
         <a href="{{ route('home') }}" class="flex flex-col leading-none hover:scale-105 transition-transform duration-200">
-          <span class="text-4xl tracking-tighter uppercase text-primary dark:text-white font-impact">FRAMEWORK</span>
+          <span class="text-4xl tracking-[-0.05em] uppercase text-primary dark:text-white font-impact">FRAMEWORK</span>
           <span class="text-[10px] tracking-ultra text-secondary dark:text-gray-400 uppercase">Supply Co.</span>
         </a>
       </div>

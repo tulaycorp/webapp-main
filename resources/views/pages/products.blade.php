@@ -19,7 +19,7 @@
               Winter '25 Collection
             </p>
             <h1 data-animate="slide-left" data-delay="200" 
-                class="text-7xl lg:text-9xl text-primary dark:text-white uppercase tracking-tighter font-impact leading-[0.85] mb-8">
+                class="text-7xl lg:text-9xl text-primary dark:text-white uppercase tracking-[-0.05em] font-impact leading-[0.85] mb-8">
               Latest<br/>Drops
             </h1>
             <p data-animate="fade-in" data-delay="300"

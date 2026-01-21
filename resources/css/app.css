@@ -57,7 +57,6 @@ body {
 /* Impact Font */
 .font-impact {
   font-family: Impact, 'Arial Black', sans-serif;
-  letter-spacing: 0.02em;
 }
 
 /* Text Color Utilities - explicit definitions for custom colors */

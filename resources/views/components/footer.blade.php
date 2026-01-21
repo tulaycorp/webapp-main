@@ -111,7 +111,7 @@
         {{-- Footer Bottom Section --}}
         <div class="flex flex-col md:flex-row justify-between items-start md:items-end relative z-10 gap-4 md:gap-6 mt-6">
           <div class="flex-1" data-footer-animate="fadeInUp" data-footer-delay="800" style="opacity: 0;">
-            <h1 class="text-[12vw] md:text-[10vw] lg:text-[8vw] xl:text-[6vw] leading-[0.8] font-impact text-white cursor-default">
+            <h1 class="text-[12vw] md:text-[10vw] lg:text-[8vw] xl:text-[6vw] leading-[0.8] font-impact text-white cursor-default tracking-[-0.05em]">
               FRAMEWORK
             </h1>
           </div>

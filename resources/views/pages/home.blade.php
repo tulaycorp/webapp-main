@@ -23,7 +23,7 @@
 
           {{-- Main Heading with Staggered Animation --}}
           <div>
-            <h1 class="text-7xl sm:text-8xl lg:text-9xl uppercase leading-none tracking-tighter text-primary dark:text-white font-impact">
+            <h1 class="text-7xl sm:text-8xl lg:text-9xl uppercase leading-none tracking-[-0.05em] text-primary dark:text-white font-impact">
               <span data-animate="slide-left" data-delay="300" class="block">WINTER</span>
               <span data-animate="slide-left" data-delay="600" class="block dark:text-stroke-white" 
                     style="-webkit-text-stroke: 2px currentColor; -webkit-text-fill-color: transparent;">'25</span>

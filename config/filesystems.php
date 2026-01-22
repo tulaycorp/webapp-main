@@ -69,8 +69,13 @@ return [
             'url' => env('CLOUDFLARE_R2_URL'),
             'endpoint' => env('CLOUDFLARE_R2_ENDPOINT'),
             'use_path_style_endpoint' => true,
-            'throw' => false,
-            'report' => false,
+            'throw' => true,
+            'report' => true,
+            // Temporary fix for SSL certificate issue on Windows
+            // TODO: Remove this and fix SSL certificates properly (see FIX_SSL_CERTIFICATE.md)
+            'http' => [
+                'verify' => env('APP_ENV') === 'local' ? false : true,
+            ],
         ],
 
     ],

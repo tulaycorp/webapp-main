@@ -1,0 +1,17 @@
+{
+    "_hash": "abba4f3eb2066efc985dd9062cbbc6b75c837e26b39e006cea04eca0d6e53fe1",
+    "patches": {
+        "nesbot/carbon": [
+            {
+                "package": "nesbot/carbon",
+                "description": "PHP 8.5 Iterator compatibility fix",
+                "url": "patches/carbon-php85-iterator-fix.patch",
+                "sha256": "86ad6a307394d1b9c202b8c4a6b07996706dc88063f9fa3dda29c88bb740f266",
+                "depth": 1,
+                "extra": {
+                    "provenance": "root"
+                }
+            }
+        ]
+    }
+}

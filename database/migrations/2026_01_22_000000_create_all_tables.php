@@ -93,26 +93,26 @@ return new class extends Migration
             $table->boolean('track_inventory')->default(true);
             $table->boolean('continue_selling_when_out_of_stock')->default(false);
             $table->boolean('featured')->default(false);
-            $table->enum('status', ['active', 'draft', 'archived'])->default('active');
+            $table->string('status', 20)->default('active');
             $table->string('category')->nullable();
             $table->unsignedBigInteger('category_id')->nullable();
             $table->string('vendor')->nullable();
             $table->string('product_type')->nullable();
             $table->text('tags')->nullable();
             $table->text('image_url')->nullable();
-            $table->longText('images')->nullable();
+            $table->jsonb('images')->nullable();
             $table->decimal('weight', 10, 3)->nullable();
-            $table->enum('weight_unit', ['kg', 'g', 'lb', 'oz'])->default('kg');
+            $table->string('weight_unit', 10)->default('kg');
             $table->boolean('requires_shipping')->default(true);
             $table->decimal('length', 10, 2)->nullable();
             $table->decimal('width', 10, 2)->nullable();
             $table->decimal('height', 10, 2)->nullable();
-            $table->enum('dimension_unit', ['cm', 'in', 'm'])->default('cm');
+            $table->string('dimension_unit', 10)->default('cm');
             $table->boolean('taxable')->default(true);
             $table->string('tax_code')->nullable();
             $table->string('seo_title')->nullable();
             $table->text('seo_description')->nullable();
-            $table->longText('metafields')->nullable();
+            $table->jsonb('metafields')->nullable();
             $table->timestamps();
 
             $table->index('category_id', 'products_category_id_index');
@@ -123,6 +123,11 @@ return new class extends Migration
             $table->index('vendor', 'products_vendor_index');
             $table->index('barcode', 'products_barcode_index');
         });
+
+        // Add CHECK constraints for PostgreSQL (replacing ENUMs)
+        DB::statement("ALTER TABLE products ADD CONSTRAINT products_status_check CHECK (status IN ('active', 'draft', 'archived'))");
+        DB::statement("ALTER TABLE products ADD CONSTRAINT products_weight_unit_check CHECK (weight_unit IN ('kg', 'g', 'lb', 'oz'))");
+        DB::statement("ALTER TABLE products ADD CONSTRAINT products_dimension_unit_check CHECK (dimension_unit IN ('cm', 'in', 'm'))");
 
         // Product Images Table
         Schema::create('product_images', function (Blueprint $table) {
@@ -142,7 +147,7 @@ return new class extends Migration
             $table->id();
             $table->unsignedInteger('user_id')->nullable();
             $table->string('order_number')->unique();
-            $table->enum('status', ['pending', 'processing', 'shipped', 'delivered', 'cancelled'])->default('pending');
+            $table->string('status', 20)->default('pending');
             $table->decimal('subtotal', 10, 2)->default(0.00);
             $table->decimal('tax', 10, 2)->default(0.00);
             $table->decimal('shipping', 10, 2)->default(0.00);
@@ -166,6 +171,9 @@ return new class extends Migration
             $table->index('created_at', 'orders_created_at_index');
             $table->index(['status', 'created_at'], 'orders_status_created_at_index');
         });
+
+        // Add CHECK constraint for orders status
+        DB::statement("ALTER TABLE orders ADD CONSTRAINT orders_status_check CHECK (status IN ('pending', 'processing', 'shipped', 'delivered', 'cancelled'))");
 
         // Order Items Table
         Schema::create('order_items', function (Blueprint $table) {
@@ -209,7 +217,7 @@ return new class extends Migration
             $table->id();
             $table->string('code')->unique();
             $table->string('description')->nullable();
-            $table->enum('discount_type', ['percentage', 'fixed'])->default('percentage');
+            $table->string('discount_type', 20)->default('percentage');
             $table->decimal('discount_value', 10, 2);
             $table->decimal('min_order_amount', 10, 2)->nullable();
             $table->decimal('max_discount_amount', 10, 2)->nullable();
@@ -220,6 +228,9 @@ return new class extends Migration
             $table->boolean('is_active')->default(true);
             $table->timestamps();
         });
+
+        // Add CHECK constraint for coupons discount_type
+        DB::statement("ALTER TABLE coupons ADD CONSTRAINT coupons_discount_type_check CHECK (discount_type IN ('percentage', 'fixed'))");
 
         // Coupon Usages Table
         Schema::create('coupon_usages', function (Blueprint $table) {

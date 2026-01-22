@@ -277,14 +277,7 @@ import 'nprogress/nprogress.css';
       headers: headers
     })
       .then(res => {
-        // If unauthorized (401), clear expired token
-        if (res.status === 401) {
-          console.log('Session expired (401), clearing stored token');
-          localStorage.removeItem('eshop_user');
-          updateCartCount(CART);
-          return null;
-        }
-        // If other error, just keep local cart
+        // If unauthorized or error, just keep local cart
         if (!res.ok) {
           console.log('Server cart fetch failed (status ' + res.status + '), keeping local cart');
           // Still update cart count from local storage
@@ -1095,16 +1088,40 @@ import 'nprogress/nprogress.css';
         }
       }
 
+      // Load catalog on all pages for cart hover functionality
+      let catalogLoaded = false;
+      
       // If featured products container exists treat as home
-      if (document.getElementById('featured-products')) window.Eshop.pages.home();
+      if (document.getElementById('featured-products')) {
+        window.Eshop.pages.home();
+        catalogLoaded = true;
+      }
       // If product grid exists treat as products page
-      if (document.getElementById('product-grid')) window.Eshop.pages.products();
+      if (document.getElementById('product-grid')) {
+        window.Eshop.pages.products();
+        catalogLoaded = true;
+      }
       // If cart items container exists treat as cart page
-      if (document.getElementById('cart-items')) window.Eshop.pages.cart();
+      if (document.getElementById('cart-items')) {
+        window.Eshop.pages.cart();
+        catalogLoaded = true;
+      }
       // If contact form exists treat as contact page
-      if (document.getElementById('contact-form')) window.Eshop.pages.contact();
+      if (document.getElementById('contact-form')) {
+        window.Eshop.pages.contact();
+      }
       // If about stats exists treat as about page
-      if (document.getElementById('stat-products')) window.Eshop.pages.about();
+      if (document.getElementById('stat-products')) {
+        window.Eshop.pages.about();
+        catalogLoaded = true;
+      }
+      
+      // Load catalog on pages without specific initializers (for cart hover)
+      if (!catalogLoaded) {
+        loadCatalog().then(() => {
+          updateCartCount(CART);
+        });
+      }
 
       // Bind any static add buttons (e.g. PDP)
       bindAddButtons(document);

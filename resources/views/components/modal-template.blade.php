@@ -256,7 +256,7 @@
             <div class="text-red-500 text-sm mt-2 hidden" id="forgot-email-error">Please enter a valid email</div>
           </div>
           
-          <button type="submit" class="btn-primary w-full text-lg">
+          <button type="submit" id="forgot-submit-btn" class="btn-primary w-full text-lg">
             Send Reset Link
           </button>
           

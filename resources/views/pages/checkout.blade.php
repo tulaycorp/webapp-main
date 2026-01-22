@@ -287,5 +287,5 @@
 @endsection
 
 @push('scripts')
-<script src="{{ asset('js/checkout.js') }}" defer></script>
+<script src="{{ asset('js/checkout.js') }}?v={{ filemtime(public_path('js/checkout.js')) }}" defer></script>
 @endpush

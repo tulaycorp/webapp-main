@@ -299,6 +299,9 @@
       var form = document.getElementById('forgot-form'); if (form) form.reset();
       $('#forgot-feedback').hide().removeClass('alert-danger alert-success alert-info');
       $('#forgot-email').removeClass('is-invalid');
+      // Reset button to original state
+      var $submit = $('#forgot-form button[type="submit"]');
+      $submit.text('Send Reset Link').prop('disabled', false);
     }
     $(document).on('click', '#forgot-close, #forgot-cancel', hideForgotModal);
     $(document).on('click', '#forgot-modal', function (e) { if (e.target.id === 'forgot-modal') hideForgotModal(); });
@@ -317,7 +320,10 @@
       $('#forgot-email').removeClass('is-invalid');
       $feedback.removeClass('alert-danger alert-success alert-info').hide();
       if (!emailPattern.test(email)) { $('#forgot-email').addClass('is-invalid'); return; }
-      $feedback.addClass('alert-info').text('Checking account...').show();
+      
+      // Show loading state
+      var originalText = $submit.text();
+      $submit.html('<span class="inline-flex items-center justify-center gap-2"><span class="loading-spinner" style="width: 16px; height: 16px;"></span><span>Checking...</span></span>');
       $submit.prop('disabled', true);
 
       $.ajax({
@@ -327,19 +333,34 @@
         timeout: 5000,
         success: function (response) {
           if (response && response.exists) {
+            // Show second state - Link Sent!
+            $submit.html('<span class="inline-flex items-center justify-center gap-2"><i data-lucide="check" class="w-5 h-5"></i><span>Link Sent!</span></span>');
+            if (window.lucide) window.lucide.createIcons();
+            
             $feedback.removeClass('alert-info').addClass('alert-success')
               .html('<i class="bi bi-check-circle me-1"></i>We found an account for <strong>' + email + '</strong>. A reset link has been sent (demo).').show();
-            setTimeout(function () { hideForgotModal(); showLoginModal(); $('#login-email').val(email).focus(); }, 1200);
+            
+            // After 2 seconds, show third state - Email Sent!
+            setTimeout(function () {
+              $submit.html('<span class="inline-flex items-center justify-center gap-2"><i data-lucide="mail-check" class="w-5 h-5"></i><span>Email Sent!</span></span>');
+              if (window.lucide) window.lucide.createIcons();
+            }, 2000);
+            
+            // Then redirect to login after another 1.2 seconds (total 3.2s)
+            setTimeout(function () { hideForgotModal(); showLoginModal(); $('#login-email').val(email).focus(); }, 3200);
           } else {
             $feedback.removeClass('alert-info').addClass('alert-danger')
               .html('<i class="bi bi-exclamation-triangle me-1"></i>No account found for <strong>' + email + '</strong>.').show();
+            // Reset button
+            $submit.text(originalText).prop('disabled', false);
           }
         },
         error: function () {
           $feedback.removeClass('alert-info').addClass('alert-danger')
             .html('<i class="bi bi-exclamation-triangle me-1"></i>Unable to check account. Please try again later.').show();
-        },
-        complete: function () { setTimeout(function () { $submit.prop('disabled', false); }, 400); }
+          // Reset button
+          $submit.text(originalText).prop('disabled', false);
+        }
       });
     });
 

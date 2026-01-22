@@ -277,7 +277,14 @@ import 'nprogress/nprogress.css';
       headers: headers
     })
       .then(res => {
-        // If unauthorized or error, just keep local cart
+        // If unauthorized (401), clear expired token
+        if (res.status === 401) {
+          console.log('Session expired (401), clearing stored token');
+          localStorage.removeItem('eshop_user');
+          updateCartCount(CART);
+          return null;
+        }
+        // If other error, just keep local cart
         if (!res.ok) {
           console.log('Server cart fetch failed (status ' + res.status + '), keeping local cart');
           // Still update cart count from local storage

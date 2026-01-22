@@ -344,6 +344,31 @@ INSERT INTO `products` (`id`, `sku`, `name`, `description`, `price`, `compare_at
     ('crossbody-bag-hij34', 'ACC002', 'Crossbody Bag', 'Compact crossbody bag with multiple compartments.', 65.00, NULL, 'Accessories', 5, 'https://images.unsplash.com/photo-1553062407-98eeb64c6a62?w=800&q=80', 0, 'active', 55, 'bag,crossbody,compact', NOW(), NOW());
 
 -- =============================================================================
+-- Settings Table (Key-Value Store)
+-- =============================================================================
+CREATE TABLE `settings` (
+    `id` BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
+    `key` VARCHAR(255) NOT NULL,
+    `value` TEXT NULL DEFAULT NULL,
+    `created_at` TIMESTAMP NULL DEFAULT NULL,
+    `updated_at` TIMESTAMP NULL DEFAULT NULL,
+    PRIMARY KEY (`id`),
+    UNIQUE KEY `settings_key_unique` (`key`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- =============================================================================
+-- Default Settings
+-- =============================================================================
+INSERT INTO `settings` (`key`, `value`, `created_at`, `updated_at`) VALUES
+    ('maintenance_mode', 'false', NOW(), NOW()),
+    ('announcement_enabled', 'false', NOW(), NOW()),
+    ('announcement_message', '⚡ WINTER SALE: 50% OFF ⚡', NOW(), NOW()),
+    ('sold_out_title', 'Sold Out', NOW(), NOW()),
+    ('sold_out_subtitle', 'Last Drop', NOW(), NOW()),
+    ('sold_out_image_home', 'https://images.unsplash.com/photo-1643387848945-da63360662f4?w=800&q=80', NOW(), NOW()),
+    ('sold_out_image_shop', 'https://images.unsplash.com/photo-1643387848945-da63360662f4?w=800&q=80', NOW(), NOW());
+
+-- =============================================================================
 -- Done! Database is ready for both webapp-main and webapp-admin-panel
 -- =============================================================================
 SELECT 'Database initialization complete!' AS status;

@@ -49,14 +49,19 @@ class AppServiceProvider extends ServiceProvider
             if (\Illuminate\Support\Facades\Schema::hasTable('settings')) {
                 $settings = \App\Models\Setting::all()->pluck('value', 'key');
                 
+                // Share the full settings array globally
+                \Illuminate\Support\Facades\View::share('settings', $settings);
+
                 view()->share('announcement_enabled', filter_var($settings['announcement_enabled'] ?? 'false', FILTER_VALIDATE_BOOLEAN));
                 view()->share('announcement_message', $settings['announcement_message'] ?? '');
             } else {
+                view()->share('settings', []);
                 view()->share('announcement_enabled', false);
                 view()->share('announcement_message', '');
             }
         } catch (\Exception $e) {
             // Fallback if DB connection fails
+            view()->share('settings', []);
             view()->share('announcement_enabled', false);
             view()->share('announcement_message', '');
         }

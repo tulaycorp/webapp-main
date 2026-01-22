@@ -90,4 +90,5 @@ Route::prefix('admin')->middleware('admin.api')->group(function () {
     
     // Settings
     Route::post('/settings', [SettingController::class, 'update'])->name('admin.api.settings.update');
+    Route::post('/settings/upload-image', [SettingController::class, 'uploadImage'])->name('admin.api.settings.upload-image');
 });

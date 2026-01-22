@@ -65,7 +65,7 @@
         {{-- Right: Model Image with Interactive Elements --}}
         <div data-animate="slide-right" data-delay="400" class="relative h-[600px] hidden lg:block rotate-3 transition-transform duration-500 hover:rotate-1">
           <div data-hover="lift" class="hero-image-container absolute inset-0 border border-border dark:border-gray-700 overflow-hidden shadow-2xl bg-white dark:bg-gray-800 group cursor-pointer">
-            <img src="{{ $settings['sold_out_image_home'] ?: 'https://images.unsplash.com/photo-1643387848945-da63360662f4?w=800&q=80' }}" 
+            <img src="{{ ($settings['sold_out_image_home'] ?? '') ?: 'https://images.unsplash.com/photo-1643387848945-da63360662f4?w=800&q=80' }}" 
                  alt="Streetwear model" 
                  class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105">
             

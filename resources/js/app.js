@@ -80,7 +80,7 @@ import './footer-animations.js';
 
   // Load products from database
   function loadCatalog() {
-    return fetch('/api/products.php?action=list')
+    return fetch('/api/products')
       .then(res => {
         if (!res.ok) throw new Error('API Request Failed');
         return res.json();

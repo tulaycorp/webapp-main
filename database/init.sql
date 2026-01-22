@@ -311,12 +311,6 @@ INSERT INTO `migrations` (`migration`, `batch`) VALUES
     ('2026_01_22_000001_update_admin_sessions_foreign_key', 1);
 
 -- =============================================================================
--- Default Admin User (password: 'password')
--- =============================================================================
-INSERT INTO `admins` (`first_name`, `last_name`, `email`, `password_hash`, `created_at`, `updated_at`) VALUES
-    ('Admin', 'User', 'admin@email.com', '$2y$12$Kq3hG7pJ.kFz8A1xCwE5YOfiSz5nR8J1V0K2m9QxT6L4wN3pY.abc', NOW(), NOW());
-
--- =============================================================================
 -- Sample Categories
 -- =============================================================================
 INSERT INTO `categories` (`id`, `name`, `slug`, `description`, `sort_order`, `is_active`, `created_at`, `updated_at`) VALUES

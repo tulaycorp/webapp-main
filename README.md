@@ -50,14 +50,14 @@ DB_PASSWORD=
 
 ### 4. Initialize Database
 
-**Option A:** Using Laravel migrations (recommended for development):
+**Full setup with sample data:**
 ```bash
 php artisan migrate:fresh --seed
 ```
 
-**Option B:** Using the shared SQL init script:
+**Essentials only (no sample products/categories):**
 ```bash
-mysql -u root -p < ../database/init.sql
+php artisan migrate:fresh-essentials
 ```
 
 ### 5. Build Frontend Assets
@@ -118,10 +118,10 @@ webapp-main/
 - Full CRUD for products, orders, categories
 - Used by the admin panel application
 
-## Test Credentials
+## Admin Credentials
 
 ```
-Email: test@example.com
+Email: admin@example.com
 Password: password
 ```
 

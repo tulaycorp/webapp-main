@@ -4,10 +4,11 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Models\User;
-use App\Models\Session;
+use App\Models\UserSession;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Validator;
 use App\Services\CartMergeService;
 
@@ -36,7 +37,7 @@ class UserController extends Controller
         // Merge guest cart into user cart (if guest had items)
         // Note: We get session_id from request body because API routes can't decrypt cookies
         $guestId = $request->input('guest_session_id');
-        \Log::info('UserController login: guest_session_id from request', [
+        Log::info('UserController login: guest_session_id from request', [
             'guest_id' => $guestId,
             'all_input' => $request->all(),
         ]);
@@ -45,7 +46,7 @@ class UserController extends Controller
         }
 
         // Create session token
-        $session = Session::createForUser($user);
+        $session = UserSession::createForUser($user);
 
         return response()->json([
             'success' => true,
@@ -129,7 +130,7 @@ class UserController extends Controller
             return response()->json(['error' => 'Session token required'], 400);
         }
 
-        Session::where('session_token', $sessionToken)->delete();
+        UserSession::where('session_token', $sessionToken)->delete();
 
         return response()->json(['success' => true]);
     }
@@ -145,7 +146,7 @@ class UserController extends Controller
             return response()->json(['error' => 'Authentication required'], 401);
         }
 
-        $session = Session::where('session_token', $sessionToken)
+        $session = UserSession::where('session_token', $sessionToken)
             ->where('expires_at', '>', now())
             ->first();
 
@@ -186,7 +187,7 @@ class UserController extends Controller
             return response()->json(['error' => 'Authentication required'], 401);
         }
 
-        $session = Session::where('session_token', $sessionToken)
+        $session = UserSession::where('session_token', $sessionToken)
             ->where('expires_at', '>', now())
             ->first();
 
@@ -252,7 +253,7 @@ class UserController extends Controller
             return response()->json(['error' => 'Authentication required'], 401);
         }
 
-        $session = Session::where('session_token', $sessionToken)
+        $session = UserSession::where('session_token', $sessionToken)
             ->where('expires_at', '>', now())
             ->first();
 

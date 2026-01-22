@@ -65,7 +65,7 @@
         {{-- Right: Model Image with Interactive Elements --}}
         <div data-animate="slide-right" data-delay="400" class="relative h-[600px] hidden lg:block rotate-3 transition-transform duration-500 hover:rotate-1">
           <div data-hover="lift" class="hero-image-container absolute inset-0 border border-border dark:border-gray-700 overflow-hidden shadow-2xl bg-white dark:bg-gray-800 group cursor-pointer">
-            <img src="https://images.unsplash.com/photo-1643387848945-da63360662f4?w=800&q=80" 
+            <img src="{{ $settings['sold_out_image_home'] ?: 'https://images.unsplash.com/photo-1643387848945-da63360662f4?w=800&q=80' }}" 
                  alt="Streetwear model" 
                  class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105">
             
@@ -77,8 +77,8 @@
           <div data-animate="scale-in" data-delay="1600" 
                data-hover="lift" 
                class="absolute -bottom-8 -left-8 bg-white dark:bg-gray-800 border border-border dark:border-gray-700 px-8 py-6 shadow-xl -rotate-6 hover:rotate-0 transition-transform duration-300">
-            <p class="text-4xl text-primary dark:text-white uppercase mb-1 font-impact">Sold Out</p>
-            <p class="text-secondary dark:text-gray-400 text-xs uppercase tracking-wider">Last Drop</p>
+            <p class="text-4xl text-primary dark:text-white uppercase mb-1 font-impact">{{ $settings['sold_out_title'] ?? 'Sold Out' }}</p>
+            <p class="text-secondary dark:text-gray-400 text-xs uppercase tracking-wider">{{ $settings['sold_out_subtitle'] ?? 'Last Drop' }}</p>
           </div>
         </div>
       </div>

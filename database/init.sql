@@ -365,6 +365,8 @@ INSERT INTO `settings` (`key`, `value`, `created_at`, `updated_at`) VALUES
     ('announcement_message', '⚡ WINTER SALE: 50% OFF ⚡', NOW(), NOW()),
     ('sold_out_title', 'Sold Out', NOW(), NOW()),
     ('sold_out_subtitle', 'Last Drop', NOW(), NOW()),
+    ('sold_out_title_shop', 'Sold Out', NOW(), NOW()),
+    ('sold_out_subtitle_shop', 'Last Drop', NOW(), NOW()),
     ('sold_out_image_home', 'https://images.unsplash.com/photo-1643387848945-da63360662f4?w=800&q=80', NOW(), NOW()),
     ('sold_out_image_shop', 'https://images.unsplash.com/photo-1643387848945-da63360662f4?w=800&q=80', NOW(), NOW());
 

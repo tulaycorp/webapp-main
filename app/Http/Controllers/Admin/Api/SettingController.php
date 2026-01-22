@@ -6,6 +6,8 @@ use App\Http\Controllers\Controller;
 use App\Models\Setting;
 use Illuminate\Http\Request;
 
+use Illuminate\Support\Str;
+
 class SettingController extends Controller
 {
     /**
@@ -47,10 +49,11 @@ class SettingController extends Controller
         $file = $request->file('image');
         $settingKey = $request->input('setting_key');
         
-        // Generate a standard filename based on the setting key to avoid clutter
-        // e.g., settings/sold_out_image_home.jpg
+        // Generate a unique filename to prevent caching issues
+        // e.g., settings/sold_out_image_home_UUID.jpg
         $extension = $file->getClientOriginalExtension();
-        $filename = "{$settingKey}.{$extension}";
+        $uuid = Str::uuid();
+        $filename = "{$settingKey}_{$uuid}.{$extension}";
         $path = "settings/{$filename}";
 
         try {

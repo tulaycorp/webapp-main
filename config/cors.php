@@ -25,6 +25,13 @@ return [
         'http://127.0.0.1:8000',
         'http://localhost:8001',
         'http://127.0.0.1:8001',
+        // Production domains
+        'https://frameworksupply.uk',
+        'https://www.frameworksupply.uk',
+        'https://admin.frameworksupply.uk',
+        'http://frameworksupply.uk',
+        'http://www.frameworksupply.uk',
+        'http://admin.frameworksupply.uk',
     ],
 
     'allowed_origins_patterns' => [],

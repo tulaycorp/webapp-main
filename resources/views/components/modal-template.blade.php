@@ -16,7 +16,7 @@
       <div class="p-8">
         <form id="login-form" class="space-y-6">
           <div>
-            <label for="login-email" class="text-label block mb-3">EMAIL ADDRESS *</label>
+            <label for="login-email" class="text-label block mb-3">EMAIL ADDRESS <span class="text-red-500">*</span></label>
             <input id="login-email" name="email" type="email" 
                    class="form-input text-base" 
                    required 
@@ -28,7 +28,7 @@
           </div>
           
           <div>
-            <label for="login-password" class="text-label block mb-3">PASSWORD *</label>
+            <label for="login-password" class="text-label block mb-3">PASSWORD <span class="text-red-500">*</span></label>
             <div class="relative">
               <input id="login-password" name="password" type="password" 
                      class="form-input text-base pr-12" 
@@ -94,7 +94,7 @@
         <form id="signup-form" class="space-y-6">
           <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div>
-              <label for="signup-first-name" class="text-label block mb-3">FIRST NAME *</label>
+              <label for="signup-first-name" class="text-label block mb-3">FIRST NAME <span class="text-red-500">*</span></label>
               <input id="signup-first-name" name="firstName" type="text" 
                      class="form-input text-base" 
                      required 
@@ -104,7 +104,7 @@
             </div>
             
             <div>
-              <label for="signup-last-name" class="text-label block mb-3">LAST NAME *</label>
+              <label for="signup-last-name" class="text-label block mb-3">LAST NAME <span class="text-red-500">*</span></label>
               <input id="signup-last-name" name="lastName" type="text" 
                      class="form-input text-base" 
                      required 
@@ -123,7 +123,7 @@
           </div>
           
           <div>
-            <label for="signup-email" class="text-label block mb-3">EMAIL ADDRESS *</label>
+            <label for="signup-email" class="text-label block mb-3">EMAIL ADDRESS <span class="text-red-500">*</span></label>
             <input id="signup-email" name="email" type="email" 
                    class="form-input text-base" 
                    required 
@@ -167,7 +167,7 @@
           </div>
           
           <div>
-            <label for="signup-password" class="text-label block mb-3">PASSWORD *</label>
+            <label for="signup-password" class="text-label block mb-3">PASSWORD <span class="text-red-500">*</span></label>
             <div class="relative">
               <input id="signup-password" name="password" type="password" 
                      class="form-input text-base pr-12" 
@@ -183,7 +183,7 @@
           </div>
           
           <div>
-            <label for="signup-password-confirm" class="text-label block mb-3">CONFIRM PASSWORD *</label>
+            <label for="signup-password-confirm" class="text-label block mb-3">CONFIRM PASSWORD <span class="text-red-500">*</span></label>
             <div class="relative">
               <input id="signup-password-confirm" name="password-confirm" type="password" 
                      class="form-input text-base pr-12" 
@@ -247,7 +247,7 @@
         
         <form id="forgot-form" class="space-y-6">
           <div>
-            <label for="forgot-email" class="text-label block mb-3">EMAIL ADDRESS *</label>
+            <label for="forgot-email" class="text-label block mb-3">EMAIL ADDRESS <span class="text-red-500">*</span></label>
             <input id="forgot-email" name="email" type="email" 
                    class="form-input text-base" 
                    required 
@@ -499,7 +499,7 @@ document.addEventListener('DOMContentLoaded', function() {
           localStorage.setItem('eshop_user', JSON.stringify(data.user));
           // Clear local cart - server will have merged cart
           localStorage.removeItem('eshop-cart-v1');
-          feedback.className = 'p-4 border-l-4 border-green-500 bg-green-50 text-green-700';
+          feedback.className = 'p-4 border-l-4 border-primary bg-gray-100 dark:bg-gray-800 text-primary dark:text-white';
           feedback.textContent = 'Login successful! Redirecting...';
           feedback.classList.remove('hidden');
           setTimeout(() => {
@@ -507,7 +507,7 @@ document.addEventListener('DOMContentLoaded', function() {
             window.location.reload();
           }, 1000);
         } else {
-          feedback.className = 'p-4 border-l-4 border-red-500 bg-red-50 text-red-700';
+          feedback.className = 'p-4 border-l-4 border-red-600 bg-red-50 dark:bg-red-900/20 text-red-700 dark:text-red-400';
           feedback.textContent = data.error || 'Login failed';
           feedback.classList.remove('hidden');
           // Reset button
@@ -515,7 +515,7 @@ document.addEventListener('DOMContentLoaded', function() {
           submitBtn.disabled = false;
         }
       } catch (err) {
-        feedback.className = 'p-4 border-l-4 border-red-500 bg-red-50 text-red-700';
+        feedback.className = 'p-4 border-l-4 border-red-600 bg-red-50 dark:bg-red-900/20 text-red-700 dark:text-red-400';
         feedback.textContent = 'Network error. Please try again.';
         feedback.classList.remove('hidden');
         // Reset button
@@ -567,7 +567,7 @@ document.addEventListener('DOMContentLoaded', function() {
         const data = await response.json();
         
         if (data.success) {
-          feedback.className = 'p-4 border-l-4 border-green-500 bg-green-50 text-green-700';
+          feedback.className = 'p-4 border-l-4 border-primary bg-gray-100 dark:bg-gray-800 text-primary dark:text-white';
           feedback.textContent = 'Account created! Please sign in.';
           feedback.classList.remove('hidden');
           setTimeout(() => {
@@ -575,7 +575,7 @@ document.addEventListener('DOMContentLoaded', function() {
             showModal('login-modal');
           }, 1500);
         } else {
-          feedback.className = 'p-4 border-l-4 border-red-500 bg-red-50 text-red-700';
+          feedback.className = 'p-4 border-l-4 border-red-600 bg-red-50 dark:bg-red-900/20 text-red-700 dark:text-red-400';
           feedback.textContent = data.error || 'Signup failed';
           feedback.classList.remove('hidden');
           // Reset button
@@ -583,7 +583,7 @@ document.addEventListener('DOMContentLoaded', function() {
           submitBtn.disabled = false;
         }
       } catch (err) {
-        feedback.className = 'p-4 border-l-4 border-red-500 bg-red-50 text-red-700';
+        feedback.className = 'p-4 border-l-4 border-red-600 bg-red-50 dark:bg-red-900/20 text-red-700 dark:text-red-400';
         feedback.textContent = 'Network error. Please try again.';
         feedback.classList.remove('hidden');
         // Reset button

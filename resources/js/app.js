@@ -4,6 +4,9 @@
 import './animations.js';
 // Import footer animations
 import './footer-animations.js';
+// Import NProgress for loading bar
+import NProgress from 'nprogress';
+import 'nprogress/nprogress.css';
 
 (function () {
   // Component loader function
@@ -1088,4 +1091,53 @@ import './footer-animations.js';
 
   // Initial badge update
   updateCartCount(CART);
+
+  // ========================================
+  // NProgress Loading Bar Configuration
+  // ========================================
+  
+  // Configure NProgress
+  NProgress.configure({ 
+    showSpinner: false,
+    trickleSpeed: 200,
+    minimum: 0.08,
+    easing: 'ease',
+    speed: 400
+  });
+
+  // Show loading bar on page navigation
+  window.addEventListener('beforeunload', () => {
+    NProgress.start();
+  });
+
+  // Show loading bar on link clicks
+  document.addEventListener('click', (e) => {
+    const link = e.target.closest('a');
+    if (link && link.href && !link.hasAttribute('data-no-loader')) {
+      // Check if it's a same-page link or external
+      const url = new URL(link.href, window.location.origin);
+      if (url.origin === window.location.origin && !link.hasAttribute('download')) {
+        NProgress.start();
+      }
+    }
+  });
+
+  // Show loading bar on form submissions
+  document.addEventListener('submit', (e) => {
+    const form = e.target;
+    if (form && !form.hasAttribute('data-no-loader')) {
+      NProgress.start();
+    }
+  });
+
+  // Complete loading bar when page is loaded
+  window.addEventListener('load', () => {
+    NProgress.done();
+  });
+
+  // Also complete on DOMContentLoaded as fallback
+  if (document.readyState === 'complete') {
+    NProgress.done();
+  }
+
 })();

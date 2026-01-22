@@ -724,11 +724,32 @@ import './footer-animations.js';
       } else {
         list.sort((a, b) => (b.featured ? 1 : 0) - (a.featured ? 1 : 0));
       }
-      grid.innerHTML = list.map((product, index) => productCard(product, index * 50)).join('');
+      // Check if this is the initial load replacing skeletons
+      const isInitialLoad = grid.querySelector('.animate-pulse') !== null;
+
+      grid.innerHTML = list.map((product, index) => {
+        // If initial load, skip animation (delay -1 or check in productCard) strictly for the first render
+        // Actually, let's just modify the HTML string after generation if needed, or pass 0 delay and ensure CSS handles it
+        // Better: removing the data-animate attribute for instant appearance
+        const cardHtml = productCard(product, index * 50);
+        if (isInitialLoad) {
+          // Remove the animation attribute to make it appear instantly
+          return cardHtml.replace('data-animate="fade-in"', '');
+        }
+        return cardHtml;
+      }).join('');
+
       bindAddButtons(grid);
 
       // Trigger animations for product cards
       if (window.AnimEngine) {
+        // Only trigger entry animations if NOT initial load (because we removed the attributes)
+        // OR if we decide to keep them but start them instantly. 
+        // Logic above removes the attribute, so AnimEngine won't find them to fade in, effectively making them visible instantly (default opacity 1 in CSS unless hidden)
+        // However, we must ensure they are visible. CSS .modern-card usually doesn't hide itself.
+        // Wait, app.css has animations. If data-animate is missing, they are just static visible elements?
+        // Let's check app.css. Yes, if no class/attribute, it is default visible.
+
         const productCards = grid.querySelectorAll('[data-animate="fade-in"]');
         productCards.forEach((card, index) => {
           const delay = parseInt(card.dataset.delay) || index * 50;
@@ -746,7 +767,20 @@ import './footer-animations.js';
     }
 
     // Bind events if elements exist
-    if (search) ['input', 'change'].forEach(ev => search.addEventListener(ev, apply));
+    // Debounce helper
+    function debounce(func, wait) {
+      let timeout;
+      return function (...args) {
+        clearTimeout(timeout);
+        timeout = setTimeout(() => func.apply(this, args), wait);
+      };
+    }
+
+    // Bind events if elements exist
+    if (search) {
+      search.addEventListener('input', debounce(apply, 100));
+      search.addEventListener('change', apply); // Keep change for immediate updates (e.g. enter key or blur)
+    }
     if (catSel) ['input', 'change'].forEach(ev => catSel.addEventListener(ev, apply));
     if (sortSel) ['input', 'change'].forEach(ev => sortSel.addEventListener(ev, apply));
 

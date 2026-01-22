@@ -39,22 +39,62 @@
     <div class="max-w-7xl mx-auto">
       {{-- Filter Tags with Interactive Animations --}}
       <div class="mb-12">
-        <h3 data-animate="fade-in" data-delay="400"
-            class="text-2xl text-primary dark:text-white uppercase tracking-wide font-impact mb-8">
-          Filter by Category
-        </h3>
+        <div class="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-8">
+            <h3 data-animate="fade-in" data-delay="400"
+                class="text-2xl text-primary dark:text-white uppercase tracking-wide font-impact mb-0">
+            Filter by Category
+            </h3>
+            
+            {{-- Search Bar --}}
+            <div class="relative group w-full lg:w-80" data-animate="fade-in" data-delay="300">
+                <i data-lucide="search" class="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-secondary dark:text-gray-400 group-hover:text-primary dark:group-hover:text-white transition-colors"></i>
+                <input type="text" 
+                        id="search" 
+                        placeholder="Search products..." 
+                        class="w-full pl-12 pr-0 py-3 bg-white dark:bg-gray-700 border border-border dark:border-gray-600 focus:border-primary dark:focus:border-white outline-none transition-all shadow-sm group-hover:shadow-md text-primary dark:text-white placeholder-secondary/70">
+            </div>
+        </div>
+
         <div class="flex flex-wrap gap-4" id="filter-container">
-          <button data-animate="fade-in" data-delay="450" data-hover="lift"
-                  class="filter-tag active px-8 py-4 uppercase text-base tracking-wider transition-all shadow-lg hover:shadow-xl bg-primary dark:bg-white text-white dark:text-gray-900 font-medium"
-                  data-filter="All">
-            All Products
-          </button>
-          {{-- Categories will be dynamically loaded via JavaScript --}}
+            <button data-animate="fade-in" data-delay="450" data-hover="lift"
+                    class="filter-tag active px-8 py-4 uppercase text-base tracking-wider transition-all shadow-lg hover:shadow-xl bg-primary dark:bg-white text-white dark:text-gray-900 font-medium"
+                    data-filter="All">
+                All Products
+            </button>
+            {{-- Skeleton Filter Pills --}}
+            @for ($i = 0; $i < 4; $i++)
+            <div class="h-14 w-32 bg-gray-200 dark:bg-gray-700 animate-pulse" style="width: {{ rand(100, 160) }}px"></div>
+            @endfor
+            {{-- Categories will be dynamically loaded via JavaScript --}}
         </div>
       </div>
 
       {{-- Product Grid with Staggered Animation --}}
-      <div id="product-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-12 mb-32"></div>
+      <div id="product-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-12 mb-32">
+        {{-- Skeleton Loaders (6 items) --}}
+        @for ($i = 0; $i < 6; $i++)
+        <div class="group animate-pulse">
+            <div class="modern-card dark:bg-gray-800 dark:border-gray-700 overflow-hidden border border-gray-200">
+                {{-- Image Placeholder --}}
+                <div class="aspect-square bg-gray-200 dark:bg-gray-700 w-full"></div>
+                
+                <div class="p-6 space-y-4">
+                    {{-- Category Placeholder --}}
+                    <div class="h-3 bg-gray-200 dark:bg-gray-700 rounded w-1/3"></div>
+                    
+                    {{-- Title Placeholder --}}
+                    <div class="h-6 bg-gray-200 dark:bg-gray-700 rounded w-3/4"></div>
+                    
+                    {{-- Price & Button Placeholder --}}
+                    <div class="flex items-center justify-between pt-2">
+                        <div class="h-8 bg-gray-200 dark:bg-gray-700 rounded w-1/4"></div>
+                        <div class="h-10 bg-gray-200 dark:bg-gray-700 rounded w-1/4"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        @endfor
+      </div>
       
       {{-- No Results --}}
       <div class="text-center py-32 hidden" id="no-results">

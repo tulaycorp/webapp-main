@@ -20,22 +20,29 @@ import 'nprogress/nprogress.css';
     if (componentName === 'modal-template' && document.getElementById('login-modal')) return;
     if (componentName === 'footer' && document.querySelector('footer')) return;
 
-    const response = await fetch(`../components/${componentName}.html`);
-    if (!response.ok) throw new Error(`Failed to load ${componentName}`);
-    const html = await response.text();
-    const targetElement = document.querySelector(targetSelector);
-    if (targetElement) {
-      if (targetSelector === 'body') {
-        // Append to body for modals
-        targetElement.insertAdjacentHTML('beforeend', html);
-      } else {
-        // Replace content for other components
-        targetElement.innerHTML = html;
+    try {
+      const response = await fetch(`../components/${componentName}.html`);
+      if (!response.ok) {
+        console.log(`Component ${componentName} not loaded (using server-side component)`);
+        return;
       }
-      // Set active navigation state for navbar
-      if (componentName === 'navbar') {
-        setActiveNavigation();
+      const html = await response.text();
+      const targetElement = document.querySelector(targetSelector);
+      if (targetElement) {
+        if (targetSelector === 'body') {
+          // Append to body for modals
+          targetElement.insertAdjacentHTML('beforeend', html);
+        } else {
+          // Replace content for other components
+          targetElement.innerHTML = html;
+        }
+        // Set active navigation state for navbar
+        if (componentName === 'navbar') {
+          setActiveNavigation();
+        }
       }
+    } catch (error) {
+      console.log(`Failed to load ${componentName}, using server-side component`);
     }
   }
   // Set active navigation state
@@ -269,8 +276,19 @@ import 'nprogress/nprogress.css';
       credentials: 'same-origin',
       headers: headers
     })
-      .then(res => res.json())
+      .then(res => {
+        // If unauthorized or error, just keep local cart
+        if (!res.ok) {
+          console.log('Server cart fetch failed (status ' + res.status + '), keeping local cart');
+          // Still update cart count from local storage
+          updateCartCount(CART);
+          return null;
+        }
+        return res.json();
+      })
       .then(data => {
+        if (!data) return; // Skip if fetch failed
+        
         console.log('Server cart response:', data);
         if (data && data.items) {
           // Simple strategy: Server is source of truth if we trust it.
@@ -286,7 +304,11 @@ import 'nprogress/nprogress.css';
             syncCartServer();
           }
         }
-      }).catch(e => console.error('Error fetching cart:', e));
+      }).catch(e => {
+        console.error('Error fetching cart:', e);
+        // On error, ensure local cart is still displayed
+        updateCartCount(CART);
+      });
   }
 
   // Initial sync on load (Fetch latest state)

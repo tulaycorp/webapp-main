@@ -159,7 +159,7 @@
 
         // Load product catalog
         function loadCatalog() {
-            return fetch('/api/products.php?action=list')
+            return fetch('/api/products')
                 .then(res => res.json())
                 .then(response => {
                     if (response && response.success && response.products) {

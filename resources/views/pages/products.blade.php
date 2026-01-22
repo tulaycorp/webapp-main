@@ -13,7 +13,7 @@
       {{-- Section Header --}}
       <div data-animate="fade-in" data-delay="0" class="mb-32">
         <div class="flex flex-col lg:flex-row lg:items-end lg:justify-between mb-16 gap-8">
-          <div>
+          <div class="flex-1 pr-12">
             <p data-animate="slide-left" data-delay="100" 
                class="text-secondary dark:text-gray-400 mb-6 uppercase tracking-[0.3em] text-lg font-medium">
               Winter '25 Collection
@@ -28,6 +28,21 @@
             </p>
           </div>
 
+          {{-- Featured/Sold Out Component --}}
+          <div data-animate="slide-right" data-delay="400" class="relative h-[600px] hidden lg:block w-full max-w-lg -rotate-2 transition-transform duration-500 hover:rotate-0">
+            <div data-hover="lift" class="hero-image-container absolute inset-0 border border-border dark:border-gray-700 overflow-hidden shadow-2xl bg-white dark:bg-gray-800 group cursor-pointer">
+              <img src="https://images.unsplash.com/photo-1643387848945-da63360662f4?w=800&q=80" 
+                  alt="Streetwear model" 
+                  class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105">
+            </div>
+
+            {{-- Floating Info Card --}}
+            <div data-animate="scale-in" data-delay="1600" 
+                data-hover="lift" 
+                class="absolute -bottom-8 -left-8 bg-white dark:bg-gray-800 border border-border dark:border-gray-700 px-8 py-6 shadow-xl rotate-3 hover:rotate-0 transition-transform duration-300">
+              <p class="text-4xl text-primary dark:text-white uppercase mb-1 font-impact">Sold Out</p>
+              <p class="text-secondary dark:text-gray-400 text-xs uppercase tracking-wider">Last Drop</p>
+            </div>
           </div>
 
         </div>
@@ -37,6 +52,7 @@
   {{-- Filter and Product Grid Section with White Background --}}
   <section class="pt-[150px] pb-20 px-6 lg:px-8 bg-white dark:bg-gray-800 transition-colors duration-300">
     <div class="max-w-7xl mx-auto">
+
       {{-- Filter Tags with Interactive Animations --}}
       <div class="mb-12">
         <div class="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-8">

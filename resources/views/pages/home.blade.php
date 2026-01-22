@@ -63,24 +63,20 @@
         </div>
 
         {{-- Right: Model Image with Interactive Elements --}}
-        <div data-animate="slide-right" data-delay="400" class="relative h-[600px] hidden lg:block">
+        <div data-animate="slide-right" data-delay="400" class="relative h-[600px] hidden lg:block rotate-3 transition-transform duration-500 hover:rotate-1">
           <div data-hover="lift" class="hero-image-container absolute inset-0 border border-border dark:border-gray-700 overflow-hidden shadow-2xl bg-white dark:bg-gray-800 group cursor-pointer">
             <img src="https://images.unsplash.com/photo-1643387848945-da63360662f4?w=800&q=80" 
                  alt="Streetwear model" 
                  class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105">
             
             {{-- Play Button Overlay --}}
-            <div class="absolute inset-0 flex items-center justify-center bg-black/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-              <div class="w-16 h-16 rounded-full bg-white/90 dark:bg-gray-800/90 flex items-center justify-center shadow-xl transform hover:scale-110 transition-transform">
-                <i data-lucide="play" class="w-8 h-8 text-primary dark:text-white ml-1"></i>
-              </div>
-            </div>
+            {{-- Play Button Overlay Removed --}}
           </div>
 
           {{-- Floating Info Card --}}
           <div data-animate="scale-in" data-delay="1600" 
                data-hover="lift" 
-               class="absolute -bottom-8 -left-8 bg-white dark:bg-gray-800 border border-border dark:border-gray-700 px-8 py-6 shadow-xl">
+               class="absolute -bottom-8 -left-8 bg-white dark:bg-gray-800 border border-border dark:border-gray-700 px-8 py-6 shadow-xl -rotate-6 hover:rotate-0 transition-transform duration-300">
             <p class="text-4xl text-primary dark:text-white uppercase mb-1 font-impact">Sold Out</p>
             <p class="text-secondary dark:text-gray-400 text-xs uppercase tracking-wider">Last Drop</p>
           </div>

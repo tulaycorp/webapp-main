@@ -10,6 +10,27 @@
     @vite(['resources/css/app.css', 'resources/js/app.js'])
     <script src="https://unpkg.com/lucide@latest"></script>
     <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+    <style>
+        /* NProgress custom styling to match site design */
+        #nprogress .bar {
+            background: #111827 !important; /* primary color */
+            height: 3px !important;
+            z-index: 99999 !important;
+        }
+        
+        #nprogress .peg {
+            box-shadow: 0 0 10px #111827, 0 0 5px #111827 !important;
+        }
+        
+        /* Dark mode support */
+        .dark #nprogress .bar {
+            background: #ffffff !important;
+        }
+        
+        .dark #nprogress .peg {
+            box-shadow: 0 0 10px #ffffff, 0 0 5px #ffffff !important;
+        }
+    </style>
     <script>
         // Apply theme immediately to prevent flash
         (function() {

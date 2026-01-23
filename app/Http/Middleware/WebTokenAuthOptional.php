@@ -2,7 +2,7 @@
 
 namespace App\Http\Middleware;
 
-use App\Models\Session;
+use App\Models\UserSession;
 use Closure;
 use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -25,17 +25,17 @@ class WebTokenAuthOptional
     public function handle(Request $request, Closure $next): Response
     {
         $token = $request->bearerToken();
-        
+
         // No token = guest mode, continue normally
         if (!$token) {
             return $next($request);
         }
-        
+
         // Token provided - validate it
-        $session = Session::where('session_token', $token)
+        $session = UserSession::where('session_token', $token)
             ->where('expires_at', '>', now())
             ->first();
-        
+
         if (!$session) {
             // Token is invalid or expired
             // For OPTIONAL auth, we should NOT block the request
@@ -44,7 +44,7 @@ class WebTokenAuthOptional
                 'token_prefix' => substr($token, 0, 10),
                 'path' => $request->path()
             ]);
-            
+
             // Continue processing as guest, but set header to signal frontend
             $response = $next($request);
             if ($response instanceof \Illuminate\Http\JsonResponse || $response instanceof \Illuminate\Http\Response) {
@@ -52,11 +52,11 @@ class WebTokenAuthOptional
             }
             return $response;
         }
-        
+
         // Valid token - attach user ID to request for downstream use
         $request->attributes->set('auth_user_id', $session->user_id);
         \Log::info('WebTokenAuthOptional: Valid token, authenticated as user ' . $session->user_id);
-        
+
         return $next($request);
     }
 }

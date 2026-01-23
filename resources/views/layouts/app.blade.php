@@ -8,8 +8,8 @@
     @yield('meta')
     
     <!-- Dynamic Favicon -->
-    <link id="favicon-light" rel="icon" type="image/png" href="{{ asset('favicon-light.png') }}" media="(prefers-color-scheme: light)">
-    <link id="favicon-dark" rel="icon" type="image/png" href="{{ asset('favicon-dark.png') }}" media="(prefers-color-scheme: dark)">
+    <link id="favicon-light" rel="icon" type="image/png" href="{{ asset('favicon-dark.png') }}" media="(prefers-color-scheme: light)">
+    <link id="favicon-dark" rel="icon" type="image/png" href="{{ asset('favicon-light.png') }}" media="(prefers-color-scheme: dark)">
     
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
     @vite(['resources/css/app.css', 'resources/js/app.js'])

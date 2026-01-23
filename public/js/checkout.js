@@ -702,7 +702,7 @@
                         'shipping_first_name': user.first_name,
                         'shipping_last_name': user.last_name,
                         'shipping_email': user.email,
-                        'shipping_phone': user.phone ? (user.country_code || '') + ' ' + user.phone : '',
+                        'shipping_phone': user.phone || '',
                         'shipping_address1': user.address1,
                         'shipping_address2': user.address2,
                     };
@@ -713,6 +713,14 @@
                             input.value = value.trim();
                         }
                     });
+
+                    // Set country code dropdown if available
+                    if (user.country_code) {
+                        const countryCodeSelect = form.querySelector('[name="shipping_country_code"]');
+                        if (countryCodeSelect) {
+                            countryCodeSelect.value = user.country_code;
+                        }
+                    }
 
                     // Also autofill card name
                     const cardNameInput = form.querySelector('[name="card_name"]');

@@ -38,12 +38,12 @@ class CheckoutController extends Controller
     {
         // Remove spaces and dashes
         $cardNumber = preg_replace('/[\s-]/', '', $cardNumber);
-        
+
         // Check if it's all digits
         if (!ctype_digit($cardNumber)) {
             return false;
         }
-        
+
         // Check length (typically 13-19 digits)
         $length = strlen($cardNumber);
         if ($length < 13 || $length > 19) {
@@ -53,21 +53,21 @@ class CheckoutController extends Controller
         // Luhn algorithm
         $sum = 0;
         $alternate = false;
-        
+
         for ($i = $length - 1; $i >= 0; $i--) {
             $digit = (int) $cardNumber[$i];
-            
+
             if ($alternate) {
                 $digit *= 2;
                 if ($digit > 9) {
                     $digit -= 9;
                 }
             }
-            
+
             $sum += $digit;
             $alternate = !$alternate;
         }
-        
+
         return ($sum % 10) === 0;
     }
 
@@ -77,12 +77,12 @@ class CheckoutController extends Controller
     public function validateCard(Request $request): JsonResponse
     {
         $cardNumber = $request->input('card_number', '');
-        
+
         $isValid = $this->validateLuhn($cardNumber);
-        
+
         // Determine card type
         $cardType = $this->getCardType($cardNumber);
-        
+
         return response()->json([
             'valid' => $isValid,
             'card_type' => $cardType,
@@ -95,7 +95,7 @@ class CheckoutController extends Controller
     private function getCardType(string $cardNumber): ?string
     {
         $cardNumber = preg_replace('/[\s-]/', '', $cardNumber);
-        
+
         if (preg_match('/^4/', $cardNumber)) {
             return 'visa';
         }
@@ -108,7 +108,7 @@ class CheckoutController extends Controller
         if (preg_match('/^6(?:011|5)/', $cardNumber)) {
             return 'discover';
         }
-        
+
         return null;
     }
 
@@ -158,8 +158,18 @@ class CheckoutController extends Controller
         }
 
         // Get the cart
+        \Log::info('Checkout process: Starting cart retrieval', [
+            'auth_user_id' => $request->attributes->get('auth_user_id'),
+            'has_session_cookie' => $request->hasCookie('eshop_session_id')
+        ]);
+
         $cart = $this->cartService->getActiveCart($request);
         $cartItems = $cart->items()->with('product')->get();
+
+        \Log::info('Checkout process: Cart retrieved', [
+            'cart_id' => $cart->id,
+            'items_count' => $cartItems->count()
+        ]);
 
         if ($cartItems->isEmpty()) {
             return response()->json([
@@ -175,7 +185,7 @@ class CheckoutController extends Controller
 
         foreach ($cartItems as $item) {
             $product = $item->product;
-            
+
             if (!$product) {
                 $stockErrors[] = "Product not found for item {$item->product_id}";
                 continue;
@@ -215,7 +225,7 @@ class CheckoutController extends Controller
 
         if ($couponCode) {
             $coupon = Coupon::where('code', strtoupper($couponCode))->first();
-            
+
             if (!$coupon) {
                 return response()->json([
                     'success' => false,
@@ -309,7 +319,7 @@ class CheckoutController extends Controller
 
         } catch (\Exception $e) {
             DB::rollBack();
-            
+
             return response()->json([
                 'success' => false,
                 'message' => 'Failed to process order. Please try again.',

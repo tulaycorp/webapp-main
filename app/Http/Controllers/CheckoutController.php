@@ -320,6 +320,13 @@ class CheckoutController extends Controller
         } catch (\Exception $e) {
             DB::rollBack();
 
+            \Log::error('Checkout process failed', [
+                'error' => $e->getMessage(),
+                'file' => $e->getFile(),
+                'line' => $e->getLine(),
+                'trace' => $e->getTraceAsString(),
+            ]);
+
             return response()->json([
                 'success' => false,
                 'message' => 'Failed to process order. Please try again.',

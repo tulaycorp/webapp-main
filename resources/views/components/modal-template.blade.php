@@ -201,8 +201,8 @@
           <div class="flex items-start gap-3">
             <input type="checkbox" id="agree-terms" required class="w-4 h-4 border-2 border-border mt-1">
             <label for="agree-terms" class="text-sm text-secondary">
-              I agree to the <a href="#" class="text-primary hover:underline">Terms of Service</a> and 
-              <a href="#" class="text-primary hover:underline">Privacy Policy</a>
+              I agree to the <a href="{{ route('terms-of-service') }}" target="_blank" rel="noopener noreferrer" class="text-primary hover:underline">Terms of Service</a> and 
+              <a href="{{ route('privacy-policy') }}" target="_blank" rel="noopener noreferrer" class="text-primary hover:underline">Privacy Policy</a>
             </label>
           </div>
           <div class="text-red-500 text-sm hidden" id="signup-terms-error">You must agree to continue</div>
@@ -380,11 +380,17 @@ document.addEventListener('DOMContentLoaded', function() {
     }
   };
 
-  // Password toggles
-  ['login', 'signup', 'signup-confirm'].forEach(prefix => {
-    const toggle = document.getElementById(`toggle-${prefix}-password`);
-    const input = document.getElementById(`${prefix}-password${prefix.includes('confirm') ? '-confirm' : ''}`);
-    const icon = document.getElementById(`${prefix}-eye-icon`);
+  // Password toggles - handle each field individually with correct IDs
+  const passwordToggles = [
+    { toggle: 'toggle-login-password', input: 'login-password', icon: 'login-eye-icon' },
+    { toggle: 'toggle-signup-password', input: 'signup-password', icon: 'signup-eye-icon' },
+    { toggle: 'toggle-signup-confirm', input: 'signup-password-confirm', icon: 'signup-confirm-icon' }
+  ];
+  
+  passwordToggles.forEach(({ toggle: toggleId, input: inputId, icon: iconId }) => {
+    const toggle = document.getElementById(toggleId);
+    const input = document.getElementById(inputId);
+    const icon = document.getElementById(iconId);
     
     if (toggle && input && icon) {
       toggle.addEventListener('click', () => {

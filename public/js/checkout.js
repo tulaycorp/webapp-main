@@ -301,8 +301,18 @@
             updateSubmitButton();
         });
 
-        // Expiry date formatting with cursor position handling
+        // Expiry date key detection (backspace handling)
+        cardExpiryInput.addEventListener('keydown', function (e) {
+            // If backspace is pressed and there's content, select all for easy clearing
+            if (e.key === 'Backspace' && e.target.value.length > 0) {
+                // Select all content so next backspace clears everything
+                e.target.select();
+            }
+        });
+
+        // Expiry date formatting
         cardExpiryInput.addEventListener('input', function (e) {
+<<<<<<< HEAD
             const cursorPos = e.target.selectionStart;
             const oldValue = e.target.dataset.oldValue || '';
             const oldLength = oldValue.length;
@@ -354,6 +364,9 @@
             // Set cursor position
             e.target.setSelectionRange(newCursorPos, newCursorPos);
 
+=======
+            e.target.value = formatExpiry(e.target.value);
+>>>>>>> 8f52175ced1bd1486339ad82c9b91966ed914689
             updateSubmitButton();
         });
 

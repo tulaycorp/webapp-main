@@ -56,7 +56,7 @@
                 <div>
                   <label
                     class="text-base uppercase tracking-[0.2em] text-primary dark:text-white font-semibold mb-4 block">FIRST
-                    NAME</label>
+                    NAME <span class="text-red-500">*</span></label>
                   <div class="error-message text-red-500 text-[10px] font-bold uppercase tracking-wider mb-2 hidden">
                     Required field</div>
                   <input required type="text"
@@ -66,7 +66,7 @@
                 <div>
                   <label
                     class="text-base uppercase tracking-[0.2em] text-primary dark:text-white font-semibold mb-4 block">LAST
-                    NAME</label>
+                    NAME <span class="text-red-500">*</span></label>
                   <div class="error-message text-red-500 text-[10px] font-bold uppercase tracking-wider mb-2 hidden">
                     Required field</div>
                   <input required type="text"
@@ -77,7 +77,7 @@
 
               <div>
                 <label class="text-base uppercase tracking-[0.2em] text-primary dark:text-white font-semibold mb-4 block"
-                  for="email">EMAIL ADDRESS</label>
+                  for="email">EMAIL ADDRESS <span class="text-red-500">*</span></label>
                 <div class="error-message text-red-500 text-[10px] font-bold uppercase tracking-wider mb-2 hidden">Enter a
                   valid email</div>
                 <input required type="email"
@@ -87,7 +87,7 @@
 
               <div>
                 <label class="text-base uppercase tracking-[0.2em] text-primary dark:text-white font-semibold mb-4 block"
-                  for="topic">TOPIC</label>
+                  for="topic">TOPIC <span class="text-red-500">*</span></label>
                 <div class="error-message text-red-500 text-[10px] font-bold uppercase tracking-wider mb-2 hidden">Please
                   choose a topic</div>
                 <select id="topic" name="topic"
@@ -104,7 +104,7 @@
 
               <div>
                 <label class="text-base uppercase tracking-[0.2em] text-primary dark:text-white font-semibold mb-4 block"
-                  for="message">YOUR MESSAGE</label>
+                  for="message">YOUR MESSAGE <span class="text-red-500">*</span></label>
                 <div class="error-message text-red-500 text-[10px] font-bold uppercase tracking-wider mb-2 hidden">Message
                   required</div>
                 <textarea required id="message" name="message" rows="8"
@@ -140,7 +140,7 @@
                   </div>
                   <div>
                     <p class="text-sm text-secondary dark:text-gray-400 uppercase tracking-wider mb-2">Email</p>
-                    <p class="text-primary dark:text-white text-lg font-medium">support@framework.co</p>
+                    <p class="text-primary dark:text-white text-lg font-medium">hello@frameworksupply.uk</p>
                   </div>
                 </li>
                 <li class="flex items-start gap-5 group cursor-pointer">

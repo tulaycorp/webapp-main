@@ -301,9 +301,44 @@
             updateSubmitButton();
         });
 
-        // Expiry date formatting
+        // Expiry date formatting with cursor position handling
         cardExpiryInput.addEventListener('input', function (e) {
-            e.target.value = formatExpiry(e.target.value);
+            const cursorPos = e.target.selectionStart;
+            const oldValue = e.target.dataset.oldValue || '';
+            const oldLength = oldValue.length;
+            
+            // Get raw digits only
+            const cleaned = e.target.value.replace(/\D/g, '');
+            
+            // Format as MM/YY
+            let formatted = cleaned;
+            if (cleaned.length >= 2) {
+                formatted = cleaned.substring(0, 2) + '/' + cleaned.substring(2, 4);
+            }
+            
+            // Update value
+            e.target.value = formatted;
+            e.target.dataset.oldValue = formatted;
+            
+            // Calculate new cursor position
+            let newCursorPos = cursorPos;
+            
+            // If we added the slash and cursor was at position 2, move it to 3
+            if (formatted.length > oldLength && cursorPos === 2 && formatted[2] === '/') {
+                newCursorPos = 3;
+            }
+            // If user is typing and cursor is after the slash, keep it there
+            else if (formatted.length > oldLength && cursorPos > 2) {
+                newCursorPos = formatted.length;
+            }
+            // If deleting and cursor is at the slash, move it back
+            else if (formatted.length < oldLength && cursorPos === 3 && oldValue[2] === '/') {
+                newCursorPos = 2;
+            }
+            
+            // Set cursor position
+            e.target.setSelectionRange(newCursorPos, newCursorPos);
+            
             updateSubmitButton();
         });
 

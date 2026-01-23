@@ -301,58 +301,18 @@
             updateSubmitButton();
         });
 
-        // Expiry date formatting with cursor position handling
+        // Expiry date key detection (backspace handling)
+        cardExpiryInput.addEventListener('keydown', function (e) {
+            // If backspace is pressed and there's content, select all for easy clearing
+            if (e.key === 'Backspace' && e.target.value.length > 0) {
+                // Select all content so next backspace clears everything
+                e.target.select();
+            }
+        });
+
+        // Expiry date formatting
         cardExpiryInput.addEventListener('input', function (e) {
-            const cursorPos = e.target.selectionStart;
-            const oldValue = e.target.dataset.oldValue || '';
-            const oldLength = oldValue.length;
-            const rawValue = e.target.value;
-
-            // Check if user typed a slash after a single digit (e.g., "2/")
-            // This indicates they want to enter a single-digit month
-            const hasSlashAfterSingleDigit = /^\d\/$/.test(rawValue) || /^\d\/\d{0,2}$/.test(rawValue);
-
-            // Get raw digits only
-            let cleaned = rawValue.replace(/\D/g, '');
-
-            // If user typed a slash after single digit, pad with leading zero
-            if (hasSlashAfterSingleDigit && cleaned.length >= 1) {
-                cleaned = '0' + cleaned;
-            }
-
-            // Format as MM/YY
-            let formatted = cleaned;
-            if (cleaned.length >= 2) {
-                formatted = cleaned.substring(0, 2) + '/' + cleaned.substring(2, 4);
-            }
-
-            // Update value
-            e.target.value = formatted;
-            e.target.dataset.oldValue = formatted;
-
-            // Calculate new cursor position
-            let newCursorPos = cursorPos;
-
-            // If we padded with a leading zero, adjust cursor
-            if (hasSlashAfterSingleDigit) {
-                newCursorPos = formatted.length;
-            }
-            // If we added the slash and cursor was at position 2, move it to 3
-            else if (formatted.length > oldLength && cursorPos === 2 && formatted[2] === '/') {
-                newCursorPos = 3;
-            }
-            // If user is typing and cursor is after the slash, keep it there
-            else if (formatted.length > oldLength && cursorPos > 2) {
-                newCursorPos = formatted.length;
-            }
-            // If deleting and cursor is at the slash, move it back
-            else if (formatted.length < oldLength && cursorPos === 3 && oldValue[2] === '/') {
-                newCursorPos = 2;
-            }
-
-            // Set cursor position
-            e.target.setSelectionRange(newCursorPos, newCursorPos);
-
+            e.target.value = formatExpiry(e.target.value);
             updateSubmitButton();
         });
 

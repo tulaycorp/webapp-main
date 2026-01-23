@@ -153,7 +153,7 @@
           <div>
             <label for="signup-phone" class="text-label block mb-3">PHONE NUMBER (OPTIONAL)</label>
             <div class="flex items-center gap-2">
-              <select id="signup-country-code" name="countryCode" class="form-input text-base flex-shrink-0" style="width: 95px;">
+              <select id="signup-country-code" name="countryCode" class="form-input text-base flex-shrink-0" style="width: 110px;">
                 <option value="+63">🇵🇭 +63</option>
                 <option value="+64" selected>🇳🇿 +64</option>
                 <option value="+61">🇦🇺 +61</option>

@@ -153,7 +153,7 @@
           <div>
             <label for="signup-phone" class="text-label block mb-3">PHONE NUMBER (OPTIONAL)</label>
             <div class="flex gap-3">
-              <select id="signup-country-code" name="countryCode" class="form-input text-base w-32">
+              <select id="signup-country-code" name="countryCode" class="form-input text-base w-24">
                 <option value="+64">+64 NZ</option>
                 <option value="+61">+61 AU</option>
                 <option value="+1">+1 US</option>

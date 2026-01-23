@@ -152,15 +152,17 @@
           
           <div>
             <label for="signup-phone" class="text-label block mb-3">PHONE NUMBER (OPTIONAL)</label>
-            <div class="flex gap-3">
-              <select id="signup-country-code" name="countryCode" class="form-input text-base w-24">
-                <option value="+64">+64 NZ</option>
-                <option value="+61">+61 AU</option>
-                <option value="+1">+1 US</option>
-                <option value="+44">+44 UK</option>
+            <div class="flex items-center gap-2">
+              <select id="signup-country-code" name="countryCode" class="form-input text-base flex-shrink-0" style="width: 95px;">
+                <option value="+63">🇵🇭 +63</option>
+                <option value="+64" selected>🇳🇿 +64</option>
+                <option value="+61">🇦🇺 +61</option>
+                <option value="+1">🇺🇸 +1</option>
+                <option value="+44">🇬🇧 +44</option>
               </select>
-              <input id="signup-phone" name="phone" type="tel" 
+              <input id="signup-phone" name="phone" type="text" 
                      class="form-input text-base flex-1" 
+                     style="max-width: 180px;"
                      placeholder="123 456 7890"
                      autocomplete="tel">
             </div>

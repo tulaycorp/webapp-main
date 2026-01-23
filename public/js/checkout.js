@@ -312,7 +312,6 @@
 
         // Expiry date formatting
         cardExpiryInput.addEventListener('input', function (e) {
-<<<<<<< HEAD
             const cursorPos = e.target.selectionStart;
             const oldValue = e.target.dataset.oldValue || '';
             const oldLength = oldValue.length;
@@ -364,9 +363,6 @@
             // Set cursor position
             e.target.setSelectionRange(newCursorPos, newCursorPos);
 
-=======
-            e.target.value = formatExpiry(e.target.value);
->>>>>>> 8f52175ced1bd1486339ad82c9b91966ed914689
             updateSubmitButton();
         });
 

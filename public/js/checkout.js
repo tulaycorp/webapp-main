@@ -310,7 +310,8 @@
 
             // Check if user typed a slash after a single digit (e.g., "2/")
             // This indicates they want to enter a single-digit month
-            const hasSlashAfterSingleDigit = /^\d\/$/.test(rawValue) || /^\d\/\d{0,2}$/.test(rawValue);
+            // We also check that the digit isn't '0', to prevent creating "00/"
+            const hasSlashAfterSingleDigit = (/^\d\/$/.test(rawValue) || /^\d\/\d{0,2}$/.test(rawValue)) && rawValue.charAt(0) !== '0';
 
             // Get raw digits only
             let cleaned = rawValue.replace(/\D/g, '');

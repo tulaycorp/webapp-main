@@ -314,21 +314,67 @@ import 'nprogress/nprogress.css';
   // Initial sync on load (Fetch latest state)
   fetchCartFromServer();
 
-  function addToCart(id) {
-    // Ensure id is compared loosely or converted
-    const existing = CART.find(i => i.id == id);
-    if (existing) {
-      existing.qty++;
-    } else {
-      CART.push({ id: id, qty: 1 });
+  async function addToCart(id, quantity = 1) {
+    const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');
+    const sessionToken = getSessionToken();
+    const headers = {
+      'Content-Type': 'application/json',
+      'Accept': 'application/json',
+      'X-CSRF-TOKEN': csrfToken
+    };
+    if (sessionToken) headers['Authorization'] = `Bearer ${sessionToken}`;
+
+    // Optimistic UI update (optional, but safer to wait for server response for strict inventory)
+    // For strict inventory, we should wait.
+
+    try {
+      const res = await fetch('/cart/add', {
+        method: 'POST',
+        headers: headers,
+        body: JSON.stringify({ product_id: id, quantity: quantity })
+      });
+
+      const data = await res.json();
+
+      if (data.success) {
+        // Find existing to update local state accurately
+        const existing = CART.find(i => i.id == id);
+        if (existing) {
+          existing.qty += quantity;
+        } else {
+          CART.push({ id: id, qty: quantity });
+        }
+        saveCart(CART, true); // Save and update UI, skip sync since we just called add
+
+        return { success: true };
+      } else {
+        // Show error (e.g. stock limit)
+        // Check if there is an alert/toast mechanism. If not, alert for now.
+        // Or return false so the caller can show it.
+        const msg = data.message || 'Could not add item to cart.';
+        alert(msg); // Simple feedback for now
+        return { success: false, message: msg };
+      }
+    } catch (e) {
+      console.error('Add to cart error:', e);
+      return { success: false, message: 'Network error' };
     }
-    saveCart(CART);
   }
   function removeFromCart(id) {
     CART = CART.filter(i => i.id != id); saveCart(CART);
   }
   function setQty(id, qty) {
-    const item = CART.find(i => i.id == id); if (!item) return; item.qty = Math.max(1, qty); saveCart(CART);
+    const item = CART.find(i => i.id == id); if (!item) return;
+
+    // Enforce stock limit
+    let newQty = Math.max(1, qty);
+    const product = getProduct(id);
+    if (product && product.track_inventory) {
+      newQty = Math.min(newQty, product.stock_quantity);
+    }
+
+    item.qty = newQty;
+    saveCart(CART);
   }
   function clearCart() { CART = []; saveCart(CART); }
 
@@ -344,6 +390,7 @@ import 'nprogress/nprogress.css';
   function productCard(product, animationDelay = 0) {
     const categoryDisplay = product.category_name || product.category || 'Uncategorized';
     const isOnSale = parseFloat(product.compare_at_price) > parseFloat(product.price);
+    const trackInventory = product.track_inventory ? '1' : '0';
 
     return `<div class="group" data-animate="fade-in" data-delay="${animationDelay}" data-hover="lift">
       <div class="modern-card dark:bg-gray-800 dark:border-gray-700 overflow-hidden transition-all duration-300 hover:shadow-xl">
@@ -370,7 +417,9 @@ import 'nprogress/nprogress.css';
       }
             </div>
             <button data-add="${product.id}" 
-                    class="px-4 py-2 bg-primary dark:bg-white text-white dark:text-gray-900 text-sm uppercase tracking-wider font-medium hover:opacity-90 transition-opacity">
+                    data-stock="${product.stock_quantity}"
+                    data-track="${trackInventory}"
+                    class="px-4 py-2 bg-primary dark:bg-white text-white dark:text-gray-900 text-sm uppercase tracking-wider font-medium hover:opacity-90 transition-opacity disabled:opacity-50 disabled:cursor-not-allowed">
               Add
             </button>
           </div>
@@ -379,19 +428,77 @@ import 'nprogress/nprogress.css';
     </div>`;
   }
 
+  function updateAddButtonStates() {
+    document.querySelectorAll('[data-add]').forEach(btn => {
+      const id = btn.getAttribute('data-add');
+      const stock = parseInt(btn.getAttribute('data-stock') || '0');
+      const track = btn.getAttribute('data-track') === '1';
+
+      if (!track) return; // Don't limit if inventory tracking is off
+
+      const cartItem = CART.find(i => i.id == id);
+      const currentQty = cartItem ? cartItem.qty : 0;
+
+      if (currentQty >= stock) {
+        btn.disabled = true;
+        // Optional: Change text to 'Max Added' or similar
+        if (btn.tagName === 'BUTTON' && !btn.querySelector('i')) { // Avoid overwriting icon buttons if any
+          if (btn.textContent.trim() !== 'Added!') { // Don't overwrite success feedback immediately
+            btn.dataset.originalText = btn.dataset.originalText || btn.textContent;
+            btn.textContent = 'Max Limit';
+          }
+        }
+      } else {
+        btn.disabled = false;
+        if (btn.dataset.originalText) {
+          btn.textContent = btn.dataset.originalText;
+        }
+      }
+    });
+  }
+
   function bindAddButtons(container) {
+    // Initial state check for new buttons
+    updateAddButtonStates();
+
     container.querySelectorAll('[data-add]').forEach(btn => {
-      btn.addEventListener('click', e => {
-        addToCart(btn.getAttribute('data-add'));
-        btn.blur();
-        // Visual feedback similar to modern app
+      btn.addEventListener('click', async e => {
         const originalText = btn.textContent.trim();
-        btn.textContent = 'Added!';
-        btn.classList.add('btn-success');
-        setTimeout(() => {
-          btn.textContent = originalText;
-          btn.classList.remove('btn-success');
-        }, 900);
+        const originalClass = btn.className;
+
+        // Disable button while processing
+        btn.disabled = true;
+        btn.style.opacity = '0.7';
+        btn.style.cursor = 'wait';
+
+        const result = await addToCart(btn.getAttribute('data-add'));
+
+        btn.disabled = false;
+        btn.style.opacity = '';
+        btn.style.cursor = '';
+        btn.blur();
+
+        if (result && result.success) {
+          // Visual feedback similar to modern app
+          btn.textContent = 'Added!';
+          btn.classList.add('btn-success');
+          // Add temporary green background if not present in class
+          if (!btn.classList.contains('bg-green-600')) {
+            btn.style.backgroundColor = '#16a34a'; // tailwind green-600
+            btn.style.borderColor = '#16a34a';
+          }
+
+          setTimeout(() => {
+            btn.textContent = originalText;
+            btn.classList.remove('btn-success');
+            btn.style.backgroundColor = '';
+            btn.style.borderColor = '';
+            btn.className = originalClass; // Restore original classes mainly
+            updateAddButtonStates(); // Re-check after success animation
+          }, 900);
+        } else {
+          updateAddButtonStates(); // Re-check in case of error (e.g. limit reached)
+        }
       });
     });
   }
@@ -872,10 +979,11 @@ import 'nprogress/nprogress.css';
               <div style="display:flex; align-items:center; border:2px solid #e5e7eb;">
                 <button style="width:40px; height:40px; display:flex; align-items:center; justify-content:center; border:none; background:transparent; cursor:pointer; font-size:1.25rem; font-weight:bold;" 
                         onclick="(function(e){e.stopPropagation();var inp=document.querySelector('[data-qty=\\'${item.id}\\']');if(inp){inp.value=Math.max(1,parseInt(inp.value)-1);inp.dispatchEvent(new Event('input',{bubbles:true}));}})(event)">−</button>
-                <input type="number" min="1" value="${item.qty}" data-qty="${item.id}" 
+                <input type="number" min="1" max="${p.track_inventory ? p.stock_quantity : ''}" value="${item.qty}" data-qty="${item.id}" 
                        style="width:50px; height:40px; text-align:center; border:none; border-left:2px solid #e5e7eb; border-right:2px solid #e5e7eb; font-weight:600; font-size:1rem;">
-                <button style="width:40px; height:40px; display:flex; align-items:center; justify-content:center; border:none; background:transparent; cursor:pointer; font-size:1.25rem; font-weight:bold;"
-                        onclick="(function(e){e.stopPropagation();var inp=document.querySelector('[data-qty=\\'${item.id}\\']');if(inp){inp.value=parseInt(inp.value)+1;inp.dispatchEvent(new Event('input',{bubbles:true}));}})(event)">+</button>
+                <button style="width:40px; height:40px; display:flex; align-items:center; justify-content:center; border:none; background:transparent; cursor:pointer; font-size:1.25rem; font-weight:bold; ${p.track_inventory && item.qty >= p.stock_quantity ? 'opacity:0.3; cursor:not-allowed;' : ''}"
+                        ${p.track_inventory && item.qty >= p.stock_quantity ? 'disabled' : ''}
+                        onclick="(function(e){e.stopPropagation();var inp=document.querySelector('[data-qty=\\'${item.id}\\']');if(inp){ var current = parseInt(inp.value); var max = ${p.track_inventory ? p.stock_quantity : 999999}; if(current < max) { inp.value=current+1;inp.dispatchEvent(new Event('input',{bubbles:true})); } }})(event)">+</button>
               </div>
               
               <div style="text-align:right; min-width:100px;">

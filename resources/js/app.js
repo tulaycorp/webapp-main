@@ -457,6 +457,7 @@ import 'nprogress/nprogress.css';
     });
   }
 
+
   function bindAddButtons(container) {
     // Initial state check for new buttons
     updateAddButtonStates();

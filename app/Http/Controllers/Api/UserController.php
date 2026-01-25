@@ -170,6 +170,10 @@ class UserController extends Controller
                 'email' => $user->email,
                 'address1' => $user->address1,
                 'address2' => $user->address2,
+                'city' => $user->city,
+                'state' => $user->state,
+                'zip' => $user->zip,
+                'country' => $user->country,
                 'country_code' => $user->country_code,
                 'phone' => $user->phone,
             ],
@@ -207,6 +211,10 @@ class UserController extends Controller
             'last_name' => 'sometimes|string|max:50',
             'address1' => 'sometimes|required|string|max:100',
             'address2' => 'sometimes|nullable|string|max:100',
+            'city' => 'sometimes|nullable|string|max:100',
+            'state' => 'sometimes|nullable|string|max:100',
+            'zip' => 'sometimes|nullable|string|max:20',
+            'country' => 'sometimes|nullable|string|max:100',
             'country_code' => 'sometimes|nullable|string|max:10',
             'phone' => 'sometimes|nullable|string|max:15',
         ]);
@@ -216,7 +224,7 @@ class UserController extends Controller
         }
 
         // Update only the fields that are provided
-        $updateFields = ['first_name', 'middle_name', 'last_name', 'address1', 'address2', 'country_code', 'phone'];
+        $updateFields = ['first_name', 'middle_name', 'last_name', 'address1', 'address2', 'city', 'state', 'zip', 'country', 'country_code', 'phone'];
         foreach ($updateFields as $field) {
             if ($request->has($field)) {
                 $user->$field = $request->input($field);
@@ -236,6 +244,10 @@ class UserController extends Controller
                 'email' => $user->email,
                 'address1' => $user->address1,
                 'address2' => $user->address2,
+                'city' => $user->city,
+                'state' => $user->state,
+                'zip' => $user->zip,
+                'country' => $user->country,
                 'country_code' => $user->country_code,
                 'phone' => $user->phone,
             ],

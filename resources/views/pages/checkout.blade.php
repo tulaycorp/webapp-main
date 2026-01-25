@@ -53,18 +53,21 @@
               <div>
                 <label class="block text-xs uppercase tracking-wider text-secondary dark:text-gray-400 font-semibold mb-2">First Name *</label>
                 <input type="text" name="shipping_first_name" required
+                       value="{{ old('shipping_first_name', $user->first_name ?? '') }}"
                        class="form-input dark:bg-gray-700 dark:border-gray-600 dark:text-white"
                        placeholder="John">
               </div>
               <div>
                 <label class="block text-xs uppercase tracking-wider text-secondary dark:text-gray-400 font-semibold mb-2">Last Name *</label>
                 <input type="text" name="shipping_last_name" required
+                       value="{{ old('shipping_last_name', $user->last_name ?? '') }}"
                        class="form-input dark:bg-gray-700 dark:border-gray-600 dark:text-white"
                        placeholder="Doe">
               </div>
               <div>
                 <label class="block text-xs uppercase tracking-wider text-secondary dark:text-gray-400 font-semibold mb-2">Email *</label>
                 <input type="email" name="shipping_email" required
+                       value="{{ old('shipping_email', $user->email ?? '') }}"
                        class="form-input dark:bg-gray-700 dark:border-gray-600 dark:text-white"
                        placeholder="john@example.com">
               </div>
@@ -72,13 +75,14 @@
                 <label class="block text-xs uppercase tracking-wider text-secondary dark:text-gray-400 font-semibold mb-2">Phone</label>
                 <div class="flex items-center gap-2">
                   <select name="shipping_country_code" class="form-input dark:bg-gray-700 dark:border-gray-600 dark:text-white flex-shrink-0" style="width: 110px;">
-                    <option value="+63">🇵🇭 +63</option>
-                    <option value="+64" selected>🇳🇿 +64</option>
-                    <option value="+61">🇦🇺 +61</option>
-                    <option value="+1">🇺🇸 +1</option>
-                    <option value="+44">🇬🇧 +44</option>
+                    <option value="+63" {{ (old('shipping_country_code', $user->country_code ?? '') == '+63') ? 'selected' : '' }}>🇵🇭 +63</option>
+                    <option value="+64" {{ (old('shipping_country_code', $user->country_code ?? '+64') == '+64') ? 'selected' : '' }}>🇳🇿 +64</option>
+                    <option value="+61" {{ (old('shipping_country_code', $user->country_code ?? '') == '+61') ? 'selected' : '' }}>🇦🇺 +61</option>
+                    <option value="+1" {{ (old('shipping_country_code', $user->country_code ?? '') == '+1') ? 'selected' : '' }}>🇺🇸 +1</option>
+                    <option value="+44" {{ (old('shipping_country_code', $user->country_code ?? '') == '+44') ? 'selected' : '' }}>🇬🇧 +44</option>
                   </select>
                   <input type="text" name="shipping_phone"
+                         value="{{ old('shipping_phone', $user->phone ?? '') }}"
                          class="form-input dark:bg-gray-700 dark:border-gray-600 dark:text-white flex-1"
                          style="max-width: 180px;"
                          placeholder="123 456 7890">
@@ -87,30 +91,35 @@
               <div class="md:col-span-2">
                 <label class="block text-xs uppercase tracking-wider text-secondary dark:text-gray-400 font-semibold mb-2">Address Line 1 *</label>
                 <input type="text" name="shipping_address1" required
+                       value="{{ old('shipping_address1', $user->address1 ?? '') }}"
                        class="form-input dark:bg-gray-700 dark:border-gray-600 dark:text-white"
                        placeholder="123 Main Street">
               </div>
               <div class="md:col-span-2">
                 <label class="block text-xs uppercase tracking-wider text-secondary dark:text-gray-400 font-semibold mb-2">Address Line 2</label>
                 <input type="text" name="shipping_address2"
+                       value="{{ old('shipping_address2', $user->address2 ?? '') }}"
                        class="form-input dark:bg-gray-700 dark:border-gray-600 dark:text-white"
                        placeholder="Apt, Suite, Unit (optional)">
               </div>
               <div>
                 <label class="block text-xs uppercase tracking-wider text-secondary dark:text-gray-400 font-semibold mb-2">City *</label>
                 <input type="text" name="shipping_city" required
+                       value="{{ old('shipping_city', $user->city ?? '') }}"
                        class="form-input dark:bg-gray-700 dark:border-gray-600 dark:text-white"
                        placeholder="New York">
               </div>
               <div>
                 <label class="block text-xs uppercase tracking-wider text-secondary dark:text-gray-400 font-semibold mb-2">State/Province *</label>
                 <input type="text" name="shipping_state" required
+                       value="{{ old('shipping_state', $user->state ?? '') }}"
                        class="form-input dark:bg-gray-700 dark:border-gray-600 dark:text-white"
                        placeholder="NY">
               </div>
               <div>
                 <label class="block text-xs uppercase tracking-wider text-secondary dark:text-gray-400 font-semibold mb-2">ZIP/Postal Code *</label>
                 <input type="text" name="shipping_zip" required
+                       value="{{ old('shipping_zip', $user->zip ?? '') }}"
                        class="form-input dark:bg-gray-700 dark:border-gray-600 dark:text-white"
                        placeholder="10001">
               </div>
@@ -119,14 +128,27 @@
                 <select name="shipping_country" required
                         class="form-input dark:bg-gray-700 dark:border-gray-600 dark:text-white">
                   <option value="">Select Country</option>
-                  <option value="US" selected>United States</option>
-                  <option value="CA">Canada</option>
-                  <option value="UK">United Kingdom</option>
-                  <option value="AU">Australia</option>
-                  <option value="DE">Germany</option>
-                  <option value="FR">France</option>
+                  <option value="US" {{ (old('shipping_country', $user->country ?? '') == 'US') ? 'selected' : '' }}>United States</option>
+                  <option value="CA" {{ (old('shipping_country', $user->country ?? '') == 'CA') ? 'selected' : '' }}>Canada</option>
+                  <option value="UK" {{ (old('shipping_country', $user->country ?? '') == 'UK') ? 'selected' : '' }}>United Kingdom</option>
+                  <option value="AU" {{ (old('shipping_country', $user->country ?? '') == 'AU') ? 'selected' : '' }}>Australia</option>
+                  <option value="DE" {{ (old('shipping_country', $user->country ?? '') == 'DE') ? 'selected' : '' }}>Germany</option>
+                  <option value="FR" {{ (old('shipping_country', $user->country ?? '') == 'FR') ? 'selected' : '' }}>France</option>
                 </select>
               </div>
+              
+              {{-- Save Info Checkbox --}}
+
+              <div class="md:col-span-2 pt-4 border-t border-gray-200 dark:border-gray-700">
+                <label class="flex items-center gap-3 cursor-pointer group">
+                  <input type="checkbox" name="save_info" value="1" 
+                         class="form-checkbox w-5 h-5 text-primary border-gray-300 rounded focus:ring-primary dark:bg-gray-700 dark:border-gray-600">
+                  <span class="text-sm text-secondary dark:text-gray-400 group-hover:text-primary dark:group-hover:text-white transition-colors">
+                    Save this information for next time
+                  </span>
+                </label>
+              </div>
+
             </div>
           </div>
           

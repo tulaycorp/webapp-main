@@ -115,6 +115,40 @@
                          placeholder="Apartment, suite, etc. (optional)">
                 </div>
               </div>
+              
+              <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
+                <div>
+                  <label class="block text-xs uppercase tracking-wider text-secondary dark:text-gray-400 font-medium mb-2">City</label>
+                  <input type="text" id="city" name="city" 
+                         class="w-full px-4 py-3 border border-border dark:border-gray-600 bg-gray-50 dark:bg-gray-800 text-primary dark:text-white focus:outline-none focus:ring-2 focus:ring-primary dark:focus:ring-white transition-shadow"
+                         placeholder="New York">
+                </div>
+                <div>
+                  <label class="block text-xs uppercase tracking-wider text-secondary dark:text-gray-400 font-medium mb-2">State/Province</label>
+                  <input type="text" id="state" name="state" 
+                         class="w-full px-4 py-3 border border-border dark:border-gray-600 bg-gray-50 dark:bg-gray-800 text-primary dark:text-white focus:outline-none focus:ring-2 focus:ring-primary dark:focus:ring-white transition-shadow"
+                         placeholder="NY">
+                </div>
+                <div>
+                  <label class="block text-xs uppercase tracking-wider text-secondary dark:text-gray-400 font-medium mb-2">ZIP/Postal Code</label>
+                  <input type="text" id="zip" name="zip" 
+                         class="w-full px-4 py-3 border border-border dark:border-gray-600 bg-gray-50 dark:bg-gray-800 text-primary dark:text-white focus:outline-none focus:ring-2 focus:ring-primary dark:focus:ring-white transition-shadow"
+                         placeholder="10001">
+                </div>
+                <div>
+                  <label class="block text-xs uppercase tracking-wider text-secondary dark:text-gray-400 font-medium mb-2">Country</label>
+                  <select id="country" name="country" 
+                          class="w-full px-4 py-3 border border-border dark:border-gray-600 bg-gray-50 dark:bg-gray-800 text-primary dark:text-white focus:outline-none focus:ring-2 focus:ring-primary dark:focus:ring-white transition-shadow">
+                    <option value="">Select Country</option>
+                    <option value="US">United States</option>
+                    <option value="CA">Canada</option>
+                    <option value="UK">United Kingdom</option>
+                    <option value="AU">Australia</option>
+                    <option value="DE">Germany</option>
+                    <option value="FR">France</option>
+                  </select>
+                </div>
+              </div>
             </div>
             
             <div class="pt-4">
@@ -267,6 +301,10 @@
                 document.getElementById('phone').value = data.user.phone || '';
                 document.getElementById('address1').value = data.user.address1 || '';
                 document.getElementById('address2').value = data.user.address2 || '';
+                document.getElementById('city').value = data.user.city || '';
+                document.getElementById('state').value = data.user.state || '';
+                document.getElementById('zip').value = data.user.zip || '';
+                document.getElementById('country').value = data.user.country || '';
             } else {
                 document.getElementById('first_name').value = user.first_name || '';
                 document.getElementById('last_name').value = user.last_name || '';
@@ -306,6 +344,10 @@
             phone: document.getElementById('phone').value,
             address1: document.getElementById('address1').value,
             address2: document.getElementById('address2').value,
+            city: document.getElementById('city').value,
+            state: document.getElementById('state').value,
+            zip: document.getElementById('zip').value,
+            country: document.getElementById('country').value,
         };
         
         try {

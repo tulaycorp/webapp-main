@@ -296,7 +296,7 @@ class CheckoutController extends Controller
                     'order_id' => $order->id,
                     'user_id' => $request->attributes->get('auth_user_id'),
                     'discount_amount' => $discountAmount,
-                    'created_at' => now(),
+                    'used_at' => now(),
                 ]);
 
                 $coupon->incrementUsage();

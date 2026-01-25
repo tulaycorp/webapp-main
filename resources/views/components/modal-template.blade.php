@@ -152,15 +152,17 @@
           
           <div>
             <label for="signup-phone" class="text-label block mb-3">PHONE NUMBER (OPTIONAL)</label>
-            <div class="flex gap-3">
-              <select id="signup-country-code" name="countryCode" class="form-input text-base w-32">
-                <option value="+64">+64 NZ</option>
-                <option value="+61">+61 AU</option>
-                <option value="+1">+1 US</option>
-                <option value="+44">+44 UK</option>
+            <div class="flex items-center gap-2">
+              <select id="signup-country-code" name="countryCode" class="form-input text-base flex-shrink-0" style="width: 110px;">
+                <option value="+63">🇵🇭 +63</option>
+                <option value="+64" selected>🇳🇿 +64</option>
+                <option value="+61">🇦🇺 +61</option>
+                <option value="+1">🇺🇸 +1</option>
+                <option value="+44">🇬🇧 +44</option>
               </select>
-              <input id="signup-phone" name="phone" type="tel" 
+              <input id="signup-phone" name="phone" type="text" 
                      class="form-input text-base flex-1" 
+                     style="max-width: 180px;"
                      placeholder="123 456 7890"
                      autocomplete="tel">
             </div>
@@ -201,8 +203,8 @@
           <div class="flex items-start gap-3">
             <input type="checkbox" id="agree-terms" required class="w-4 h-4 border-2 border-border mt-1">
             <label for="agree-terms" class="text-sm text-secondary">
-              I agree to the <a href="#" class="text-primary hover:underline">Terms of Service</a> and 
-              <a href="#" class="text-primary hover:underline">Privacy Policy</a>
+              I agree to the <a href="{{ route('terms-of-service') }}" target="_blank" rel="noopener noreferrer" class="text-primary hover:underline">Terms of Service</a> and 
+              <a href="{{ route('privacy-policy') }}" target="_blank" rel="noopener noreferrer" class="text-primary hover:underline">Privacy Policy</a>
             </label>
           </div>
           <div class="text-red-500 text-sm hidden" id="signup-terms-error">You must agree to continue</div>
@@ -380,11 +382,17 @@ document.addEventListener('DOMContentLoaded', function() {
     }
   };
 
-  // Password toggles
-  ['login', 'signup', 'signup-confirm'].forEach(prefix => {
-    const toggle = document.getElementById(`toggle-${prefix}-password`);
-    const input = document.getElementById(`${prefix}-password${prefix.includes('confirm') ? '-confirm' : ''}`);
-    const icon = document.getElementById(`${prefix}-eye-icon`);
+  // Password toggles - handle each field individually with correct IDs
+  const passwordToggles = [
+    { toggle: 'toggle-login-password', input: 'login-password', icon: 'login-eye-icon' },
+    { toggle: 'toggle-signup-password', input: 'signup-password', icon: 'signup-eye-icon' },
+    { toggle: 'toggle-signup-confirm', input: 'signup-password-confirm', icon: 'signup-confirm-icon' }
+  ];
+  
+  passwordToggles.forEach(({ toggle: toggleId, input: inputId, icon: iconId }) => {
+    const toggle = document.getElementById(toggleId);
+    const input = document.getElementById(inputId);
+    const icon = document.getElementById(iconId);
     
     if (toggle && input && icon) {
       toggle.addEventListener('click', () => {

@@ -147,7 +147,7 @@ class OrderController extends Controller
      */
     public function update(Request $request, int $id): JsonResponse
     {
-        $order = Order::findOrFail($id);
+        $order = Order::with('items')->findOrFail($id);
         
         $validated = $request->validate([
             'status' => 'sometimes|in:pending,processing,shipped,delivered,cancelled',
@@ -164,6 +164,20 @@ class OrderController extends Controller
             'shipping_country' => 'sometimes|string|max:255',
         ]);
         
+        // Check if status is being changed to 'cancelled'
+        $previousStatus = $order->status;
+        $newStatus = $validated['status'] ?? $previousStatus;
+        
+        // Restore inventory if order is being cancelled and wasn't already cancelled
+        if ($newStatus === Order::STATUS_CANCELLED && $previousStatus !== Order::STATUS_CANCELLED) {
+            foreach ($order->items as $item) {
+                $product = \App\Models\Product::find($item->product_id);
+                if ($product && $product->track_inventory) {
+                    $product->increment('stock_quantity', $item->quantity);
+                }
+            }
+        }
+        
         $order->update($validated);
         
         return response()->json([
@@ -178,7 +192,19 @@ class OrderController extends Controller
      */
     public function destroy(int $id): JsonResponse
     {
-        $order = Order::findOrFail($id);
+        $order = Order::with('items')->findOrFail($id);
+        
+        // Restore inventory for all items in the order before deletion
+        // Only restore if the order was not already cancelled
+        if ($order->status !== Order::STATUS_CANCELLED) {
+            foreach ($order->items as $item) {
+                $product = \App\Models\Product::find($item->product_id);
+                if ($product && $product->track_inventory) {
+                    $product->increment('stock_quantity', $item->quantity);
+                }
+            }
+        }
+        
         $order->delete();
         
         return response()->json([

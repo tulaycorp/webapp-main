@@ -70,9 +70,19 @@
               </div>
               <div>
                 <label class="block text-xs uppercase tracking-wider text-secondary dark:text-gray-400 font-semibold mb-2">Phone</label>
-                <input type="tel" name="shipping_phone"
-                       class="form-input dark:bg-gray-700 dark:border-gray-600 dark:text-white"
-                       placeholder="+1 (555) 123-4567">
+                <div class="flex items-center gap-2">
+                  <select name="shipping_country_code" class="form-input dark:bg-gray-700 dark:border-gray-600 dark:text-white flex-shrink-0" style="width: 110px;">
+                    <option value="+63">🇵🇭 +63</option>
+                    <option value="+64" selected>🇳🇿 +64</option>
+                    <option value="+61">🇦🇺 +61</option>
+                    <option value="+1">🇺🇸 +1</option>
+                    <option value="+44">🇬🇧 +44</option>
+                  </select>
+                  <input type="text" name="shipping_phone"
+                         class="form-input dark:bg-gray-700 dark:border-gray-600 dark:text-white flex-1"
+                         style="max-width: 180px;"
+                         placeholder="123 456 7890">
+                </div>
               </div>
               <div class="md:col-span-2">
                 <label class="block text-xs uppercase tracking-wider text-secondary dark:text-gray-400 font-semibold mb-2">Address Line 1 *</label>

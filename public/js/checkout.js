@@ -312,7 +312,6 @@
 
         // Expiry date formatting
         cardExpiryInput.addEventListener('input', function (e) {
-<<<<<<< HEAD
             const cursorPos = e.target.selectionStart;
             const oldValue = e.target.dataset.oldValue || '';
             const oldLength = oldValue.length;
@@ -364,9 +363,6 @@
             // Set cursor position
             e.target.setSelectionRange(newCursorPos, newCursorPos);
 
-=======
-            e.target.value = formatExpiry(e.target.value);
->>>>>>> 8f52175ced1bd1486339ad82c9b91966ed914689
             updateSubmitButton();
         });
 
@@ -706,7 +702,7 @@
                         'shipping_first_name': user.first_name,
                         'shipping_last_name': user.last_name,
                         'shipping_email': user.email,
-                        'shipping_phone': user.phone ? (user.country_code || '') + ' ' + user.phone : '',
+                        'shipping_phone': user.phone || '',
                         'shipping_address1': user.address1,
                         'shipping_address2': user.address2,
                     };
@@ -717,6 +713,14 @@
                             input.value = value.trim();
                         }
                     });
+
+                    // Set country code dropdown if available
+                    if (user.country_code) {
+                        const countryCodeSelect = form.querySelector('[name="shipping_country_code"]');
+                        if (countryCodeSelect) {
+                            countryCodeSelect.value = user.country_code;
+                        }
+                    }
 
                     // Also autofill card name
                     const cardNameInput = form.querySelector('[name="card_name"]');

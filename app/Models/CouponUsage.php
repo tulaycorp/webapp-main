@@ -31,6 +31,7 @@ class CouponUsage extends Model
         'order_id',
         'user_id',
         'discount_amount',
+        'used_at',
     ];
 
     /**
@@ -42,7 +43,7 @@ class CouponUsage extends Model
     {
         return [
             'discount_amount' => 'float',
-            'created_at' => 'datetime',
+            'used_at' => 'datetime',
         ];
     }
 

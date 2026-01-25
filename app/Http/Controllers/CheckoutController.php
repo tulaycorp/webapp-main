@@ -308,12 +308,17 @@ class CheckoutController extends Controller
             // Clear the cart
             $cart->items()->delete();
 
-            DB::commit();
-
-
-            
             // Save shipping info if requested
             if ($request->boolean('save_info') && $user = auth()->user()) {
+                \Log::info('Saving shipping info to user profile', [
+                    'user_id' => $user->id,
+                    'save_info' => $request->boolean('save_info'),
+                    'city' => $request->input('shipping_city'),
+                    'state' => $request->input('shipping_state'),
+                    'zip' => $request->input('shipping_zip'),
+                    'country' => $request->input('shipping_country'),
+                ]);
+
                 $user->update([
                     'first_name' => $request->input('shipping_first_name'),
                     'last_name' => $request->input('shipping_last_name'),
@@ -326,7 +331,17 @@ class CheckoutController extends Controller
                     'zip' => $request->input('shipping_zip'),
                     'country' => $request->input('shipping_country'),
                 ]);
+
+                \Log::info('Shipping info saved successfully', [
+                    'user_id' => $user->id,
+                    'updated_city' => $user->fresh()->city,
+                    'updated_state' => $user->fresh()->state,
+                    'updated_zip' => $user->fresh()->zip,
+                    'updated_country' => $user->fresh()->country,
+                ]);
             }
+
+            DB::commit();
 
             return response()->json([
                 'success' => true,

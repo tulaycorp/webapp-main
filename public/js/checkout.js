@@ -584,6 +584,15 @@
                 const formData = new FormData(form);
                 const data = Object.fromEntries(formData.entries());
 
+                // Log form data for debugging
+                console.log('Checkout form data:', {
+                    save_info: data.save_info,
+                    city: data.shipping_city,
+                    state: data.shipping_state,
+                    zip: data.shipping_zip,
+                    country: data.shipping_country
+                });
+
                 const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');
                 const sessionToken = getSessionToken();
 
@@ -697,6 +706,13 @@
                 if (data.success && data.user) {
                     const user = data.user;
 
+                    console.log('Autofilling user data:', {
+                        city: user.city,
+                        state: user.state,
+                        zip: user.zip,
+                        country: user.country
+                    });
+
                     // Autofill form fields
                     const fields = {
                         'shipping_first_name': user.first_name,
@@ -705,12 +721,21 @@
                         'shipping_phone': user.phone || '',
                         'shipping_address1': user.address1,
                         'shipping_address2': user.address2,
+                        'shipping_city': user.city,
+                        'shipping_state': user.state,
+                        'shipping_zip': user.zip,
+                        'shipping_country': user.country,
                     };
 
                     Object.entries(fields).forEach(([name, value]) => {
                         const input = form.querySelector(`[name="${name}"]`);
                         if (input && value) {
                             input.value = value.trim();
+                            console.log(`Set ${name} to:`, value);
+                        } else if (input && !value) {
+                            console.log(`Skipped ${name} - no value in database`);
+                        } else if (!input) {
+                            console.log(`Field ${name} not found in form`);
                         }
                     });
 

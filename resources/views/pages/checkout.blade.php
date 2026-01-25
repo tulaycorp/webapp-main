@@ -138,7 +138,7 @@
               </div>
               
               {{-- Save Info Checkbox --}}
-              @auth
+
               <div class="md:col-span-2 pt-4 border-t border-gray-200 dark:border-gray-700">
                 <label class="flex items-center gap-3 cursor-pointer group">
                   <input type="checkbox" name="save_info" value="1" 
@@ -148,7 +148,7 @@
                   </span>
                 </label>
               </div>
-              @endauth
+
             </div>
           </div>
           

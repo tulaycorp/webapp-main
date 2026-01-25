@@ -28,7 +28,8 @@ class CheckoutController extends Controller
      */
     public function index(Request $request)
     {
-        return view('pages.checkout');
+        $user = auth()->user();
+        return view('pages.checkout', compact('user'));
     }
 
     /**
@@ -137,6 +138,8 @@ class CheckoutController extends Controller
             'card_name' => 'required|string|max:100',
             // Coupon (optional)
             'coupon_code' => 'nullable|string|max:50',
+            // Save info
+            'save_info' => 'nullable|boolean',
         ]);
 
         if ($validator->fails()) {
@@ -306,6 +309,24 @@ class CheckoutController extends Controller
             $cart->items()->delete();
 
             DB::commit();
+
+
+            
+            // Save shipping info if requested
+            if ($request->boolean('save_info') && $user = auth()->user()) {
+                $user->update([
+                    'first_name' => $request->input('shipping_first_name'),
+                    'last_name' => $request->input('shipping_last_name'),
+                    'email' => $request->input('shipping_email'),
+                    'phone' => $request->input('shipping_phone'),
+                    'address1' => $request->input('shipping_address1'),
+                    'address2' => $request->input('shipping_address2'),
+                    'city' => $request->input('shipping_city'),
+                    'state' => $request->input('shipping_state'),
+                    'zip' => $request->input('shipping_zip'),
+                    'country' => $request->input('shipping_country'),
+                ]);
+            }
 
             return response()->json([
                 'success' => true,

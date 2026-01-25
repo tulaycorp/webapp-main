@@ -26,19 +26,20 @@ Route::get('/products/{id}/{slug?}', [ProductController::class, 'show'])->name('
 // Cart Routes (with optional token auth for logged-in user detection)
 Route::middleware(['web', \App\Http\Middleware\WebTokenAuthOptional::class])->group(function () {
     Route::post('/cart/sync', [CartController::class, 'sync']);
+    Route::post('/cart/add', [CartController::class, 'add']);
     Route::get('/cart/data', [CartController::class, 'index']);
     Route::get('/cart', [PageController::class, 'cart'])->name('cart');
     Route::post('/cart/guest/reset', [CartController::class, 'resetGuest']);
-    
+
     // Checkout Routes
     Route::get('/checkout', [CheckoutController::class, 'index'])->name('checkout');
     Route::post('/checkout/process', [CheckoutController::class, 'process'])->name('checkout.process');
     Route::post('/checkout/validate-card', [CheckoutController::class, 'validateCard'])->name('checkout.validate-card');
-    
+
     // Orders Routes
     Route::get('/orders', [OrderController::class, 'index'])->name('orders');
     Route::get('/orders/data', [OrderController::class, 'getOrders'])->name('orders.data');
-    
+
     // Account Route
     Route::get('/account', [PageController::class, 'account'])->name('account');
 });

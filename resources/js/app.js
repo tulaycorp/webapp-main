@@ -445,7 +445,7 @@ import 'nprogress/nprogress.css';
         if (btn.tagName === 'BUTTON' && !btn.querySelector('i')) { // Avoid overwriting icon buttons if any
           if (btn.textContent.trim() !== 'Added!') { // Don't overwrite success feedback immediately
             btn.dataset.originalText = btn.dataset.originalText || btn.textContent;
-            btn.textContent = 'Max Limit';
+            btn.textContent = 'Out of Stock';
           }
         }
       } else {
